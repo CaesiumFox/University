@@ -1,4 +1,4 @@
-package com.github.caesiumfox.lab01;
+package io.github.caesiumfox.lab01;
 
 public class Main {
 	private static int[] d;
