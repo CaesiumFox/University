@@ -1,8 +1,8 @@
 # Simple but working
 
-MAINCLASS := ru.caesiumfox.lab01.Main
-CLASSES := ru.caesiumfox.lab01.Main \
-           ru.caesiumfox.lab01.Generator
+MAINCLASS := com.github.caesiumfox.lab01.Main
+CLASSES := com.github.caesiumfox.lab01.Main \
+           com.github.caesiumfox.lab01.Generator
 
 SRCS := $(addprefix ./src/,$(addsuffix .java,$(subst .,/,$(CLASSES))))
 JARF := lab01.jar
