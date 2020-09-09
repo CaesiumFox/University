@@ -8,7 +8,7 @@ SRCS := $(addprefix ./src/,$(addsuffix .java,$(subst .,/,$(CLASSES))))
 JARF := lab01.jar
 
 all:
-	mkdir bin
+	mkdir -p bin
 	javac -d bin/ $(SRCS)
 	jar cfe $(JARF) $(MAINCLASS) -C bin/ .
 
