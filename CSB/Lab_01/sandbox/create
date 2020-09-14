@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mkdir -p lab0/croagunk1/ludicolo
+mkdir -p lab0/croagunk1/butterfree
+mkdir -p lab0/croagunk1/pineco
+mkdir -p lab0/pidgey7/piplup
+mkdir -p lab0/pidgey7/scolipede
+mkdir -p lab0/swellow2/clefairy
+mkdir -p lab0/swellow2/buizel
+
+# ...
