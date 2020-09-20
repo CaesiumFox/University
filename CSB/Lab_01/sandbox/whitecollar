@@ -1,0 +1,5 @@
+#!/bin/bash
+
+wc -l lab0/pidgey1/* | head -n -1 | sort -n -
+
+ls -R lab0/croagunk1/ | sort -r -

@@ -1,11 +1,36 @@
 #!/bin/bash
 
-mkdir -p lab0/croagunk1/ludicolo
-mkdir -p lab0/croagunk1/butterfree
-mkdir -p lab0/croagunk1/pineco
-mkdir -p lab0/pidgey7/piplup
-mkdir -p lab0/pidgey7/scolipede
-mkdir -p lab0/swellow2/clefairy
-mkdir -p lab0/swellow2/buizel
+# creating
+mkdir lab0
+touch lab0/beldum3
+mkdir lab0/croagunk1
+touch lab0/croagunk1/cottonee
+mkdir lab0/croagunk1/ludicolo
+mkdir lab0/croagunk1/butterfree
+mkdir lab0/croagunk1/pineco
+touch lab0/croagunk1/aipom
+touch lab0/magikarp1
+mkdir lab0/pidgey7
+touch lab0/pidgey7/pidgey
+mkdir lab0/pidgey7/piplup
+mkdir lab0/pidgey7/scolipede
+touch lab0/pidgey7/alakazam
+touch lab0/pidgey7/happiny
+mkdir lab0/swellow2
+touch lab0/swellow2/hippowdon
+mkdir lab0/swellow2/clefairy
+mkdir lab0/swellow2/buizel
+touch lab0/swellow2/sunkern
+touch lab0/taillow8
 
-# ...
+# filling
+echo -e "Ходы  Iron Defense Iron Head Zen\nHeadbutt" > lab0/beldum3
+echo -e "Способности  Absorb Growth Leech Seed Stun Spore\nMega Drain Cotton Spore Razor Leaf Poisonpowder Giga Drain Charm\nHelping Hand Energy Ball Cotton Gard Sunny Day Endeavor\nSolarbeam" > lab0/croagunk1/cottonee
+echo -e "Ходы  Body Slam Bounce Covet Defense Curl Double-Edge\nDynamicpunch Fire Punch Focus Punch Foul Play Fury Cutter Gunk Shot\nIce Punch Iron Tail Knock Off Last Resort Low Kick Magic Coat Mega\nKick Mega Punch Metronome Mud-Slap Role Play Seed Bomb Seismic Toss\nShock Wave Sleep Talk Snatch Snore Sprite Swift Thunderpunch Uproar\nWater Pulse" > lab0/croagunk1/aipom
+echo -e "Способности  Torrent Swift Swim\nSimple" > lab0/magikarp1
+echo -e "satk=4 sdef=4 spd=6" > lab0/pidgey7/pidgey
+echo -e "Ходы  Body Slam Counter\nDouble-Edge Drain Punch Dynnamicpunch Fire Punch Focus Punch Foul Play\nGravity Ice Punch Iron Tail Kinesis Knock Off Magic Coat Magic Room\nRecycle Role Play Magic Coat Mega Kick Mega Punch Metronome Saismic\nToss Shock Wave Signal Beam Skill Swap Sleep Talk Snatch Snore\nThunderpunch Trick Wonder Room Zen Headbutt" > lab0/pidgey7/alakazam
+echo -e "Ходы  Covet Drain\nPunch Endeavor Gravity Heal Bell Helping Hand Hyper Voice Icy Wind\nLast Resort Mud-Slap Recycle Rollout Shock Wave Sleep Talk Snore\nUproar Water Pulse Zen Headbutt" > lab0/pidgey7/happiny
+echo -e "Способности  Landslide Sand\nStream Arena Trap" > lab0/swellow2/hippowdon
+echo -e "Развитые способности  Early\nBird" > lab0/swellow2/sunkern
+echo -e "weight=5.1 height=12.0 atk=6 def=3" > lab0/taillow8

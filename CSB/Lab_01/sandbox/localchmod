@@ -1,0 +1,22 @@
+#!/bin/bash
+
+chmod 060 lab0/beldum3
+chmod 357 lab0/croagunk1
+chmod 044 lab0/croagunk1/cottonee
+chmod 753 lab0/croagunk1/ludicolo
+chmod 577 lab0/croagunk1/butterfree
+chmod 305 lab0/croagunk1/pineco
+chmod 440 lab0/croagunk1/aipom
+chmod 620 lab0/magikarp1
+chmod 537 lab0/pidgey7
+chmod 404 lab0/pidgey7/pidgey
+chmod 511 lab0/pidgey7/piplup
+chmod 307 lab0/pidgey7/scolipede
+chmod 440 lab0/pidgey7/alakazam
+chmod 404 lab0/pidgey7/happiny
+chmod 737 lab0/swellow2
+chmod 066 lab0/swellow2/hippowdon
+chmod 335 lab0/swellow2/clefairy
+chmod 500 lab0/swellow2/buizel
+chmod 400 lab0/swellow2/sunkern
+chmod 640 lab0/taillow8

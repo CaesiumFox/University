@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cat lab0/pidgey7/alakazam lab0/croagunk1/aipom > lab0/belbum3_67
+ln -s lab0/swellow2 lab0/Copy_46
+cp lab0/taillow8 lab0/croagunk1/pineco/
+ln lab0/magikarp1 lab0/croagunk1/cottoneemagikarp
+cp -r lab0/swellow2 lab0/croagunk1/butterfree/
+cp lab0/magikarp1 lab0/pidgey7/pidgeymagikarp
+ln -s lab0/beldum3 lab0/swellow2/hippowdonbeldum
