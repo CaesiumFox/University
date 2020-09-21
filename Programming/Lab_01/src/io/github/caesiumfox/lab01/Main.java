@@ -8,9 +8,9 @@ public class Main {
 	private static double[][] g;
 
 	public static void main(String[] args) {
-		d = Generator.GenerateArithmetic((short)4, (short)2, 8);
-		x = Generator.GenerateRandom(-5.0, 15.0, 17);
-		g = Generator.GenerateGArray(d, x);
+		d = Generator.generateArithmetic((short)4, (short)2, 8);
+		x = Generator.generateRandom(-5.0, 15.0, 17);
+		g = Generator.generateGArray(d, x);
 
 		for(int i = 0; i < d.length; i++) {
 			for(int j = 0; j < x.length; j++) {
