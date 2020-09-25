@@ -1,9 +1,30 @@
-#!/bin/bash
+#! /bin/bash
 
 cat lab0/pidgey7/alakazam lab0/croagunk1/aipom > lab0/belbum3_67
+
+
 ln -s lab0/swellow2 lab0/Copy_46
+
+
 cp lab0/taillow8 lab0/croagunk1/pineco/
+
+
 ln lab0/magikarp1 lab0/croagunk1/cottoneemagikarp
+
+
+chmod 700 lab0/swellow2 lab0/swellow2/* lab0/croagunk1/butterfree
 cp -r lab0/swellow2 lab0/croagunk1/butterfree/
+chmod 577 lab0/croagunk1/butterfree
+chmod 737 lab0/swellow2
+chmod 066 lab0/swellow2/hippowdon
+chmod 335 lab0/swellow2/clefairy
+chmod 500 lab0/swellow2/buizel
+chmod 400 lab0/swellow2/sunkern
+
+
+chmod 700 lab0/pidgey7
 cp lab0/magikarp1 lab0/pidgey7/pidgeymagikarp
+chmod 537 lab0/pidgey7
+
+
 ln -s lab0/beldum3 lab0/swellow2/hippowdonbeldum

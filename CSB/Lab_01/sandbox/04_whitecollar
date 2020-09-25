@@ -1,0 +1,20 @@
+#! /bin/bash
+
+wc -l lab0/pidgey7/* | grep -v "total" | sort
+
+
+chmod +r lab0/croagunk1
+ls -1R lab0/croagunk1/ 2> /dev/null | grep "." | grep -v ":$" | sort -r
+chmod 357 lab0/croagunk1
+
+
+cat lab0/*y lab0/*/*y lab0/*/*/*y | sort
+
+
+ls -lt lab0/c* lab0/*/c* lab0/*/*/c* 2> /dev/null
+
+
+ls -lr lab0/pidgey7 2>&1
+
+
+ls -ltu lab0/swellow2/ lab0/swellow2/*/ 2> /dev/null
