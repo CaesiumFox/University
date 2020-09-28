@@ -2,7 +2,7 @@
 
 #removing
 
-chmod 700 lab0/beldum3 lab0/swellow2/hippowdon lab0/croagunk1
-chmod -R 700 lab0/croagunk1/
-rm lab0/beldum3 lab0/swellow2/hippowdon lab0/Copy_* lab0/croagunk1/cottoneemagika*
-rm -r lab0/croagunk1/
+chmod 700 ~/lab0/beldum3 ~/lab0/swellow2/hippowdon ~/lab0/croagunk1
+chmod -R 700 ~/lab0/croagunk1/
+rm ~/lab0/beldum3 ~/lab0/swellow2/hippowdon ~/lab0/Copy_* ~/lab0/croagunk1/cottoneemagika*
+rm -r ~/lab0/croagunk1/
