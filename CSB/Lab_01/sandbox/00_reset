@@ -1,4 +1,8 @@
 #! /bin/bash
 
-chmod -R 777 ~/lab0/
-rm -rf ~/lab0/
+if chmod -R 777 ~/lab0/ 2> /dev/null; then
+	rm -rf ~/lab0/
+else
+	echo "Ошибка: Нет каталога ~/lab0/" >&2
+	exit 1
+fi

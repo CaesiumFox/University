@@ -1,30 +1,154 @@
 #! /bin/bash
-
-cat ~/lab0/pidgey7/alakazam ~/lab0/croagunk1/aipom > ~/lab0/belbum3_67
-
-
-ln -s ~/lab0/swellow2 ~/lab0/Copy_46
+total_errors=0
 
 
-cp ~/lab0/taillow8 ~/lab0/croagunk1/pineco/
 
 
-ln ~/lab0/magikarp1 ~/lab0/croagunk1/cottoneemagikarp
+
+# cat ~/lab0/pidgey7/alakazam ~/lab0/croagunk1/aipom > ~/lab0/belbum3_67
+errors=0
+if ! [ -e ~/lab0/pidgey7/alakazam ]; then
+	echo "Ошибка: нет файла ~/lab0/pidgey7/alakazam" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0/croagunk1/aipom ]; then
+	echo "Ошибка: нет файла ~/lab0/croagunk1/aipom" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	cat ~/lab0/pidgey7/alakazam ~/lab0/croagunk1/aipom > ~/lab0/belbum3_67
+else
+	total_errors=1
+fi
 
 
-chmod 700 ~/lab0/swellow2 ~/lab0/swellow2/* ~/lab0/croagunk1/butterfree
-cp -r ~/lab0/swellow2 ~/lab0/croagunk1/butterfree/
-chmod 577 ~/lab0/croagunk1/butterfree
-chmod 737 ~/lab0/swellow2
-chmod 066 ~/lab0/swellow2/hippowdon
-chmod 335 ~/lab0/swellow2/clefairy
-chmod 500 ~/lab0/swellow2/buizel
-chmod 400 ~/lab0/swellow2/sunkern
 
 
-chmod 700 ~/lab0/pidgey7
-cp ~/lab0/magikarp1 ~/lab0/pidgey7/pidgeymagikarp
-chmod 537 ~/lab0/pidgey7
+
+# ln -s ~/lab0/swellow2 ~/lab0/Copy_46
+errors=0
+if ! [ -e ~/lab0/swellow2 ]; then
+	echo "Ошибка: нет каталога ~/lab0/swellow2" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0 ]; then
+	echo "Ошибка: нет каталога ~/lab0" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	ln -s ~/lab0/swellow2 ~/lab0/Copy_46
+else
+	total_errors=1
+fi
 
 
-ln -s ~/lab0/beldum3 ~/lab0/swellow2/hippowdonbeldum
+
+
+
+# cp ~/lab0/taillow8 ~/lab0/croagunk1/pineco/
+errors=0
+if ! [ -e ~/lab0/taillow8 ]; then
+	echo "Ошибка: нет файла ~/lab0/taillow8" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0/croagunk1/pineco ]; then
+	echo "Ошибка: нет каталога ~/lab0/croagunk1/pineco" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	cp ~/lab0/taillow8 ~/lab0/croagunk1/pineco/
+else
+	total_errors=1
+fi
+
+
+
+
+
+# ln ~/lab0/magikarp1 ~/lab0/croagunk1/cottoneemagikarp
+errors=0
+if ! [ -e ~/lab0/magikarp1 ]; then
+	echo "Ошибка: нет файла ~/lab0/magikarp1" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0/croagunk1 ]; then
+	echo "Ошибка: нет каталога ~/lab0/croagunk1" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	ln ~/lab0/magikarp1 ~/lab0/croagunk1/cottoneemagikarp
+else
+	total_errors=1
+fi
+
+
+
+
+
+# cp -r ~/lab0/swellow2 ~/lab0/croagunk1/butterfree/
+errors=0
+if ! [ -e ~/lab0/swellow2 ]; then
+	echo "Ошибка: нет каталога ~/lab0/swellow2" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0/croagunk1/butterfree ]; then
+	echo "Ошибка: нет каталога ~/lab0/croagunk1/butterfree" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	chmod 700 ~/lab0/swellow2 ~/lab0/swellow2/* ~/lab0/croagunk1/butterfree
+	cp -r ~/lab0/swellow2 ~/lab0/croagunk1/butterfree/
+	chmod 577 ~/lab0/croagunk1/butterfree
+	chmod 737 ~/lab0/swellow2
+	chmod 066 ~/lab0/swellow2/hippowdon
+	chmod 335 ~/lab0/swellow2/clefairy
+	chmod 500 ~/lab0/swellow2/buizel
+	chmod 400 ~/lab0/swellow2/sunkern
+else
+	total_errors=1
+fi
+
+
+
+
+
+# cp ~/lab0/magikarp1 ~/lab0/pidgey7/pidgeymagikarp
+errors=0
+if ! [ -e ~/lab0/magikarp1 ]; then
+	echo "Ошибка: нет файла ~/lab0/magikarp1" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0/pidgey7 ]; then
+	echo "Ошибка: нет каталога ~/lab0/pidgey7" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	chmod 700 ~/lab0/pidgey7
+	cp ~/lab0/magikarp1 ~/lab0/pidgey7/pidgeymagikarp
+	chmod 537 ~/lab0/pidgey7
+else
+	total_errors=1
+fi
+
+
+
+
+
+# ln -s ~/lab0/beldum3 ~/lab0/swellow2/hippowdonbeldum
+errors=0
+if ! [ -e ~/lab0/beldum3 ]; then
+	echo "Ошибка: нет файла ~/lab0/beldum3" >&2
+	errors=1
+fi
+if ! [ -e ~/lab0/swellow2 ]; then
+	echo "Ошибка: нет каталога ~/lab0/swellow2" >&2
+	errors=1
+fi
+if (("$errors" == 0)); then
+	ln -s ~/lab0/beldum3 ~/lab0/swellow2/hippowdonbeldum
+else
+	total_errors=1
+fi
+
+
+exit $total_errors
