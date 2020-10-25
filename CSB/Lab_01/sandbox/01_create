@@ -2,17 +2,8 @@
 
 if [ -e ~/lab0/ ]; then
 	echo "Каталог ~/lab0/ уже существует."
-	read -p "Перезаписать (всё будет предварительно удалено)? [y/n] " answer_rewrite
-	case "$answer_rewrite" in
-	"Y" | "y")
-		chmod -R 777 ~/lab0/ 2> /dev/null
-		rm -rf ~/lab0/
-		;;
-	*)
-		echo "Прервано"
-		exit 1
-		;;
-	esac
+	echo "Прервано"
+	exit 1
 fi
 
 # creating

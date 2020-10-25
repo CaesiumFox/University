@@ -102,3 +102,5 @@ if ! chmod 640 ~/lab0/taillow8 2> /dev/null; then
 	echo "Пропущено" >&2
 	retval=1
 fi
+
+exit ${retval}
