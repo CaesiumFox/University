@@ -1,0 +1,9 @@
+.settings/
+.vscode/
+bin/
+reference/
+target/
+texts/
+.classpath
+.project
+*.jar

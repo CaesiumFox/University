@@ -1,0 +1,101 @@
+package io.github.caesiumfox.lab03.characters;
+
+import io.github.caesiumfox.lab03.enums.*;
+import io.github.caesiumfox.lab03.Mammal;
+import io.github.caesiumfox.lab03.interfaces.Sniffable;
+
+public class Dog extends Mammal {
+    private Size size;
+    private Breed breed;
+    private FurColor furColor;
+
+    public Dog(String name, Gender gender, Size size,
+               Breed breed, FurColor furColor) {
+        super(name, gender);
+        this.size = size;
+        this.breed = breed;
+        this.furColor = furColor;
+        this.mood = Mood.Happy;
+    }
+
+    public void sniff(Sniffable object) {
+        switch(object.makeScent()) {
+            case Good:
+            case Neuter:
+                if(object instanceof Human)
+                    this.mood = Mood.Friendly;
+                else
+                    this.mood = Mood.Happy;
+                break;
+            case Bad:
+                this.mood = Mood.Angry;
+                break;
+        }
+    }
+
+    public Size getSize() {
+        return size;
+    }
+    public Breed getBreed() {
+        return breed;
+    }
+    public FurColor getFurColor() {
+        return furColor;
+    }
+
+    public void say() {
+        System.out.print(this.toString());
+        switch (mood) {
+            case Happy:
+                System.out.println(" yaps happily");
+                break;
+            case Friendly:
+                System.out.println(" yaps friendly");
+                break;
+            case Sad:
+                System.out.println(" whines");
+                break;
+            case Angry:
+                System.out.println(" snarls");
+                break;
+        }
+    }
+    public Scent makeScent() {
+        return Scent.Good;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        if(this.getClass() == obj.getClass()) {
+            Dog dog = (Dog)obj;
+            return (this.getName().equals(dog.getName())
+                    && this.getGender() == dog.getGender()
+                    && this.getMood() == dog.getMood()
+                    && this.getSize() == dog.getSize()
+                    && this.getBreed() == dog.getBreed()
+                    && this.getFurColor() == dog.getFurColor());
+        }
+        return false;
+    }
+    @Override
+    public String toString() {
+        return "Dog named " + this.getName();
+    }
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + this.getName().hashCode();
+        result = 31 * result + this.getGender().hashCode();
+        result = 31 * result + this.getMood().hashCode();
+        result = 31 * result + this.getSize().hashCode();
+        result = 31 * result + this.getBreed().hashCode();
+        result = 31 * result + this.getFurColor().hashCode();
+        return result;
+    }
+}
