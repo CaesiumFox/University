@@ -2,6 +2,7 @@ package io.github.caesiumfox.lab04;
 
 import io.github.caesiumfox.lab04.characters.*;
 import io.github.caesiumfox.lab04.enums.*;
+import io.github.caesiumfox.lab04.exceptions.AlreadyAcquaintedException;
 import io.github.caesiumfox.lab04.exceptions.EmptyNameException;
 
 public class Main {
@@ -14,11 +15,26 @@ public class Main {
     private static Street street;
 
     public static void main(String[] args) {
-        krister.getAcquaintedWith(karlsson);
-        karlsson.getAcquaintedWith(krister);
-        gunilla.getAcquaintedWith(karlsson);
-        karlsson.getAcquaintedWith(gunilla);
-
+        try {
+            krister.getAcquaintedWith(karlsson);
+        } catch(AlreadyAcquaintedException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            karlsson.getAcquaintedWith(krister);
+        } catch(AlreadyAcquaintedException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            gunilla.getAcquaintedWith(karlsson);
+        } catch(AlreadyAcquaintedException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            karlsson.getAcquaintedWith(gunilla);
+        } catch(AlreadyAcquaintedException e) {
+            System.err.println(e.getMessage());
+        }
         svante.goTo(house);
         krister.goTo(house);
         gunilla.goTo(house);
@@ -57,7 +73,12 @@ public class Main {
                 for(int i = 0; i < humans.length; i++) {
                     for(int j = 0; j < humans.length; j++) {
                         if(i != j) {
-                            humans[i].getAcquaintedWith(humans[j]);
+                            try {
+                                humans[i].getAcquaintedWith(humans[j]);
+                            }
+                            catch(AlreadyAcquaintedException e) {
+                                System.err.println(e.getMessage());
+                            }
                         }
                     }
                 }
