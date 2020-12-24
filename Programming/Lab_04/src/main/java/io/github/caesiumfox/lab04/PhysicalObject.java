@@ -6,7 +6,7 @@ public abstract class PhysicalObject {
     protected String name;
 
     public PhysicalObject(String name) throws EmptyNameException {
-        if(name.equals(""))
+        if(name.isEmpty())
             throw new EmptyNameException(this);
         this.name = name;
     }

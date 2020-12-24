@@ -9,35 +9,29 @@ public class Dog extends Mammal {
     private Size size;
     private Breed breed;
     private FurColor furColor;
-    public Nose nose;
 
-    public class Nose {
-        public void sniff(Sniffable object) {
-            System.out.println(Dog.this.toString()
-                    + " sniffs " + object.toString());
-            switch(object.makeScent()) {
-                case Good:
-                case Neuter:
-                    if(object instanceof Human)
-                        Dog.this.mood = Mood.Friendly;
-                    else
-                        Dog.this.mood = Mood.Happy;
-                    break;
-                case Bad:
-                    Dog.this.mood = Mood.Angry;
-                    break;
-            }
-        }
-    }
-
-    public Dog(String name, Gender gender, Size size,
-            Breed breed, FurColor furColor) throws EmptyNameException {
+    public Dog(String name, Gender gender, Size size, Breed breed,
+               FurColor furColor) throws EmptyNameException {
         super(name, gender);
         this.size = size;
         this.breed = breed;
         this.furColor = furColor;
         this.mood = Mood.Happy;
-        nose = new Nose();
+    }
+
+    public void sniff(Sniffable object) {
+        switch(object.makeScent()) {
+            case Good:
+            case Neuter:
+                if(object instanceof Human)
+                    this.mood = Mood.Friendly;
+                else
+                    this.mood = Mood.Happy;
+                break;
+            case Bad:
+                this.mood = Mood.Angry;
+                break;
+        }
     }
 
     public Size getSize() {
@@ -65,6 +59,9 @@ public class Dog extends Mammal {
             case Angry:
                 System.out.println(" snarls");
                 break;
+            case Thoughtful:
+                System.out.println(" says nothing");
+                break;
         }
     }
     public Scent makeScent() {
@@ -73,10 +70,12 @@ public class Dog extends Mammal {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null)
+        if(obj == null) {
             return false;
-        if(obj == this)
+        }
+        if(obj == this) {
             return true;
+        }
         if(this.getClass() == obj.getClass()) {
             Dog dog = (Dog)obj;
             return (this.getName().equals(dog.getName())
@@ -84,7 +83,8 @@ public class Dog extends Mammal {
                     && this.getMood() == dog.getMood()
                     && this.getSize() == dog.getSize()
                     && this.getBreed() == dog.getBreed()
-                    && this.getFurColor() == dog.getFurColor());
+                    && this.getFurColor() == dog.getFurColor()
+                    && this.getThought().equals(dog.getThought()));
         }
         return false;
     }
@@ -101,6 +101,7 @@ public class Dog extends Mammal {
         result = 31 * result + this.getSize().hashCode();
         result = 31 * result + this.getBreed().hashCode();
         result = 31 * result + this.getFurColor().hashCode();
+        result = 31 * result + this.getThought().hashCode();
         return result;
     }
 }

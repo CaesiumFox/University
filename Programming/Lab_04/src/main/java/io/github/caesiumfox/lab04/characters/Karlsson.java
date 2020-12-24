@@ -15,10 +15,12 @@ public class Karlsson extends Human implements Flying {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null)
+        if(obj == null) {
             return false;
-        if(obj == this)
+        }
+        if(obj == this) {
             return true;
+        }
         if(this.getClass() == obj.getClass()) {
             Karlsson karlsson = (Karlsson)obj;
             return (this.getName().equals(karlsson.getName())
