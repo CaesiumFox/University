@@ -24,7 +24,7 @@ public class Building extends PhysicalObject {
     }
     @Override
     public String toString() {
-        return "House \"" + this.getName() + "\"";
+        return "Building \"" + this.getName() + "\"";
     }
     @Override
     public int hashCode() {

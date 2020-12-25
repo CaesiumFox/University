@@ -9,6 +9,24 @@ public class Dog extends Mammal {
     private Size size;
     private Breed breed;
     private FurColor furColor;
+    public Nose nose;
+
+    public class Nose {
+        public void sniff(Sniffable object) {
+            switch(object.makeScent()) {
+                case Good:
+                case Neuter:
+                    if(object instanceof Human)
+                        Dog.this.mood = Mood.Friendly;
+                    else
+                        Dog.this.mood = Mood.Happy;
+                    break;
+                case Bad:
+                    Dog.this.mood = Mood.Angry;
+                    break;
+            }
+        }
+    }
 
     public Dog(String name, Gender gender, Size size, Breed breed,
                FurColor furColor) throws EmptyNameException {
@@ -17,21 +35,7 @@ public class Dog extends Mammal {
         this.breed = breed;
         this.furColor = furColor;
         this.mood = Mood.Happy;
-    }
-
-    public void sniff(Sniffable object) {
-        switch(object.makeScent()) {
-            case Good:
-            case Neuter:
-                if(object instanceof Human)
-                    this.mood = Mood.Friendly;
-                else
-                    this.mood = Mood.Happy;
-                break;
-            case Bad:
-                this.mood = Mood.Angry;
-                break;
-        }
+        this.nose = new Nose();
     }
 
     public Size getSize() {

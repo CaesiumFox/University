@@ -1,7 +1,7 @@
 package io.github.caesiumfox.lab04;
 
 import io.github.caesiumfox.lab04.enums.*;
-import io.github.caesiumfox.lab04.environment.Street;
+import io.github.caesiumfox.lab04.environment.Way;
 import io.github.caesiumfox.lab04.exceptions.EmptyNameException;
 import io.github.caesiumfox.lab04.interfaces.*;
 
@@ -20,20 +20,30 @@ public abstract class Mammal extends PhysicalObject
     public Gender getGender() {
         return gender;
     }
+    public Mood getMood() {
+        return mood;
+    }
+    public void setMood(Mood mood) {
+        this.mood = mood;
+    }
     public String getThought() {
         return thought;
     }
     public void setThought(String thought) {
         this.thought = thought;
     }
-    public Mood getMood() {
-        return mood;
+
+    public void breathe() {
+        System.out.println(this.toString() + " breathes");
     }
 
     public void go(PhysicalObject destination) {
         System.out.println(this.toString() + " goes to " + destination.toString());
     }
-    public void crossStreet(Street street) {
-        System.out.println(this.toString() + " crosses " + street.toString());
+    public void crossStreet(Way way) {
+        System.out.println(this.toString() + " crosses " + way.toString());
+    }
+    public void follow(PhysicalObject followee) {
+        System.out.println(this.toString() + " follows " + followee.toString());
     }
 }

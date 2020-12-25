@@ -2,6 +2,7 @@ package io.github.caesiumfox.lab04.characters;
 
 import io.github.caesiumfox.lab04.enums.*;
 import io.github.caesiumfox.lab04.Mammal;
+import io.github.caesiumfox.lab04.exceptions.AcquaintanceException;
 import io.github.caesiumfox.lab04.exceptions.EmptyNameException;
 import io.github.caesiumfox.lab04.exceptions.NoThoughtException;
 import io.github.caesiumfox.lab04.interfaces.Vocal;
@@ -18,6 +19,8 @@ public class Human extends Mammal {
     }
 
     public void getAcquaintedWith(Human human) {
+        if(human == this || acquaintances.contains(human))
+            throw new AcquaintanceException(this, human);
         acquaintances.add(human);
         System.out.println(this.toString() + " is now acquainted with " + human.toString());
     }
