@@ -1,0 +1,7 @@
+.idea/
+bin/
+reference/
+target/
+texts/
+src/test/
+*.jar
