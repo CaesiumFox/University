@@ -37,4 +37,8 @@ public class Movie {
      * Не может быть null
      */
     private Person director;
+
+
+    public Movie() {}
+    public Movie(io.github.caesiumfox.lab05.parsingSkeleton.Movie skeleton) {}
 }

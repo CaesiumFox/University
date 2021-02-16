@@ -1,6 +1,22 @@
 package io.github.caesiumfox.lab05.element;
 
+import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
+
 public class Person {
+    /**
+     * Вспомогательный класс для работы с JSON файлами
+     * при помощи библиотеки GSON.
+     * GSON работает напосредственно с ним,
+     * преобразование между "скелетом" и
+     * базовым классом (Person) происходит
+     * отдельно.
+     */
+    public static class Skeleton {
+        public String name;
+        public String passportID;
+        public Color hairColor;
+    }
+
     /**
      * Не может быть null,
      * Не может быть пустой
@@ -15,5 +31,61 @@ public class Person {
     /**
      * Не может быть null
      */
-    private Color hairColor; //Поле не может быть null
+    private Color hairColor;
+
+    private static int passportIDMinLen = 6;
+    private static int passportIDMaxLen = 46;
+
+
+    public Person(String name, String passportID, Color hairColor) {
+        setName(name);
+        setPassportID(passportID);
+        setHairColor(hairColor);
+    }
+    public Person(Skeleton skeleton) {
+        setName(skeleton.name);
+        setPassportID(skeleton.passportID);
+        setHairColor(skeleton.hairColor);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassportID() {
+        return passportID;
+    }
+
+    public Color getHairColor() {
+        return hairColor;
+    }
+
+    public void setName(String name) {
+        if(name.length() == 0) {
+            throw new StringLengthLimitationException(name, 1, -1);
+        }
+        if(name == null) {
+            throw new NullPointerException();
+        }
+        this.name = name;
+    }
+
+    public void setPassportID(String passportID) {
+        if(passportID.length() < passportIDMinLen
+                || passportID.length() > passportIDMaxLen) {
+            throw new StringLengthLimitationException(passportID,
+                    passportIDMinLen, passportIDMaxLen);
+        }
+        if(passportID == null) {
+            throw new NullPointerException();
+        }
+        this.passportID = passportID;
+    }
+
+    public void setHairColor(Color hairColor) {
+        if(hairColor == null) {
+            throw new NullPointerException();
+        }
+        this.hairColor = hairColor;
+    }
 }
