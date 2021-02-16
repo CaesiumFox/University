@@ -56,7 +56,7 @@ public class Coordinates {
      * @exception CoordinatesOutOfRangeException выбрасывается,
      * если координаты выходят за пределы областей допустимых значений.
      */
-    public Coordinates(io.github.caesiumfox.lab05.parsingSkeleton.Coordinates skeleton) {
+    public Coordinates(Skeleton skeleton) {
         setX(skeleton.x);
         setY(skeleton.y);
     }
