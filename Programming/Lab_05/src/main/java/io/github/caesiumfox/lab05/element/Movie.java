@@ -1,6 +1,20 @@
 package io.github.caesiumfox.lab05.element;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Movie {
+    public static class Skeleton {
+        public int id;
+        public String name;
+        public Coordinates.Skeleton coordinates;
+        public Date creationDate;
+        public long oscarsCount;
+        public MovieGenre genre;
+        public MpaaRating mpaaRating;
+        public Person.Skeleton director;
+    }
+
     /**
      * Не может быть null, Значение поля должно быть больше 0,
      * Значение этого поля должно быть уникальным,
