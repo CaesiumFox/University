@@ -4,11 +4,31 @@ import com.google.gson.annotations.SerializedName;
 
 public enum MovieGenre {
     @SerializedName("action")
-    ACTION,
+    ACTION {
+        @Override
+        public String toString() {
+            return "Action";
+        }
+    },
     @SerializedName("tragedy")
-    TRAGEDY,
+    TRAGEDY  {
+        @Override
+        public String toString() {
+            return "Tragedy";
+        }
+    },
     @SerializedName("horror")
-    HORROR,
+    HORROR {
+        @Override
+        public String toString() {
+            return "Horror";
+        }
+    },
     @SerializedName("fantasy")
-    FANTASY
+    FANTASY {
+        @Override
+        public String toString() {
+            return "Fantasy";
+        }
+    }
 }

@@ -2,6 +2,7 @@ package io.github.caesiumfox.lab05.command;
 
 import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.exceptions.InvalidCommandException;
+import io.github.caesiumfox.lab05.exceptions.ShellSignalException;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public abstract class Command {
     protected Database database;
     protected ArrayList<String> args;
     protected abstract void prepare();
-    protected abstract void execute();
-    public void run() {
+    protected abstract void execute() throws ShellSignalException;
+    public void run() throws ShellSignalException {
         prepare();
         execute();
     }
@@ -36,6 +37,8 @@ public abstract class Command {
                 return new Info(args, database, output, input);
             case "show":
                 return new Show(args, database, output, input);
+            case "exit":
+                return new Exit(args, database, output, input);
             default:
                 throw new InvalidCommandException(args.get(0));
         }
@@ -68,7 +71,7 @@ public abstract class Command {
     public String toString() {
         StringBuilder result = new StringBuilder(args.get(0));
         for(int i = 1; i < args.size(); i++) {
-            result.append(" ").append(args.get(0));
+            result.append(" ").append(args.get(i));
         }
         return result.toString();
     }

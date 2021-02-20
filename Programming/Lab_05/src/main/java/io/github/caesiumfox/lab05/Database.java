@@ -9,35 +9,31 @@ import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.HashSet;
+import java.util.*;
 
 public class Database {
     public static class Skeleton {
-        public String name;
         public Date creationDate;
         public List<Movie.Skeleton> data;
     }
 
     private String inputFile;
-    private String name;
     private final Date creationDate;
     private LinkedHashMap<Integer, Movie> data;
-    private HashSet<String> knownPassportIDs;
+    private Set<String> knownPassportIDs;
     private int maxId;
 
     public Database() {
-        this.name = "";
+        inputFile = "";
         creationDate = new Date();
         knownPassportIDs = new HashSet<>();
         data = new LinkedHashMap<>();
     }
-    public Database(Skeleton skeleton) {
-        this.name = skeleton.name;
+    public Database(Skeleton skeleton, String inputFile) {
+        this.inputFile = inputFile;
         this.creationDate = skeleton.creationDate;
         this.knownPassportIDs = new HashSet<>();
+        this.data = new LinkedHashMap<>();
         for(Movie.Skeleton movieSkeleton : skeleton.data) {
             if(this.data.containsKey(movieSkeleton.id)) {
                 throw new ElementIdAlreadyExistsException(movieSkeleton.id);
@@ -54,9 +50,6 @@ public class Database {
 
     public String getInputFile() {
         return inputFile;
-    }
-    public String getName() {
-        return name;
     }
     public Date getCreationDate() {
         return creationDate;
@@ -80,9 +73,17 @@ public class Database {
         output.println(new SimpleDateFormat(Main.dateFormat).format(this.creationDate));
         output.print(  "    Max ID:        ");
         output.println(this.maxId);
+        output.print(  "    N/O Elements:  ");
+        output.println(this.data.size());
     }
     public void show(PrintStream output) {
-
+        if(data.isEmpty()) {
+            output.println("  There are No Elements");
+            return;
+        }
+        for(Map.Entry<Integer, Movie> entry : data.entrySet()) {
+            output.println(entry.getValue().toString());
+        }
     }
     public void insert(Movie movie) {}
     public void update(Integer id, Movie movie) {}

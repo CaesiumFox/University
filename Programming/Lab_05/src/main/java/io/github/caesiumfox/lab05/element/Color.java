@@ -4,13 +4,38 @@ import com.google.gson.annotations.SerializedName;
 
 public enum Color {
     @SerializedName("green")
-    GREEN,
+    GREEN {
+        @Override
+        public String toString() {
+            return "Green";
+        }
+    },
     @SerializedName("red")
-    RED,
+    RED {
+        @Override
+        public String toString() {
+            return "Red";
+        }
+    },
     @SerializedName("blue")
-    BLUE,
+    BLUE {
+        @Override
+        public String toString() {
+            return "Blue";
+        }
+    },
     @SerializedName("yellow")
-    YELLOW,
+    YELLOW {
+        @Override
+        public String toString() {
+            return "Yellow";
+        }
+    },
     @SerializedName("white")
-    WHITE
+    WHITE {
+        @Override
+        public String toString() {
+            return "White";
+        }
+    }
 }

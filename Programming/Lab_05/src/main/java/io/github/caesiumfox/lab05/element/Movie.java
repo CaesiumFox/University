@@ -1,5 +1,6 @@
 package io.github.caesiumfox.lab05.element;
 
+import io.github.caesiumfox.lab05.Main;
 import io.github.caesiumfox.lab05.exceptions.NumberOutOfRangeException;
 import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
 
@@ -149,5 +150,25 @@ public class Movie {
             throw new NullPointerException();
         }
         this.director = director;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder result = new StringBuilder();
+        result.append("ID: ").append(id).append('\n');
+        result.append("    Name: ").append(name).append('\n');
+        result.append("    Coordinates:\n");
+        result.append("        X: ").append(coordinates.getX()).append('\n');
+        result.append("        Y: ").append(coordinates.getY()).append('\n');
+        result.append("    Creation Date: ").append(
+                new SimpleDateFormat(Main.dateFormat).format(this.creationDate)).append('\n');
+        result.append("    N/O Oscars: ").append(oscarsCount).append('\n');
+        result.append("    Genre: ").append(genre).append('\n');
+        result.append("    MPAA Rating;").append(mpaaRating).append('\n');
+        result.append("    Director:\n");
+        result.append("        Name: ").append(director.getName()).append('\n');
+        result.append("        Passport ID: ").append(director.getPassportID()).append('\n');
+        result.append("        Hair Color: ").append(director.getHairColor()).append('\n');
+        return result.toString();
     }
 }

@@ -5,3 +5,4 @@ target/
 texts/
 src/test/
 *.jar
+*.json
