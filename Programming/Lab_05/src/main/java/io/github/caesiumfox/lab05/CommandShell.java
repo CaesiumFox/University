@@ -8,6 +8,7 @@ import io.github.caesiumfox.lab05.exceptions.ShellSignalExitException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class CommandShell {
@@ -29,9 +30,7 @@ public class CommandShell {
         return database;
     }
     public void setDatabase(Database database) {
-        if(database == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(database);
         this.database = database;
     }
 

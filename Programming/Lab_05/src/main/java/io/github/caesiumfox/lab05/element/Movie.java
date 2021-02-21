@@ -6,6 +6,7 @@ import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class Movie {
     /**
@@ -87,7 +88,7 @@ public class Movie {
         setDirector(new Person(skeleton.director));
     }
 
-    public Integer getId() {
+    public Integer getID() {
         return id;
     }
     public String getName() {
@@ -112,19 +113,20 @@ public class Movie {
         return director;
     }
 
+    public void setID(Integer id) {
+        Objects.requireNonNull(id);
+        this.id = id;
+    }
+
     public void setName(String name) {
+        Objects.requireNonNull(name);
         if(name.length() == 0) {
             throw new StringLengthLimitationException(name, 1, -1);
-        }
-        if(name == null) {
-            throw new NullPointerException();
         }
         this.name = name;
     }
     public void setCoordinates(Coordinates coordinates) {
-        if(name == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(coordinates);
         this.coordinates = coordinates;
     }
     public void setOscarsCount(long oscarsCount) {
@@ -134,21 +136,15 @@ public class Movie {
         this.oscarsCount = oscarsCount;
     }
     public void setGenre(MovieGenre genre) {
-        if(genre == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(genre);
         this.genre = genre;
     }
     public void setMpaaRating(MpaaRating mpaaRating) {
-        if(mpaaRating == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(mpaaRating);
         this.mpaaRating = mpaaRating;
     }
     public void setDirector(Person director) {
-        if(director == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(director);
         this.director = director;
     }
 
@@ -164,7 +160,7 @@ public class Movie {
                 new SimpleDateFormat(Main.dateFormat).format(this.creationDate)).append('\n');
         result.append("    N/O Oscars: ").append(oscarsCount).append('\n');
         result.append("    Genre: ").append(genre).append('\n');
-        result.append("    MPAA Rating;").append(mpaaRating).append('\n');
+        result.append("    MPAA Rating: ").append(mpaaRating).append('\n');
         result.append("    Director:\n");
         result.append("        Name: ").append(director.getName()).append('\n');
         result.append("        Passport ID: ").append(director.getPassportID()).append('\n');

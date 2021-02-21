@@ -2,6 +2,8 @@ package io.github.caesiumfox.lab05.element;
 
 import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
 
+import java.util.Objects;
+
 public class Person {
     /**
      * Вспомогательный класс для работы с JSON файлами
@@ -61,31 +63,25 @@ public class Person {
     }
 
     public void setName(String name) {
+        Objects.requireNonNull(name);
         if(name.length() == 0) {
             throw new StringLengthLimitationException(name, 1, -1);
-        }
-        if(name == null) {
-            throw new NullPointerException();
         }
         this.name = name;
     }
 
     public void setPassportID(String passportID) {
+        Objects.requireNonNull(passportID);
         if(passportID.length() < passportIDMinLen
                 || passportID.length() > passportIDMaxLen) {
             throw new StringLengthLimitationException(passportID,
                     passportIDMinLen, passportIDMaxLen);
         }
-        if(passportID == null) {
-            throw new NullPointerException();
-        }
         this.passportID = passportID;
     }
 
     public void setHairColor(Color hairColor) {
-        if(hairColor == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(hairColor);
         this.hairColor = hairColor;
     }
 }
