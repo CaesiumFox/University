@@ -24,6 +24,6 @@ public class Show extends Command {
     public void getHelp() {
         output.println("Command: show");
         output.println("Usage:   show");
-        output.println("  Prints the contents of the database");
+        output.println("  Prints the contents of the database.");
     }
 }

@@ -167,4 +167,17 @@ public class Movie {
         result.append("        Hair Color: ").append(director.getHairColor()).append('\n');
         return result.toString();
     }
+
+    public Skeleton toSkeleton() {
+        Skeleton skeleton = new Skeleton();
+        skeleton.id = this.id;
+        skeleton.name = this.name;
+        skeleton.coordinates = this.coordinates.toSkeleton();
+        skeleton.creationDate = this.creationDate;
+        skeleton.oscarsCount = this.oscarsCount;
+        skeleton.genre = this.genre;
+        skeleton.mpaaRating = this.mpaaRating;
+        skeleton.director = this.director.toSkeleton();
+        return skeleton;
+    }
 }

@@ -24,6 +24,7 @@ public class Info extends Command {
     public void getHelp() {
         output.println("Command: info");
         output.println("Usage:   info");
-        output.println("  Prints the information about the database");
+        output.println("  Prints the information about the" +
+                       "  database.");
     }
 }

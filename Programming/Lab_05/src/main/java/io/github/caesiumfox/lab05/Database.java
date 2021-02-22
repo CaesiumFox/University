@@ -1,5 +1,6 @@
 package io.github.caesiumfox.lab05;
 
+import io.github.caesiumfox.lab05.element.Coordinates;
 import io.github.caesiumfox.lab05.element.Movie;
 import io.github.caesiumfox.lab05.element.MpaaRating;
 import io.github.caesiumfox.lab05.exceptions.*;
@@ -79,8 +80,8 @@ public class Database {
             output.println("  There are No Elements");
             return;
         }
-        for(Map.Entry<Integer, Movie> entry : data.entrySet()) {
-            output.println(entry.getValue().toString());
+        for(Movie movie : data.values()) {
+            output.println(movie.toString());
         }
     }
     public void insert(Movie movie) {
@@ -123,11 +124,20 @@ public class Database {
         data.clear();
         maxID = 0;
     }
-    public void save(PrintWriter output) {}
     public void remove_lower(Movie movie) {}
     public void remove_greater_key(Integer id) {}
     public void remove_lower_key(Integer id) {}
     //public Movie min_by_mpaa_rating() {}
     //public int count_greater_than_oscars_count(long oscarsCount) {}
     //public Set<Movie> filter_by_mpaa_rating(MpaaRating rating) {}
+
+    public Skeleton toSkeleton() {
+        Skeleton skeleton = new Skeleton();
+        skeleton.creationDate = this.creationDate;
+        skeleton.data = new ArrayList<Movie.Skeleton>(this.data.size());
+        for(Movie movie : this.data.values()) {
+            skeleton.data.add(movie.toSkeleton());
+        }
+        return skeleton;
+    }
 }

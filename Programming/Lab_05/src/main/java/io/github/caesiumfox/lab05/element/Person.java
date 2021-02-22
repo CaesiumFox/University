@@ -84,4 +84,12 @@ public class Person {
         Objects.requireNonNull(hairColor);
         this.hairColor = hairColor;
     }
+
+    public Skeleton toSkeleton() {
+        Skeleton skeleton = new Skeleton();
+        skeleton.name = this.name;
+        skeleton.passportID = this.passportID;
+        skeleton.hairColor = this.hairColor;
+        return skeleton;
+    }
 }

@@ -2,28 +2,34 @@ package io.github.caesiumfox.lab05;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.caesiumfox.lab05.exceptions.EnvVariableNotDefinedException;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 public class Main {
+    public static final String envVariableForInputFileName = "LAB_INPUT_FILE";
     public static String dateFormat = "dd.MM.yyyy";
+    public static Gson parser;
+
     private static Database database;
     private static CommandShell shell;
-    private static FileReader fileReader;
     private static BufferedReader reader;
-    private static final String inputFile = "rc.json";;
+    private static PrintWriter writer;
+    private static String inputFile;
+
     public static void main(String[] args) {
+        parser = new GsonBuilder().setDateFormat(dateFormat).create();
         try {
-            fileReader = new FileReader(inputFile);
-            reader = new BufferedReader(fileReader);
-            Gson parser = new GsonBuilder().setDateFormat(dateFormat).create();
+            inputFile = System.getenv().get(envVariableForInputFileName);
+            if(inputFile == null)
+                throw new EnvVariableNotDefinedException(envVariableForInputFileName);
+            reader = new BufferedReader(new FileReader(inputFile));
             Database.Skeleton skeleton = parser.fromJson(reader, Database.Skeleton.class);
             database = new Database(skeleton, inputFile);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | EnvVariableNotDefinedException e) {
             System.err.println(e.getMessage());
             Database.Skeleton skeleton = new Database.Skeleton();
             skeleton.creationDate = new Date();
@@ -32,5 +38,14 @@ public class Main {
         }
         shell = new CommandShell(database);
         shell.run();
+    }
+    public static void writeToFile(String data, String fileName) {
+        try {
+            writer = new PrintWriter(new FileWriter(fileName));
+            writer.println(data);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.err.println("Aborted writing");
+        }
     }
 }

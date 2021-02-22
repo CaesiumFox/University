@@ -26,6 +26,6 @@ public class Exit extends Command {
     public void getHelp() {
         output.println("Command: exit");
         output.println("Usage:   exit");
-        output.println("  Exits the program");
+        output.println("  Exits the program.");
     }
 }

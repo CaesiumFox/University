@@ -51,7 +51,7 @@ public class Coordinates {
      * Конструктор, инициализирующий координаты
      * в соответствии с первичными данными,
      * полученными в результате чтения json файла
-     * @param skeleton объект класса {@link io.github.caesiumfox.lab05.parsingSkeleton.Coordinates},
+     * @param skeleton объект класса {@link Skeleton},
      *                 содержащий данные из json файла
      * @exception CoordinatesOutOfRangeException выбрасывается,
      * если координаты выходят за пределы областей допустимых значений.
@@ -113,5 +113,12 @@ public class Coordinates {
         } else {
             throw new CoordinatesOutOfRangeException(y, minY, maxY);
         }
+    }
+
+    public Skeleton toSkeleton() {
+        Skeleton skeleton = new Skeleton();
+        skeleton.x = this.x;
+        skeleton.y = this.y;
+        return skeleton;
     }
 }
