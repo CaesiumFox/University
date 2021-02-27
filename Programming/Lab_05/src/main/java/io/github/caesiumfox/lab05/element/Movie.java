@@ -1,12 +1,16 @@
 package io.github.caesiumfox.lab05.element;
 
+import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.Main;
+import io.github.caesiumfox.lab05.exceptions.CoordinatesOutOfRangeException;
 import io.github.caesiumfox.lab05.exceptions.NumberOutOfRangeException;
 import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
 
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class Movie {
     /**
@@ -86,6 +90,52 @@ public class Movie {
         setGenre(skeleton.genre);
         setMpaaRating(skeleton.mpaaRating);
         setDirector(new Person(skeleton.director));
+    }
+    public Movie(Integer newID, PrintStream output, PrintStream errout, Scanner input, Database database) {
+        this.id = newID;
+
+        // name
+        output.print("Enter the name (not empty):\n    ");
+        while(true) {
+            try {
+                setName(input.nextLine());
+                break;
+            } catch (StringLengthLimitationException e) {
+                output.println("The shouldn't be empty.");
+                output.print("Enter the name again (not empty):\n    ");
+            }
+        }
+
+        // Coordinates
+        Coordinates coordinates = new Coordinates();
+        output.format("Enter X coordinate (from %f to %f):\n    ",
+                Coordinates.minX, Coordinates.maxX);
+        while(true) {
+            try {
+                coordinates.setX(input.nextFloat());
+                break;
+            } catch (CoordinatesOutOfRangeException e) {
+                output.println("The shouldn't be empty.");
+                output.print("Enter the name again:\n    ");
+            }
+        }
+        output.print("Enter the name:\n    ");
+        while(true) {
+            try {
+                setName(input.nextLine());
+                break;
+            } catch (StringLengthLimitationException e) {
+                output.println("The shouldn't be empty.");
+                output.print("Enter the name again:\n    ");
+            }
+        }
+        setCoordinates(coordinates);
+
+        this.creationDate = new Date();
+        setOscarsCount(oscarsCount);
+        setGenre(genre);
+        setMpaaRating(mpaaRating);
+        setDirector(director);
     }
 
     public Integer getID() {

@@ -35,8 +35,8 @@ public class Person {
      */
     private Color hairColor;
 
-    private static int passportIDMinLen = 6;
-    private static int passportIDMaxLen = 46;
+    public static int passportIDMinLen = 6;
+    public static int passportIDMaxLen = 46;
 
 
     public Person(String name, String passportID, Color hairColor) {

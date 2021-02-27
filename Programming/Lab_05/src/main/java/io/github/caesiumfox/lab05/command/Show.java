@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 public class Show extends Command {
     public Show(ArrayList<String> args, Database database,
-                PrintStream output, Scanner input) {
-        super(args, database, output, input);
+                PrintStream output, PrintStream errout, Scanner input) {
+        super(args, database, errout, output, input);
     }
 
     @Override

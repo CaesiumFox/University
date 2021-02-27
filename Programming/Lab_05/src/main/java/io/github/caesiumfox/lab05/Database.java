@@ -64,6 +64,10 @@ public class Database {
         this.inputFile = inputFile;
     }
 
+    public boolean hasPassportID(String passportID) {
+        return this.knownPassportIDs.contains(passportID);
+    }
+
     public void info(PrintStream output) {
         output.println("  --- Database info ---");
         output.print(  "    Input File:    ");

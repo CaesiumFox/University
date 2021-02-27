@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 public abstract class Command {
     protected PrintStream output;
+    protected PrintStream errout;
     protected Scanner input;
     protected Database database;
     protected ArrayList<String> args;
@@ -22,23 +23,51 @@ public abstract class Command {
     public abstract void getHelp();
 
     public Command(ArrayList<String> args, Database database,
-                   PrintStream output, Scanner input) {
+                   PrintStream output, PrintStream errout, Scanner input) {
         this.args = args;
         this.database = database;
         this.output = output;
+        this.errout = errout;
         this.input = input;
     }
 
     public static Command getCommand(ArrayList<String> args, Database database,
-                                     PrintStream output, Scanner input)
+                                     PrintStream output, PrintStream errout,
+                                     Scanner input)
             throws InvalidCommandException {
         switch(args.get(0)) {
+            case "help":
+                // TODO
             case "info":
-                return new Info(args, database, output, input);
+                return new Info(args, database, output, errout, input);
             case "show":
-                return new Show(args, database, output, input);
+                return new Show(args, database, output, errout, input);
+            case "insert":
+                return new Insert(args, database, output, errout, input);
+            case "update":
+                // TODO
+            case "remove_key":
+                // TODO
+            case "clear":
+                // TODO
+            case "save":
+                // TODO
+            case "execute_script":
+                // TODO
             case "exit":
-                return new Exit(args, database, output, input);
+                return new Exit(args, database, output, errout, input);
+            case "remove_lower":
+                // TODO
+            case "remove_greater_key":
+                // TODO
+            case "remove_lower_key":
+                // TODO
+            case "min_by_mpaa_rating":
+                // TODO
+            case "count_greater_than_oscars_count":
+                // TODO
+            case "filter_by_mpaa_rating":
+                // TODO
             default:
                 throw new InvalidCommandException(args.get(0));
         }
@@ -46,6 +75,9 @@ public abstract class Command {
 
     public PrintStream getOutput() {
         return output;
+    }
+    public PrintStream getErrout() {
+        return errout;
     }
     public Scanner getInput() {
         return input;
@@ -59,6 +91,9 @@ public abstract class Command {
 
     public void setOutput(PrintStream output) {
         this.output = output;
+    }
+    public void setErrout(PrintStream errout) {
+        this.errout = errout;
     }
     public void setInput(Scanner input) {
         this.input = input;
