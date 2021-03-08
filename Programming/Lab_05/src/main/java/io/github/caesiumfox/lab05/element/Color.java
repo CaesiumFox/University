@@ -1,6 +1,7 @@
 package io.github.caesiumfox.lab05.element;
 
 import com.google.gson.annotations.SerializedName;
+import io.github.caesiumfox.lab05.exceptions.WrongEnumInputException;
 
 public enum Color {
     @SerializedName("green")
@@ -37,5 +38,26 @@ public enum Color {
         public String toString() {
             return "White";
         }
+    };
+
+    public static Color fromString(String str) throws WrongEnumInputException {
+        String loweredStr = str.toLowerCase();
+        switch(loweredStr) {
+            case "green":
+                return GREEN;
+            case "red":
+                return RED;
+            case "blue":
+                return BLUE;
+            case "yellow":
+                return YELLOW;
+            case "white":
+                return WHITE;
+        }
+        throw new WrongEnumInputException(str);
+    }
+
+    public static String listConstants() {
+        return "(blue, green, red, white, yellow)";
     }
 }

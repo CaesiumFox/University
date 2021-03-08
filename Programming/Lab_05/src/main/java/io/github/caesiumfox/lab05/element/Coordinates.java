@@ -56,7 +56,7 @@ public class Coordinates {
      * @exception CoordinatesOutOfRangeException выбрасывается,
      * если координаты выходят за пределы областей допустимых значений.
      */
-    public Coordinates(Skeleton skeleton) {
+    public Coordinates(Skeleton skeleton) throws CoordinatesOutOfRangeException {
         setX(skeleton.x);
         setY(skeleton.y);
     }
@@ -89,7 +89,7 @@ public class Coordinates {
      * @see #getY()
      * @see #setY(float)
      */
-    public void setX(float x) {
+    public void setX(float x) throws CoordinatesOutOfRangeException {
         if(x >= minX && x <= maxX) {
             this.x = x;
         } else {
@@ -107,7 +107,7 @@ public class Coordinates {
      * @see #getY()
      * @see #setX(float)
      */
-    public void setY(float y) {
+    public void setY(float y) throws CoordinatesOutOfRangeException {
         if(y >= minY && y <= maxY) {
             this.y = y;
         } else {

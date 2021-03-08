@@ -1,6 +1,8 @@
 package io.github.caesiumfox.lab05.command;
 
 import io.github.caesiumfox.lab05.Database;
+import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
+import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
 import io.github.caesiumfox.lab05.exceptions.InvalidCommandException;
 import io.github.caesiumfox.lab05.exceptions.ShellSignalException;
 
@@ -14,9 +16,10 @@ public abstract class Command {
     protected Scanner input;
     protected Database database;
     protected ArrayList<String> args;
-    protected abstract void prepare();
-    protected abstract void execute() throws ShellSignalException;
-    public void run() throws ShellSignalException {
+    protected abstract void prepare() throws InvalidArgumentsException;
+    protected abstract void execute() throws ShellSignalException, CommandExecutionException;
+    public void run() throws ShellSignalException,
+            CommandExecutionException, InvalidArgumentsException {
         prepare();
         execute();
     }
@@ -37,7 +40,7 @@ public abstract class Command {
             throws InvalidCommandException {
         switch(args.get(0)) {
             case "help":
-                // TODO
+                return new Help(args, database, output, errout, input);
             case "info":
                 return new Info(args, database, output, errout, input);
             case "show":
@@ -45,32 +48,32 @@ public abstract class Command {
             case "insert":
                 return new Insert(args, database, output, errout, input);
             case "update":
-                // TODO
+                return new Update(args, database, output, errout, input);
             case "remove_key":
-                // TODO
+                return new RemoveKey(args, database, output, errout, input);
             case "clear":
-                // TODO
+                return new Clear(args, database, output, errout, input);
             case "save":
-                // TODO
+                return new Save(args, database, output, errout, input);
             case "execute_script":
                 // TODO
+                output.println("WIP command");
             case "exit":
                 return new Exit(args, database, output, errout, input);
             case "remove_lower":
-                // TODO
+                return new RemoveLower(args, database, output, errout, input);
             case "remove_greater_key":
-                // TODO
+                return new RemoveGreaterKey(args, database, output, errout, input);
             case "remove_lower_key":
-                // TODO
+                return new RemoveLowerKey(args, database, output, errout, input);
             case "min_by_mpaa_rating":
-                // TODO
+                return new MinByMpaaRating(args, database, output, errout, input);
             case "count_greater_than_oscars_count":
-                // TODO
+                return new CountGreaterThanOscarsCount(args, database, output, errout, input);
             case "filter_by_mpaa_rating":
-                // TODO
-            default:
-                throw new InvalidCommandException(args.get(0));
+                return new FilterByMpaaRating(args, database, output, errout, input);
         }
+        throw new InvalidCommandException(args.get(0));
     }
 
     public PrintStream getOutput() {

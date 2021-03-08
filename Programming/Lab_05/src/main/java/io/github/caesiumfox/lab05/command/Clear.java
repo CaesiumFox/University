@@ -6,8 +6,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Info extends Command {
-    public Info(ArrayList<String> args, Database database,
+public class Clear extends Command {
+    public Clear(ArrayList<String> args, Database database,
                 PrintStream output, PrintStream errout, Scanner input) {
         super(args, database, output, errout, input);
     }
@@ -17,13 +17,13 @@ public class Info extends Command {
 
     @Override
     protected void execute() {
-        database.info(output);
+        database.clear();
     }
 
     @Override
     public void getHelp() {
-        output.println("Command: info");
-        output.println("Usage:   info");
-        output.println("  Prints the information about the database.");
+        output.println("Command: clear");
+        output.println("Usage:   clear");
+        output.println("  Clears the database.");
     }
 }

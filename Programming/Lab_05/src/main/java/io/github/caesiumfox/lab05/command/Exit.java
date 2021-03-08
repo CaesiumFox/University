@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Exit extends Command {
     public Exit(ArrayList<String> args, Database database,
                 PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, errout, output, input);
+        super(args, database, output, errout, input);
     }
 
     @Override

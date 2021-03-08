@@ -7,7 +7,6 @@ import io.github.caesiumfox.lab05.exceptions.EnvVariableNotDefinedException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
 
 public class Main {
     public static final String envVariableForInputFileName = "LAB_INPUT_FILE";
@@ -43,6 +42,7 @@ public class Main {
         try {
             writer = new PrintWriter(new FileWriter(fileName));
             writer.println(data);
+            writer.close();
         } catch (IOException e) {
             System.err.println(e.getMessage());
             System.err.println("Aborted writing");

@@ -1,6 +1,7 @@
 package io.github.caesiumfox.lab05.command;
 
 import io.github.caesiumfox.lab05.Database;
+import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
 import io.github.caesiumfox.lab05.exceptions.ShellSignalSaveException;
 
 import java.io.PrintStream;
@@ -12,12 +13,15 @@ public class Save extends Command {
 
     public Save(ArrayList<String> args, Database database,
                 PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, errout, output, input);
+        super(args, database, output, errout, input);
     }
 
     @Override
-    protected void prepare() {
-        outputFile = args.get(1);
+    protected void prepare() throws InvalidArgumentsException {
+        if (args.size() > 1)
+            outputFile = args.get(1);
+        else
+            throw new InvalidArgumentsException(args);
     }
 
     @Override
@@ -29,7 +33,6 @@ public class Save extends Command {
     public void getHelp() {
         output.println("Command: save");
         output.println("Usage:   save <file name>");
-        output.println("  Saves the database in the specified" +
-                       "  JSON file.");
+        output.println("  Saves the database in the specified JSON file.");
     }
 }

@@ -1,13 +1,14 @@
 package io.github.caesiumfox.lab05.command;
 
 import io.github.caesiumfox.lab05.Database;
+import io.github.caesiumfox.lab05.exceptions.EmptyDatabaseException;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Info extends Command {
-    public Info(ArrayList<String> args, Database database,
+public class MinByMpaaRating extends Command {
+    public MinByMpaaRating(ArrayList<String> args, Database database,
                 PrintStream output, PrintStream errout, Scanner input) {
         super(args, database, output, errout, input);
     }
@@ -17,7 +18,11 @@ public class Info extends Command {
 
     @Override
     protected void execute() {
-        database.info(output);
+        try {
+            output.println(database.min_by_mpaa_rating());
+        } catch (EmptyDatabaseException e) {
+            output.println(e.getMessage());
+        }
     }
 
     @Override

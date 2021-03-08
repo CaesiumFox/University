@@ -6,7 +6,7 @@ package io.github.caesiumfox.lab05.exceptions;
  * {@link io.github.caesiumfox.lab05.element.Coordinates}
  * значения, выходящие за пределы области допустимых значений.
  */
-public class CoordinatesOutOfRangeException extends RuntimeException {
+public class CoordinatesOutOfRangeException extends Exception {
     /**
      * Создаёт новое исключение
      * @param value значение координаты, оказавшееся недопустимым

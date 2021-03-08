@@ -39,12 +39,17 @@ public class Person {
     public static int passportIDMaxLen = 46;
 
 
-    public Person(String name, String passportID, Color hairColor) {
+    public Person() {
+        name = "";
+        passportID = "";
+        hairColor = Color.GREEN;
+    }
+    public Person(String name, String passportID, Color hairColor)  throws StringLengthLimitationException {
         setName(name);
         setPassportID(passportID);
         setHairColor(hairColor);
     }
-    public Person(Skeleton skeleton) {
+    public Person(Skeleton skeleton)  throws StringLengthLimitationException {
         setName(skeleton.name);
         setPassportID(skeleton.passportID);
         setHairColor(skeleton.hairColor);
@@ -62,7 +67,7 @@ public class Person {
         return hairColor;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
         if(name.length() == 0) {
             throw new StringLengthLimitationException(name, 1, -1);
@@ -70,7 +75,7 @@ public class Person {
         this.name = name;
     }
 
-    public void setPassportID(String passportID) {
+    public void setPassportID(String passportID) throws StringLengthLimitationException {
         Objects.requireNonNull(passportID);
         if(passportID.length() < passportIDMinLen
                 || passportID.length() > passportIDMaxLen) {

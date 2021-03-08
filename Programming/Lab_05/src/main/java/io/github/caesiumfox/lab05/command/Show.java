@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Show extends Command {
     public Show(ArrayList<String> args, Database database,
                 PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, errout, output, input);
+        super(args, database, output, errout, input);
     }
 
     @Override

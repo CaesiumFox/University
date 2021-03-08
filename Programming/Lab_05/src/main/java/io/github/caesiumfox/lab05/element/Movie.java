@@ -2,13 +2,13 @@ package io.github.caesiumfox.lab05.element;
 
 import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.Main;
-import io.github.caesiumfox.lab05.exceptions.CoordinatesOutOfRangeException;
-import io.github.caesiumfox.lab05.exceptions.NumberOutOfRangeException;
-import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
+import io.github.caesiumfox.lab05.exceptions.*;
 
 import java.io.PrintStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -70,18 +70,8 @@ public class Movie {
     private Person director;
 
 
-    public Movie(Integer id, String name, Coordinates coordinates, long oscarsCount,
-                 MovieGenre genre, MpaaRating mpaaRating, Person director) {
-        this.id = id;
-        setName(name);
-        setCoordinates(coordinates);
-        this.creationDate = new Date();
-        setOscarsCount(oscarsCount);
-        setGenre(genre);
-        setMpaaRating(mpaaRating);
-        setDirector(director);
-    }
-    public Movie(Skeleton skeleton) {
+    public Movie(Skeleton skeleton) throws StringLengthLimitationException,
+            CoordinatesOutOfRangeException, NumberOutOfRangeException {
         this.id = skeleton.id;
         setName(skeleton.name);
         setCoordinates(new Coordinates(skeleton.coordinates));
@@ -91,74 +81,158 @@ public class Movie {
         setMpaaRating(skeleton.mpaaRating);
         setDirector(new Person(skeleton.director));
     }
-    public Movie(Integer newID, PrintStream output, PrintStream errout, Scanner input, Database database) {
+
+    public Movie(Integer newID, PrintStream output, Scanner input, Database database) {
         this.id = newID;
 
         // name
-        output.print("Enter the name (not empty):\n    ");
-        while(true) {
+        output.format("Enter the name (not empty):\n    ");
+        while (true) {
             try {
                 setName(input.nextLine());
                 break;
             } catch (StringLengthLimitationException e) {
-                output.println("The shouldn't be empty.");
-                output.print("Enter the name again (not empty):\n    ");
+                output.println("The name shouldn't be empty.");
+                output.format("Enter the name again (not empty):\n    ");
             }
         }
 
-        // Coordinates
+        // coordinates
         Coordinates coordinates = new Coordinates();
         output.format("Enter X coordinate (from %f to %f):\n    ",
                 Coordinates.minX, Coordinates.maxX);
-        while(true) {
+        while (true) {
             try {
                 coordinates.setX(input.nextFloat());
                 break;
-            } catch (CoordinatesOutOfRangeException e) {
-                output.println("The shouldn't be empty.");
-                output.print("Enter the name again:\n    ");
+            } catch (CoordinatesOutOfRangeException | InputMismatchException e) {
+                output.println(e.getMessage());
+                output.format("Enter X coordinate again (from %f to %f):\n    ",
+                        Coordinates.minX, Coordinates.maxX);
             }
         }
-        output.print("Enter the name:\n    ");
-        while(true) {
+        output.format("Enter Y coordinate (from %f to %f):\n    ",
+                Coordinates.minY, Coordinates.maxY);
+        while (true) {
             try {
-                setName(input.nextLine());
+                coordinates.setY(input.nextFloat());
                 break;
-            } catch (StringLengthLimitationException e) {
-                output.println("The shouldn't be empty.");
-                output.print("Enter the name again:\n    ");
+            } catch (CoordinatesOutOfRangeException | InputMismatchException e) {
+                output.println(e.getMessage());
+                output.format("Enter Y coordinate again (from %f to %f):\n    ",
+                        Coordinates.minY, Coordinates.maxY);
             }
         }
         setCoordinates(coordinates);
 
+        // creationDate
         this.creationDate = new Date();
-        setOscarsCount(oscarsCount);
-        setGenre(genre);
-        setMpaaRating(mpaaRating);
+
+        // oscarsCount
+        output.format("Enter the number of Oscars (positive integer):\n    ");
+        while (true) {
+            try {
+                setOscarsCount(input.nextLong());
+                break;
+            } catch (NumberOutOfRangeException | InputMismatchException e) {
+                output.println(e.getMessage());
+                output.format("Enter the number of Oscars again (positive integer):\n    ");
+            }
+        }
+        input.nextLine(); // resetting to a new line
+
+        // genre
+        output.format("Enter the genre %s:\n    ", MovieGenre.listConstants());
+        while (true) {
+            try {
+                setGenre(MovieGenre.fromString(input.nextLine()));
+                break;
+            } catch (WrongEnumInputException e) {
+                output.println(e.getMessage());
+                output.format("Enter the genre again %s:\n    ", MovieGenre.listConstants());
+            }
+        }
+
+        // mpaaRating
+        output.format("Enter the MPAA rating %s:\n    ", MpaaRating.listConstants());
+        while (true) {
+            try {
+                setMpaaRating(MpaaRating.fromString(input.nextLine()));
+                break;
+            } catch (WrongEnumInputException e) {
+                output.println(e.getMessage());
+                output.format("Enter the MPAA rating again %s:\n    ", MpaaRating.listConstants());
+            }
+        }
+
+        // director
+        Person director = new Person();
+        output.format("Enter the director's name :\n    ");
+        while (true) {
+            try {
+                director.setName(input.nextLine());
+                break;
+            } catch (StringLengthLimitationException e) {
+                output.println(e.getMessage());
+                output.format("Enter the director's name again:\n    ");
+            }
+        }
+        output.format("Enter the director's passport ID (%d to %d symbols):\n    ",
+                Person.passportIDMinLen, Person.passportIDMaxLen);
+        while (true) {
+            try {
+                String passportID = input.nextLine();
+                if (database.hasPassportID(passportID))
+                    throw new PassportIdAlreadyExistsException(passportID);
+                director.setPassportID(passportID);
+                break;
+            } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {
+                output.println(e.getMessage());
+                output.format("Enter the director's passport ID again (%d to %d symbols):\n    ",
+                        Person.passportIDMinLen, Person.passportIDMaxLen);
+            }
+        }
+        output.format("Enter the director's hair color %s:\n    ", Color.listConstants());
+        while (true) {
+            try {
+                director.setHairColor(Color.fromString(input.nextLine()));
+                break;
+            } catch (WrongEnumInputException e) {
+                output.println(e.getMessage());
+                output.format("Enter the director's hair color again %s:\n    ", Color.listConstants());
+            }
+        }
         setDirector(director);
     }
 
     public Integer getID() {
         return id;
     }
+
     public String getName() {
         return name;
     }
+
     public Coordinates getCoordinates() {
         return coordinates;
     }
+
     public Date getCreationDate() {
         return creationDate;
     }
+
     public long getOscarsCount() {
         return oscarsCount;
     }
+
     public MovieGenre getGenre() {
         return genre;
     }
+
     public MpaaRating getMpaaRating() {
         return mpaaRating;
     }
+
     public Person getDirector() {
         return director;
     }
@@ -168,31 +242,36 @@ public class Movie {
         this.id = id;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
-        if(name.length() == 0) {
+        if (name.length() == 0) {
             throw new StringLengthLimitationException(name, 1, -1);
         }
         this.name = name;
     }
+
     public void setCoordinates(Coordinates coordinates) {
         Objects.requireNonNull(coordinates);
         this.coordinates = coordinates;
     }
-    public void setOscarsCount(long oscarsCount) {
-        if(oscarsCount < 1) {
+
+    public void setOscarsCount(long oscarsCount) throws NumberOutOfRangeException {
+        if (oscarsCount < 1) {
             throw new NumberOutOfRangeException(oscarsCount, 1, -1);
         }
         this.oscarsCount = oscarsCount;
     }
+
     public void setGenre(MovieGenre genre) {
         Objects.requireNonNull(genre);
         this.genre = genre;
     }
+
     public void setMpaaRating(MpaaRating mpaaRating) {
         Objects.requireNonNull(mpaaRating);
         this.mpaaRating = mpaaRating;
     }
+
     public void setDirector(Person director) {
         Objects.requireNonNull(director);
         this.director = director;

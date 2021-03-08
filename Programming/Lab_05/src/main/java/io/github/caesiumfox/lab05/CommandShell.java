@@ -1,10 +1,7 @@
 package io.github.caesiumfox.lab05;
 
 import io.github.caesiumfox.lab05.command.Command;
-import io.github.caesiumfox.lab05.exceptions.InvalidCommandException;
-import io.github.caesiumfox.lab05.exceptions.ShellSignalException;
-import io.github.caesiumfox.lab05.exceptions.ShellSignalExitException;
-import io.github.caesiumfox.lab05.exceptions.ShellSignalSaveException;
+import io.github.caesiumfox.lab05.exceptions.*;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -30,6 +27,7 @@ public class CommandShell {
     public Database getDatabase() {
         return database;
     }
+
     public void setDatabase(Database database) {
         Objects.requireNonNull(database);
         this.database = database;
@@ -37,23 +35,29 @@ public class CommandShell {
 
     public void run() {
         running = true;
-        while(running) {
+        while (running) {
             try {
+                output.print("> ");
                 String line = input.nextLine();
                 ArrayList<String> args = new ArrayList<String>(Arrays.asList(line.split(" ")));
-                Command command = Command.getCommand(args, database, output, input);
+                Command command = Command.getCommand(args, database, output, errout, input);
                 command.run();
-            } catch (InvalidCommandException e) {
+            } catch (InvalidCommandException | InvalidArgumentsException |
+                    CommandExecutionException e) {
                 errout.println(e.getMessage());
             } catch (ShellSignalExitException e) {
                 output.println(e.getMessage());
                 System.exit(0);
             } catch (ShellSignalSaveException e) {
                 output.println(e.getMessage());
-                Main.writeToFile(Main.parser.toJson(database.toSkeleton()), e.getOutputFile());
+                Database.Skeleton skel = database.toSkeleton();
+                String newJson = Main.parser.toJson(skel);
+                Main.writeToFile(newJson, e.getOutputFile());
             } catch (ShellSignalException e) {
                 output.println(e.getMessage());
             }
+            errout.flush();
+            output.flush();
         }
     }
 }
