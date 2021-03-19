@@ -20,10 +20,14 @@ public class CountGreaterThanOscarsCount extends Command {
 
     @Override
     protected void prepare() throws InvalidArgumentsException {
-        if(args.size() > 1)
-            oscarsCount = Long.parseLong(args.get(1));
-        else
+        try {
+            if (args.size() > 1)
+                oscarsCount = Long.parseLong(args.get(1));
+            else
+                throw new InvalidArgumentsException(args);
+        } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
+        }
     }
 
     @Override

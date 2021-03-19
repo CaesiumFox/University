@@ -6,3 +6,4 @@ texts/
 src/test/
 *.jar
 *.json
+*.script

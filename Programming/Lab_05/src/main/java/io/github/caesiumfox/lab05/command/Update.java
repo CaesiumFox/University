@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 public class Update extends Command {
     private Integer id;
+
     public Update(ArrayList<String> args, Database database,
                   PrintStream output, PrintStream errout, Scanner input) {
         super(args, database, output, errout, input);
@@ -17,17 +18,21 @@ public class Update extends Command {
 
     @Override
     protected void prepare() throws InvalidArgumentsException {
-        if(args.size() > 1)
-            id = Integer.parseInt(args.get(1));
-        else
+        try {
+            if (args.size() > 1)
+                id = Integer.parseInt(args.get(1));
+            else
+                throw new InvalidArgumentsException(args);
+        } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
+        }
     }
 
     @Override
     protected void execute() throws CommandExecutionException {
         try {
             database.update(id, new Movie(id, output, input, database));
-        } catch(NoKeyInDatabaseException | PassportIdAlreadyExistsException e) {
+        } catch (NoKeyInDatabaseException | PassportIdAlreadyExistsException e) {
             throw new CommandExecutionException(e);
         }
     }

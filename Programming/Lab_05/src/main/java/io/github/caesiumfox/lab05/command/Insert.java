@@ -2,10 +2,7 @@ package io.github.caesiumfox.lab05.command;
 
 import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.element.Movie;
-import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
-import io.github.caesiumfox.lab05.exceptions.ElementIdAlreadyExistsException;
-import io.github.caesiumfox.lab05.exceptions.PassportIdAlreadyExistsException;
-import io.github.caesiumfox.lab05.exceptions.RunOutOfIdsException;
+import io.github.caesiumfox.lab05.exceptions.*;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -19,11 +16,15 @@ public class Insert extends Command {
     }
 
     @Override
-    protected void prepare() {
-        if(args.size() > 1)
-            id = Integer.parseInt(args.get(1));
-        else
-            id = null; // Is checked for null
+    protected void prepare() throws InvalidArgumentsException {
+        try {
+            if (args.size() > 1)
+                id = Integer.parseInt(args.get(1));
+            else
+                id = null; // Is checked for null
+        } catch (NumberFormatException e) {
+            throw new InvalidArgumentsException(args);
+        }
     }
 
     @Override

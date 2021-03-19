@@ -56,8 +56,7 @@ public abstract class Command {
             case "save":
                 return new Save(args, database, output, errout, input);
             case "execute_script":
-                // TODO
-                output.println("WIP command");
+                return new ExecuteScript(args, database, output, errout, input);
             case "exit":
                 return new Exit(args, database, output, errout, input);
             case "remove_lower":

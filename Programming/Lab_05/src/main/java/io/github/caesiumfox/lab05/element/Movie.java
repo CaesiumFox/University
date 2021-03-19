@@ -7,10 +7,7 @@ import io.github.caesiumfox.lab05.exceptions.*;
 import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.InputMismatchException;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class Movie {
     /**
@@ -89,7 +86,7 @@ public class Movie {
         output.format("Enter the name (not empty):\n    ");
         while (true) {
             try {
-                setName(input.nextLine());
+                setName(input.nextLine().trim());
                 break;
             } catch (StringLengthLimitationException e) {
                 output.println("The name shouldn't be empty.");
@@ -99,13 +96,14 @@ public class Movie {
 
         // coordinates
         Coordinates coordinates = new Coordinates();
-        output.format("Enter X coordinate (from %f to %f):\n    ",
+        output.format("Enter X coordinate (from %.1f to %.1f):\n    ",
                 Coordinates.minX, Coordinates.maxX);
         while (true) {
             try {
-                coordinates.setX(input.nextFloat());
+                String temp = input.nextLine().trim();
+                coordinates.setX(Float.parseFloat(temp));
                 break;
-            } catch (CoordinatesOutOfRangeException | InputMismatchException e) {
+            } catch (CoordinatesOutOfRangeException | NumberFormatException e) {
                 output.println(e.getMessage());
                 output.format("Enter X coordinate again (from %f to %f):\n    ",
                         Coordinates.minX, Coordinates.maxX);
@@ -115,9 +113,10 @@ public class Movie {
                 Coordinates.minY, Coordinates.maxY);
         while (true) {
             try {
-                coordinates.setY(input.nextFloat());
+                String temp = input.nextLine().trim();
+                coordinates.setY(Float.parseFloat(temp));
                 break;
-            } catch (CoordinatesOutOfRangeException | InputMismatchException e) {
+            } catch (CoordinatesOutOfRangeException | NumberFormatException e) {
                 output.println(e.getMessage());
                 output.format("Enter Y coordinate again (from %f to %f):\n    ",
                         Coordinates.minY, Coordinates.maxY);
@@ -132,20 +131,20 @@ public class Movie {
         output.format("Enter the number of Oscars (positive integer):\n    ");
         while (true) {
             try {
-                setOscarsCount(input.nextLong());
+                String temp = input.nextLine().trim();
+                setOscarsCount(Long.parseLong(temp));
                 break;
-            } catch (NumberOutOfRangeException | InputMismatchException e) {
+            } catch (NumberOutOfRangeException | NumberFormatException e) {
                 output.println(e.getMessage());
                 output.format("Enter the number of Oscars again (positive integer):\n    ");
             }
         }
-        input.nextLine(); // resetting to a new line
 
         // genre
         output.format("Enter the genre %s:\n    ", MovieGenre.listConstants());
         while (true) {
             try {
-                setGenre(MovieGenre.fromString(input.nextLine()));
+                setGenre(MovieGenre.fromString(input.nextLine().trim()));
                 break;
             } catch (WrongEnumInputException e) {
                 output.println(e.getMessage());
@@ -157,7 +156,7 @@ public class Movie {
         output.format("Enter the MPAA rating %s:\n    ", MpaaRating.listConstants());
         while (true) {
             try {
-                setMpaaRating(MpaaRating.fromString(input.nextLine()));
+                setMpaaRating(MpaaRating.fromString(input.nextLine().trim()));
                 break;
             } catch (WrongEnumInputException e) {
                 output.println(e.getMessage());
@@ -170,7 +169,7 @@ public class Movie {
         output.format("Enter the director's name :\n    ");
         while (true) {
             try {
-                director.setName(input.nextLine());
+                director.setName(input.nextLine().trim());
                 break;
             } catch (StringLengthLimitationException e) {
                 output.println(e.getMessage());
@@ -181,7 +180,7 @@ public class Movie {
                 Person.passportIDMinLen, Person.passportIDMaxLen);
         while (true) {
             try {
-                String passportID = input.nextLine();
+                String passportID = input.nextLine().trim();
                 if (database.hasPassportID(passportID))
                     throw new PassportIdAlreadyExistsException(passportID);
                 director.setPassportID(passportID);
@@ -195,7 +194,7 @@ public class Movie {
         output.format("Enter the director's hair color %s:\n    ", Color.listConstants());
         while (true) {
             try {
-                director.setHairColor(Color.fromString(input.nextLine()));
+                director.setHairColor(Color.fromString(input.nextLine().trim()));
                 break;
             } catch (WrongEnumInputException e) {
                 output.println(e.getMessage());

@@ -34,7 +34,7 @@ public enum MovieGenre {
     };
 
     public static MovieGenre fromString(String str) throws WrongEnumInputException {
-        String loweredStr = str.toLowerCase();
+        String loweredStr = str.toLowerCase().trim();
         switch(loweredStr) {
             case "action":
                 return ACTION;

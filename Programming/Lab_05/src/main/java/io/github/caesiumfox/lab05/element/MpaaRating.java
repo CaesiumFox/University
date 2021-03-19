@@ -34,7 +34,7 @@ public enum MpaaRating {
     };
 
     public static MpaaRating fromString(String str) throws WrongEnumInputException {
-        String loweredStr = str.toLowerCase();
+        String loweredStr = str.toLowerCase().trim();
         switch(loweredStr) {
             case "g":
                 return G;

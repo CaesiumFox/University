@@ -36,39 +36,39 @@ public class Help extends Command {
             }
             return;
         }
-        // TODO
+
         output.println("help [command]");
-        output.println("      - ");
+        output.println("      - show the help for commands");
         output.println("info");
-        output.println("      - ");
+        output.println("      - print information about the database");
         output.println("show");
-        output.println("      - ");
+        output.println("      - print all database elements");
         output.println("insert [key]");
-        output.println("      - ");
+        output.println("      - add a new element");
         output.println("update <key>");
-        output.println("      - ");
+        output.println("      - replace an existing element");
         output.println("remove_key <key>");
-        output.println("      - ");
+        output.println("      - remove an existing element by key");
         output.println("clear");
-        output.println("      - ");
+        output.println("      - clear the database");
         output.println("save <filename>");
-        output.println("      - ");
+        output.println("      - save the database in the file");
         output.println("execute_script <filename>");
-        output.println("      - ");
+        output.println("      - run script");
         output.println("exit");
-        output.println("      - ");
+        output.println("      - exit this program");
         output.println("remove_lower");
-        output.println("      - ");
+        output.println("      - remove all elements less than the specified");
         output.println("remove_greater_key <key>");
-        output.println("      - ");
+        output.println("      - remove all elements with IDs greater that specified");
         output.println("remove_lower_key <key>");
-        output.println("      - ");
+        output.println("      - remove all elements with IDs less that specified");
         output.println("min_by_mpaa_rating");
-        output.println("      - ");
+        output.println("      - print the element with least MPAA rating");
         output.println("count_greater_than_oscars_count <count>");
-        output.println("      - ");
+        output.println("      - print the number of elements with more oscars than specified");
         output.println("filter_by_mpaa_rating <rating>");
-        output.println("      - ");
+        output.println("      - print all elements with the specified MPAA rating");
     }
 
     @Override

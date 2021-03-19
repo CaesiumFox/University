@@ -41,7 +41,7 @@ public enum Color {
     };
 
     public static Color fromString(String str) throws WrongEnumInputException {
-        String loweredStr = str.toLowerCase();
+        String loweredStr = str.toLowerCase().trim();
         switch(loweredStr) {
             case "green":
                 return GREEN;

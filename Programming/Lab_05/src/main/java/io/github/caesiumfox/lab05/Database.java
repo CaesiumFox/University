@@ -109,15 +109,20 @@ public class Database {
         knownPassportIDs.add(movie.getDirector().getPassportID());
     }
 
-    public void insert(Integer id, Movie movie) throws ElementIdAlreadyExistsException {
+    public void insert(Integer id, Movie movie)
+            throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException {
         if (data.containsKey(id)) {
             throw new ElementIdAlreadyExistsException(id);
+        }
+        if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
+            throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
         }
         if (id > maxID) {
             maxID = id;
         }
         movie.setID(id);
         data.put(id, movie);
+        knownPassportIDs.add(movie.getDirector().getPassportID());
     }
 
     public void update(Integer id, Movie movie)
@@ -140,11 +145,7 @@ public class Database {
         knownPassportIDs.remove(data.get(id).getDirector().getPassportID());
         data.remove(id);
         if (id == maxID) {
-            maxID = 0;
-            for (Integer i : data.keySet()) {
-                if (i > maxID)
-                    maxID = i;
-            }
+            updateMaxID();
         }
     }
 
@@ -156,30 +157,33 @@ public class Database {
 
     public void remove_lower(Movie movie) {
         MovieComparator comparator = new MovieComparator();
-        for (Integer key : data.keySet()) {
+        for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (comparator.compare(data.get(key), movie) < 0) {
                 knownPassportIDs.remove(data.get(key).getDirector().getPassportID());
                 data.remove(key);
             }
         }
+        updateMaxID();
     }
 
     public void remove_greater_key(Integer id) {
-        for (Integer key : data.keySet()) {
+        for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (key > id) {
                 knownPassportIDs.remove(data.get(key).getDirector().getPassportID());
                 data.remove(key);
             }
         }
+        updateMaxID();
     }
 
     public void remove_lower_key(Integer id) {
-        for (Integer key : data.keySet()) {
+        for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (key < id) {
                 knownPassportIDs.remove(data.get(key).getDirector().getPassportID());
                 data.remove(key);
             }
         }
+        updateMaxID();
     }
 
     public Movie min_by_mpaa_rating() throws EmptyDatabaseException {
@@ -225,5 +229,13 @@ public class Database {
             skeleton.data.add(movie.toSkeleton());
         }
         return skeleton;
+    }
+
+    private void updateMaxID() {
+        maxID = 0;
+        for (Integer i : data.keySet()) {
+            if (i > maxID)
+                maxID = i;
+        }
     }
 }

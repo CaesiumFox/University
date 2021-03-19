@@ -26,7 +26,7 @@ public class RemoveLower extends Command {
     public void getHelp() {
         output.println("Command: remove_lower");
         output.println("Usage:   remove_lower");
-        output.println("  Launches an interactive builder that asks for each field of the test element," +
+        output.println("  Launches an interactive builder that asks for each field of the test element,\n" +
                 "  then removes all elements less that the test element.");
     }
 }

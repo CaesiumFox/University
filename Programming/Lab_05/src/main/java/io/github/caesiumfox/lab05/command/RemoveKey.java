@@ -19,10 +19,14 @@ public class RemoveKey extends Command {
 
     @Override
     protected void prepare() throws InvalidArgumentsException {
-        if (args.size() > 1)
-            id = Integer.parseInt(args.get(1));
-        else
+        try {
+            if (args.size() > 1)
+                id = Integer.parseInt(args.get(1));
+            else
+                throw new InvalidArgumentsException(args);
+        } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
+        }
     }
 
     @Override
