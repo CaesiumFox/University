@@ -7,6 +7,7 @@ import io.github.caesiumfox.lab05.exceptions.EnvVariableNotDefinedException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.NoSuchElementException;
 
 public class Main {
     public static final String envVariableForInputFileName = "LAB_INPUT_FILE";
@@ -23,20 +24,37 @@ public class Main {
         parser = new GsonBuilder().setDateFormat(dateFormat).create();
         try {
             inputFile = System.getenv().get(envVariableForInputFileName);
-            if(inputFile == null)
+            if (inputFile == null)
                 throw new EnvVariableNotDefinedException(envVariableForInputFileName);
             reader = new BufferedReader(new FileReader(inputFile));
-            Database.Skeleton skeleton = parser.fromJson(reader, Database.Skeleton.class);
-            database = new Database(skeleton, inputFile);
+            Database.RawData rawData = parser.fromJson(reader, Database.RawData.class);
+            database = new Database(rawData, new File(inputFile).getAbsolutePath());
         } catch (FileNotFoundException | EnvVariableNotDefinedException e) {
             System.err.println(e.getMessage());
-            Database.Skeleton skeleton = new Database.Skeleton();
-            skeleton.creationDate = new Date();
-            skeleton.data = new ArrayList<>();
-            database = new Database(skeleton, "");
+            System.out.println("An empty database will be initialized");
+            Database.RawData rawData = new Database.RawData();
+            rawData.creationDate = new Date();
+            rawData.data = new ArrayList<>();
+            database = new Database(rawData, "");
         }
         shell = new CommandShell(database);
-        shell.run();
+        try {
+            shell.run();
+        } catch (NoSuchElementException e) {
+            String backupName;
+            if(database.getInputFile().length() > 0) {
+                backupName = database.getInputFile() + ".bak";
+            } else {
+                backupName = "tmp.bak";
+            }
+
+            System.out.println("Looks like you have entered an EOF character" +
+                    "by pressing Ctrl+D.");
+            System.out.println("Unfortunately the program can no longer continue working.");
+            System.out.println("The current state of the database will be saved in " + backupName);
+            writeToFile(parser.toJson(database.toRawData()), backupName);
+            System.exit(1);
+        }
     }
     public static void writeToFile(String data, String fileName) {
         try {

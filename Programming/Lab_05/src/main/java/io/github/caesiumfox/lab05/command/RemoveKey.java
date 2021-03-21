@@ -9,12 +9,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда удаления по ключу
+ */
 public class RemoveKey extends Command {
     private Integer id;
 
     public RemoveKey(ArrayList<String> args, Database database,
-                     PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                     PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -42,6 +45,6 @@ public class RemoveKey extends Command {
     public void getHelp() {
         output.println("Command: remove_key");
         output.println("Usage:   remove_key <id>");
-        output.println("  Removes the element by the specified key.");
+        output.println("  Removes the entry by the specified key if such entry exists.");
     }
 }

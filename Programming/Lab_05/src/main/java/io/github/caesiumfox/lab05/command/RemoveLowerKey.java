@@ -8,12 +8,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда удаления по меньшему ключу
+ */
 public class RemoveLowerKey extends Command {
     private Integer id;
 
     public RemoveLowerKey(ArrayList<String> args, Database database,
-                          PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                          PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -37,6 +40,6 @@ public class RemoveLowerKey extends Command {
     public void getHelp() {
         output.println("Command: remove_lower_key");
         output.println("Usage:   remove_lower_key <id>");
-        output.println("  Removes all the elements that have the key less than the specified.");
+        output.println("  Removes all entries with the key less than the specified.");
     }
 }

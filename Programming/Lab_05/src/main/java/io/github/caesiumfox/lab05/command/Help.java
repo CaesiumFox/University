@@ -8,11 +8,14 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда справки
+ */
 public class Help extends Command {
     private String command;
     public Help(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -30,7 +33,7 @@ public class Help extends Command {
             try {
                 ArrayList<String> subArg = new ArrayList<>();
                 subArg.add(args.get(1));
-                Command.getCommand(subArg, database, output, errout, input).getHelp();
+                Command.getCommand(subArg, database, output, input).getHelp();
             } catch(InvalidCommandException e) {
                 throw new CommandExecutionException(e);
             }
@@ -42,13 +45,13 @@ public class Help extends Command {
         output.println("info");
         output.println("      - print information about the database");
         output.println("show");
-        output.println("      - print all database elements");
+        output.println("      - print all database entries");
         output.println("insert [key]");
-        output.println("      - add a new element");
+        output.println("      - add a new entry");
         output.println("update <key>");
-        output.println("      - replace an existing element");
+        output.println("      - replace an existing entry");
         output.println("remove_key <key>");
-        output.println("      - remove an existing element by key");
+        output.println("      - remove an existing entry by key");
         output.println("clear");
         output.println("      - clear the database");
         output.println("save <filename>");
@@ -56,19 +59,19 @@ public class Help extends Command {
         output.println("execute_script <filename>");
         output.println("      - run script");
         output.println("exit");
-        output.println("      - exit this program");
+        output.println("      - exit program");
         output.println("remove_lower");
-        output.println("      - remove all elements less than the specified");
+        output.println("      - remove all entries less than the specified");
         output.println("remove_greater_key <key>");
-        output.println("      - remove all elements with IDs greater that specified");
+        output.println("      - remove all entries with IDs greater that specified");
         output.println("remove_lower_key <key>");
-        output.println("      - remove all elements with IDs less that specified");
+        output.println("      - remove all entries with IDs less that specified");
         output.println("min_by_mpaa_rating");
-        output.println("      - print the element with least MPAA rating");
+        output.println("      - print the entry with the least MPAA rating");
         output.println("count_greater_than_oscars_count <count>");
-        output.println("      - print the number of elements with more oscars than specified");
+        output.println("      - print the number of entries with more oscars than specified");
         output.println("filter_by_mpaa_rating <rating>");
-        output.println("      - print all elements with the specified MPAA rating");
+        output.println("      - print all entries with the specified MPAA rating");
     }
 
     @Override

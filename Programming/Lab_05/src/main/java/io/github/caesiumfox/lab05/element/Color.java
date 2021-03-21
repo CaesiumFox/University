@@ -3,6 +3,11 @@ package io.github.caesiumfox.lab05.element;
 import com.google.gson.annotations.SerializedName;
 import io.github.caesiumfox.lab05.exceptions.WrongEnumInputException;
 
+/**
+ * Определяет один из пяти цветов:
+ * green, red, blue, yellow, white
+ */
+
 public enum Color {
     @SerializedName("green")
     GREEN {
@@ -40,6 +45,15 @@ public enum Color {
         }
     };
 
+    /**
+     * Определяет цвет по его названию.
+     * В отличие от {@link #valueOf(String)}
+     * не чувствителен к регистру.
+     * @param str Одно из значений:
+     * "green", "red", "blue", "yellow", "white"
+     * в любом регистре.
+     * @return Получившийся цвет
+     */
     public static Color fromString(String str) throws WrongEnumInputException {
         String loweredStr = str.toLowerCase().trim();
         switch(loweredStr) {
@@ -57,6 +71,16 @@ public enum Color {
         throw new WrongEnumInputException(str);
     }
 
+    /**
+     * Возвращает строку, содержащюю
+     * все константы перечисления
+     * {@link Color}, перечисленные в
+     * алфавитном порядке в
+     * нижнем регистре через запятую
+     * и пробел и заключенные в
+     * круглые скобки.
+     * @return Описанная выше строка
+     */
     public static String listConstants() {
         return "(blue, green, red, white, yellow)";
     }

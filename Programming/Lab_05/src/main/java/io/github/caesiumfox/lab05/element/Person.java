@@ -4,69 +4,112 @@ import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
 
 import java.util.Objects;
 
+/**
+ * Класс, описывающий человека.
+ */
 public class Person {
     /**
      * Вспомогательный класс для работы с JSON файлами
      * при помощи библиотеки GSON.
      * GSON работает напосредственно с ним,
-     * преобразование между "скелетом" и
-     * базовым классом (Person) происходит
+     * преобразование между ним и
+     * основным классом ({@link Person}) происходит
      * отдельно.
      */
-    public static class Skeleton {
+    public static class RawData {
         public String name;
         public String passportID;
         public Color hairColor;
     }
 
-    /**
-     * Не может быть null,
-     * Не может быть пустой
-     */
     private String name;
-    /**
-     * Не может быть null,
-     * Длина от 6 о 46 символов
-     * Значение должно быть уникальным
-     */
     private String passportID;
-    /**
-     * Не может быть null
-     */
     private Color hairColor;
 
+    /**
+     * Наименьшая длина номера паспорта
+     */
     public static int passportIDMinLen = 6;
+    /**
+     * Наибольшая длина номера паспорта
+     */
     public static int passportIDMaxLen = 46;
 
-
+    /**
+     * Конструктор по умолчанию.
+     * Создаёт человека с зелёными волосами,
+     * именем "a" и паспортным номером "000000".
+     */
     public Person() {
-        name = "";
-        passportID = "";
+        name = "a";
+        passportID = "0".repeat(passportIDMinLen);
         hairColor = Color.GREEN;
     }
+
+    /**
+     * Конструктор, инициализирующий человека
+     * с заданными параметрами.
+     * @param name Имя человека
+     * @param passportID Номер пасспорта
+     * @param hairColor Цвет волос
+     * @throws StringLengthLimitationException Если
+     * имя пустое или номер паспорта выходит за пределы промежутка
+     * [{@link #passportIDMinLen}, {@link #passportIDMaxLen}]
+     */
     public Person(String name, String passportID, Color hairColor)  throws StringLengthLimitationException {
         setName(name);
         setPassportID(passportID);
         setHairColor(hairColor);
     }
-    public Person(Skeleton skeleton)  throws StringLengthLimitationException {
-        setName(skeleton.name);
-        setPassportID(skeleton.passportID);
-        setHairColor(skeleton.hairColor);
+
+    /**
+     * Конструктор, инициализирующий человека
+     * в соответствии с первичными данными,
+     * полученными в результате чтения json файла
+     * @param rawData Объект класса {@link RawData},
+     * содержащий данные из json файла
+     * @throws StringLengthLimitationException Если
+     * имя пустое или номер паспорта выходит за пределы промежутка
+     * [{@link #passportIDMinLen}, {@link #passportIDMaxLen}]
+     */
+    public Person(RawData rawData)  throws StringLengthLimitationException {
+        setName(rawData.name);
+        setPassportID(rawData.passportID);
+        setHairColor(rawData.hairColor);
     }
 
+    /**
+     * Возвращает имя человека
+     * @return Имя
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Возвращает номер пасспорта
+     * @return Номер пасспорта
+     */
     public String getPassportID() {
         return passportID;
     }
 
+    /**
+     * Возвращает цвет волос
+     * @return Цвет волос
+     */
     public Color getHairColor() {
         return hairColor;
     }
 
+    /**
+     * Устанавливает имя человека
+     * @param name Имя человека
+     * @throws StringLengthLimitationException Если
+     * имя было пустым
+     * @throws NullPointerException Если в качестве
+     * параметра было передано значение null
+     */
     public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
         if(name.length() == 0) {
@@ -75,6 +118,15 @@ public class Person {
         this.name = name;
     }
 
+    /**
+     * Устанавливает номер паспорта
+     * @param passportID Номер паспорта
+     * @throws StringLengthLimitationException Если
+     * номер паспорта выходит за пределы промежутка
+     * [{@link #passportIDMinLen}, {@link #passportIDMaxLen}].
+     * @throws NullPointerException Если в качестве
+     * параметра было передано значение null
+     */
     public void setPassportID(String passportID) throws StringLengthLimitationException {
         Objects.requireNonNull(passportID);
         if(passportID.length() < passportIDMinLen
@@ -85,16 +137,28 @@ public class Person {
         this.passportID = passportID;
     }
 
+    /**
+     * Устанавливает цвет волос.
+     * @param hairColor Цвет волос
+     * @throws NullPointerException Если в качестве
+     * параметра было передано значение null
+     */
     public void setHairColor(Color hairColor) {
         Objects.requireNonNull(hairColor);
         this.hairColor = hairColor;
     }
 
-    public Skeleton toSkeleton() {
-        Skeleton skeleton = new Skeleton();
-        skeleton.name = this.name;
-        skeleton.passportID = this.passportID;
-        skeleton.hairColor = this.hairColor;
-        return skeleton;
+    /**
+     * Преобразует объект класса в
+     * соответсвующий ему объект
+     * класса {@link RawData}
+     * @return Объект класса {@link RawData}
+     */
+    public RawData toRawData () {
+        RawData rawData = new RawData();
+        rawData.name = this.name;
+        rawData.passportID = this.passportID;
+        rawData.hairColor = this.hairColor;
+        return rawData;
     }
 }

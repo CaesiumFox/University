@@ -7,12 +7,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда удаления по большему ключу
+ */
 public class RemoveGreaterKey extends Command {
     private Integer id;
 
     public RemoveGreaterKey(ArrayList<String> args, Database database,
-                     PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                     PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -36,6 +39,6 @@ public class RemoveGreaterKey extends Command {
     public void getHelp() {
         output.println("Command: remove_greater_key");
         output.println("Usage:   remove_greater_key <id>");
-        output.println("  Removes all the elements that have key greater than the specified.");
+        output.println("  Removes all entries with the key greater than the specified.");
     }
 }

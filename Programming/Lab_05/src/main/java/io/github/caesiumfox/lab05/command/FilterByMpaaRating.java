@@ -9,13 +9,17 @@ import io.github.caesiumfox.lab05.exceptions.WrongEnumInputException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Set;
 
+/**
+ * Команда фильтрации по возрастной категории
+ */
 public class FilterByMpaaRating extends Command {
     private MpaaRating model;
 
     public FilterByMpaaRating(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -31,8 +35,13 @@ public class FilterByMpaaRating extends Command {
 
     @Override
     protected void execute() {
-        for(Movie movie : database.filter_by_mpaa_rating(model)) {
-            output.println(movie);
+        Set<Movie> set = database.filter_by_mpaa_rating(model);
+        if (set.size() == 0) {
+            output.println("There are no such entries");
+        } else {
+            for (Movie movie : set) {
+                output.println(movie);
+            }
         }
     }
 
@@ -40,6 +49,7 @@ public class FilterByMpaaRating extends Command {
     public void getHelp() {
         output.println("Command: filter_by_mpaa_rating");
         output.println("Usage:   filter_by_mpaa_rating <rating>");
-        output.println("  Prints all elements with the same MPAA rating as specified.");
+        output.println("  Prints all entries with the same MPAA rating as specified or prints a\n" +
+                "  placeholder if there are no such entries.");
     }
 }

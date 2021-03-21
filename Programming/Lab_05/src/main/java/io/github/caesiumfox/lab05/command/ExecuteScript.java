@@ -4,19 +4,21 @@ import io.github.caesiumfox.lab05.CommandShell;
 import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
 import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
+import io.github.caesiumfox.lab05.exceptions.ScriptAlreadyExecutedException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда выполнения скрипта
+ */
 public class ExecuteScript extends Command {
     private String scriptFilename;
 
     public ExecuteScript(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -30,10 +32,17 @@ public class ExecuteScript extends Command {
     @Override
     protected void execute() throws CommandExecutionException {
         try {
+            String fullPath = new File(scriptFilename).getCanonicalPath();
+            if(CommandShell.executingScripts.contains(fullPath))
+                throw new ScriptAlreadyExecutedException(fullPath);
+            CommandShell.executingScripts.add(fullPath);
+
             FileReader reader = new FileReader(scriptFilename);
             CommandShell childShell = new CommandShell(database, reader);
             childShell.run();
-        } catch (FileNotFoundException e) {
+
+            CommandShell.executingScripts.remove(fullPath);
+        } catch (IOException | ScriptAlreadyExecutedException e) {
             throw new CommandExecutionException(e);
         }
     }

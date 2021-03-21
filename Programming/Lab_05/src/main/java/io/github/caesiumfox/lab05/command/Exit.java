@@ -8,10 +8,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда выхода из программы
+ */
 public class Exit extends Command {
     public Exit(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -26,6 +29,6 @@ public class Exit extends Command {
     public void getHelp() {
         output.println("Command: exit");
         output.println("Usage:   exit");
-        output.println("  Exits the program.");
+        output.println("  Exits the program. Nothing is saved automatically.");
     }
 }

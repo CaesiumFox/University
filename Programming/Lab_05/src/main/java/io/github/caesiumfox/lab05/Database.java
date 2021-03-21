@@ -1,17 +1,27 @@
 package io.github.caesiumfox.lab05;
 
-import io.github.caesiumfox.lab05.element.Movie;
-import io.github.caesiumfox.lab05.element.MpaaRating;
+import io.github.caesiumfox.lab05.element.*;
 import io.github.caesiumfox.lab05.exceptions.*;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * База данных с которой ведётся работа
+ */
 public class Database {
-    public static class Skeleton {
+    /**
+     * Вспомогательный класс для работы с JSON файлами
+     * при помощи библиотеки GSON.
+     * GSON работает напосредственно с ним,
+     * преобразование между ним и
+     * основным классом ({@link Database}) происходит
+     * отдельно.
+     */
+    public static class RawData {
         public Date creationDate;
-        public List<Movie.Skeleton> data;
+        public List<Movie.RawData> data;
     }
 
     private String inputFile;
@@ -20,6 +30,12 @@ public class Database {
     private Set<String> knownPassportIDs;
     private int maxID;
 
+    /**
+     * Конструктор по умолчанию.
+     * Создаёт пустую базу данных без
+     * данных о файле-источнике, с
+     * датой создания равной текущей
+     */
     public Database() {
         inputFile = "";
         creationDate = new Date();
@@ -28,24 +44,31 @@ public class Database {
         maxID = 0;
     }
 
-    public Database(Skeleton skeleton, String inputFile) {
+    /**
+     * Конструктор, инициализирующий базу данных
+     * в соответствии с первичными данными,
+     * полученными в результате чтения json файла
+     * @param rawData Объект класса {@link RawData},
+     * содержащий данные из json файла
+     */
+    public Database(RawData rawData, String inputFile) {
         maxID = 0;
         this.inputFile = inputFile;
-        this.creationDate = skeleton.creationDate;
+        this.creationDate = rawData.creationDate;
         this.knownPassportIDs = new HashSet<>();
         this.data = new LinkedHashMap<>();
-        for (Movie.Skeleton movieSkeleton : skeleton.data) {
+        for (Movie.RawData movieRawData : rawData.data) {
             try {
-                if (this.data.containsKey(movieSkeleton.id)) {
-                    throw new ElementIdAlreadyExistsException(movieSkeleton.id);
+                if (this.data.containsKey(movieRawData.id)) {
+                    throw new ElementIdAlreadyExistsException(movieRawData.id);
                 }
-                if (this.knownPassportIDs.contains(movieSkeleton.director.passportID)) {
-                    throw new PassportIdAlreadyExistsException(movieSkeleton.director.passportID);
+                if (this.knownPassportIDs.contains(movieRawData.director.passportID)) {
+                    throw new PassportIdAlreadyExistsException(movieRawData.director.passportID);
                 }
-                if (movieSkeleton.id > maxID)
-                    maxID = movieSkeleton.id;
-                this.knownPassportIDs.add(movieSkeleton.director.passportID);
-                this.data.put(movieSkeleton.id, new Movie(movieSkeleton));
+                if (movieRawData.id > maxID)
+                    maxID = movieRawData.id;
+                this.knownPassportIDs.add(movieRawData.director.passportID);
+                this.data.put(movieRawData.id, new Movie(movieRawData));
             } catch (ElementIdAlreadyExistsException | PassportIdAlreadyExistsException |
                     StringLengthLimitationException | NumberOutOfRangeException |
                     CoordinatesOutOfRangeException e) {
@@ -55,38 +78,85 @@ public class Database {
         }
     }
 
+    /**
+     * Возвращает имя файла, из которого
+     * была считана база данных, или
+     * пустую строку, если база данных
+     * была создана с нуля.
+     * @return Имя файла или пустая строка
+     */
     public String getInputFile() {
         return inputFile;
     }
 
+    /**
+     * Возвращает дату создания базы данных.
+     * @return Дата создания
+     */
     public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setInputFile(String inputFile) throws StringLengthLimitationException {
-        Objects.requireNonNull(inputFile);
-        if (inputFile.length() == 0) {
-            throw new StringLengthLimitationException(inputFile, 1, -1);
-        }
-        this.inputFile = inputFile;
-    }
-
+    /**
+     * Проверяет наличие паспорта в базе данных
+     * @param passportID Номер проверяемого паспорта
+     * @return true, если паспорт есть, false, если нет
+     */
     public boolean hasPassportID(String passportID) {
         return this.knownPassportIDs.contains(passportID);
     }
 
-    public void info(PrintStream output) {
-        output.println("  --- Database info ---");
-        output.print("    Input File:    ");
-        output.println(this.inputFile.length() == 0 ? "<N/A>" : this.inputFile);
-        output.print("    Creation Date: ");
-        output.println(new SimpleDateFormat(Main.dateFormat).format(this.creationDate));
-        output.print("    Max ID:        ");
-        output.println(this.maxID);
-        output.print("    N/O Elements:  ");
-        output.println(this.data.size());
+    /**
+     * Перерасчитывает максимальное значение
+     * идентификатора фильма
+     */
+    private void updateMaxID() {
+        maxID = 0;
+        for (Integer i : data.keySet()) {
+            if (i > maxID)
+                maxID = i;
+        }
     }
 
+    /**
+     * Выводит в поток вывода информацию о
+     * базе данных
+     * @param output Поток вывода
+     */
+    public void info(PrintStream output) {
+        output.println("--- Database info ---");
+        output.print("  Input File:      ");
+        output.println(this.inputFile.length() == 0 ? "<N/A>" : this.inputFile);
+        output.print("  Creation Date:   ");
+        output.println(new SimpleDateFormat(Main.dateFormat).format(this.creationDate));
+        output.print("  Max ID:          ");
+        output.println(this.maxID);
+        output.print("  N/O Elements:    ");
+        output.println(this.data.size());
+
+        output.println("  Collection type: LinkedHashMap");
+        output.println("  Fields:");
+        output.println("    ID: [0 - 2147483647]");
+        output.println("    Name: Not empty string");
+        output.println("    Coordinates:");
+        output.format ("      X: [%f, %f]\n", Coordinates.minX, Coordinates.maxX);
+        output.format ("      Y: [%f, %f]\n", Coordinates.minY, Coordinates.maxY);
+        output.format ("    Creation Date: %s\n", Main.dateFormat);
+        output.println("    Oscars Count: [1 - 9223372036854775807]");
+        output.format ("    Genre: %s\n", MovieGenre.listConstants());
+        output.format ("    MPAA Rating: %s\n", MpaaRating.listConstants());
+        output.println("    Director:");
+        output.println("      Name: Not empty string");
+        output.format ("      Passport ID: string with %d to %d characters\n",
+                Person.passportIDMinLen, Person.passportIDMaxLen);
+        output.format ("      Hair Color: %s\n", Color.listConstants());
+    }
+
+    /**
+     * Выводит в поток вывода информацию о каждой
+     * записи в базе данных.
+     * @param output Поток вывода
+     */
     public void show(PrintStream output) {
         if (data.isEmpty()) {
             output.println("  There are No Elements");
@@ -97,6 +167,20 @@ public class Database {
         }
     }
 
+    /**
+     * Делает запись о фильме в базу данных,
+     * меняя идентификатор на тот,
+     * что на единицу больше наибольшего
+     * уже существующего идентификатора
+     * @param movie Запись о фильме
+     * @throws RunOutOfIdsException Если
+     * в базе данных есть элемент с максимально
+     * возможным значением идентификатора
+     * @throws PassportIdAlreadyExistsException Если
+     * в базе данных уже есть запись о фильме,
+     * номер паспорта режиссёра которого совпадает
+     * с номером паспорта режиссёра новой записи
+     */
     public void insert(Movie movie) throws RunOutOfIdsException, PassportIdAlreadyExistsException {
         if (maxID == Integer.MAX_VALUE) {
             throw new RunOutOfIdsException();
@@ -109,6 +193,18 @@ public class Database {
         knownPassportIDs.add(movie.getDirector().getPassportID());
     }
 
+    /**
+     * Делает запись о фильме в базу данных,
+     * меняя идентификатор на новый
+     * @param id Новый идентификатор
+     * @param movie Запись о фильме
+     * @throws ElementIdAlreadyExistsException Если
+     * новый идентификатор уже занят
+     * @throws PassportIdAlreadyExistsException Если
+     * в базе данных уже есть запись о фильме,
+     * номер паспорта режиссёра которого совпадает
+     * с номером паспорта режиссёра новой записи
+     */
     public void insert(Integer id, Movie movie)
             throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException {
         if (data.containsKey(id)) {
@@ -125,6 +221,19 @@ public class Database {
         knownPassportIDs.add(movie.getDirector().getPassportID());
     }
 
+    /**
+     * Обновляет запись о фильме в базу данных,
+     * по заданному идентификатору.
+     * Дата создания записи обновляется.
+     * @param id Идентификатор
+     * @param movie Запись о фильме
+     * @throws ElementIdAlreadyExistsException Если
+     * новый идентификатор уже занят
+     * @throws PassportIdAlreadyExistsException Если
+     * в базе данных уже есть запись о фильме,
+     * номер паспорта режиссёра которого совпадает
+     * с номером паспорта режиссёра новой записи
+     */
     public void update(Integer id, Movie movie)
             throws NoKeyInDatabaseException, PassportIdAlreadyExistsException {
         if (!data.containsKey(id)) {
@@ -138,6 +247,12 @@ public class Database {
         data.put(id, movie);
     }
 
+    /**
+     * Удаляет запись о фильме по его идентификатору (ключу).
+     * @param id Идентификатор записи, которую нужно удалить
+     * @throws NoKeyInDatabaseException Если нет
+     * зфписи с указанным идентификатором
+     */
     public void remove_key(Integer id) throws NoKeyInDatabaseException {
         if (!data.containsKey(id)) {
             throw new NoKeyInDatabaseException(id);
@@ -149,12 +264,22 @@ public class Database {
         }
     }
 
+    /**
+     * Очищает базу данных, но сохраняет дату создания
+     * и файл-источник.
+     */
     public void clear() {
         knownPassportIDs.clear();
         data.clear();
         maxID = 0;
     }
 
+    /**
+     * Удаляет все записи, которые в соответствии
+     * с компаратором {@link MovieComparator}
+     * меньшие, чем заданная запись.
+     * @param movie Запись, с которой производится сравнение
+     */
     public void remove_lower(Movie movie) {
         MovieComparator comparator = new MovieComparator();
         for (Integer key : new HashSet<Integer>(data.keySet())) {
@@ -166,6 +291,11 @@ public class Database {
         updateMaxID();
     }
 
+    /**
+     * Удаляет все записи, идентификатор (ключ)
+     * которых больше чем заданный.
+     * @param id Значение ключа, с которым производится сравнение
+     */
     public void remove_greater_key(Integer id) {
         for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (key > id) {
@@ -176,6 +306,11 @@ public class Database {
         updateMaxID();
     }
 
+    /**
+     * Удаляет все записи, идентификатор (ключ)
+     * которых меньше чем заданный.
+     * @param id Значение ключа, с которым производится сравнение
+     */
     public void remove_lower_key(Integer id) {
         for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (key < id) {
@@ -186,6 +321,13 @@ public class Database {
         updateMaxID();
     }
 
+    /**
+     * Возвращает любую запись с наименьшей
+     * возрастной категорией
+     * @return Запись с наименьшей возрастной категорей
+     * @throws EmptyDatabaseException Если база
+     * данных пуста
+     */
     public Movie min_by_mpaa_rating() throws EmptyDatabaseException {
         MpaaRating minRating = MpaaRating.R;
         Movie minByRating = null;
@@ -201,6 +343,15 @@ public class Database {
         return minByRating;
     }
 
+    /**
+     * Возвращает количество записей, в которых
+     * количество оскаров больше, чем заданное
+     * значение (0 в случае, если база данных пуста).
+     * @param oscarsCount Количество оскаров, с которым
+     * производится сравнение
+     * @return Количество записей с числом оскаров
+     * большим чем задано
+     */
     public int count_greater_than_oscars_count(long oscarsCount) {
         int counter = 0;
         for (Movie movie : data.values()) {
@@ -211,6 +362,13 @@ public class Database {
         return counter;
     }
 
+    /**
+     * Возвращает множество всех записей с заданной
+     * возрастной категорией. Если таких записей нет
+     * или база данных пуста, возвращается пустое множество.
+     * @param rating Искомая возрастная категория
+     * @return Множество всех записей с заданной возрастной категорией
+     */
     public Set<Movie> filter_by_mpaa_rating(MpaaRating rating) {
         HashSet<Movie> result = new HashSet<>();
         for (Movie movie : data.values()) {
@@ -221,21 +379,19 @@ public class Database {
         return result;
     }
 
-    public Skeleton toSkeleton() {
-        Skeleton skeleton = new Skeleton();
-        skeleton.creationDate = this.creationDate;
-        skeleton.data = new ArrayList<Movie.Skeleton>(this.data.size());
+    /**
+     * Преобразует объект класса в
+     * соответсвующий ему объект
+     * класса {@link RawData}
+     * @return Объект класса {@link RawData}
+     */
+    public RawData toRawData() {
+        RawData rawData = new RawData();
+        rawData.creationDate = this.creationDate;
+        rawData.data = new ArrayList<Movie.RawData>(this.data.size());
         for (Movie movie : this.data.values()) {
-            skeleton.data.add(movie.toSkeleton());
+            rawData.data.add(movie.toRawData());
         }
-        return skeleton;
-    }
-
-    private void updateMaxID() {
-        maxID = 0;
-        for (Integer i : data.keySet()) {
-            if (i > maxID)
-                maxID = i;
-        }
+        return rawData;
     }
 }

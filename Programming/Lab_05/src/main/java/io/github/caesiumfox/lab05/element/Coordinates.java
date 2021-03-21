@@ -2,16 +2,19 @@ package io.github.caesiumfox.lab05.element;
 
 import io.github.caesiumfox.lab05.exceptions.CoordinatesOutOfRangeException;
 
+/**
+ * Класс, описывающий координаты
+ */
 public class Coordinates {
     /**
      * Вспомогательный класс для работы с JSON файлами
      * при помощи библиотеки GSON.
      * GSON работает напосредственно с ним,
-     * преобразование между "скелетом" и
-     * базовым классом (Coordinates) происходит
+     * преобразование между ним и
+     * основным классом ({@link Coordinates}) происходит
      * отдельно.
      */
-    public static class Skeleton {
+    public static class RawData {
         public float x;
         public float y;
     }
@@ -40,7 +43,7 @@ public class Coordinates {
     /**
      * Конструктор по умолчанию.
      * Инициализирует координаты как
-     * ({@link #minX}, {link #minY}).
+     * ({@link #minX}, {@link #minY}).
      */
     public Coordinates() {
         this.x = minX;
@@ -51,19 +54,19 @@ public class Coordinates {
      * Конструктор, инициализирующий координаты
      * в соответствии с первичными данными,
      * полученными в результате чтения json файла
-     * @param skeleton объект класса {@link Skeleton},
-     *                 содержащий данные из json файла
-     * @exception CoordinatesOutOfRangeException выбрасывается,
+     * @param rawData Объект класса {@link RawData},
+     * содержащий данные из json файла
+     * @exception CoordinatesOutOfRangeException Выбрасывается,
      * если координаты выходят за пределы областей допустимых значений.
      */
-    public Coordinates(Skeleton skeleton) throws CoordinatesOutOfRangeException {
-        setX(skeleton.x);
-        setY(skeleton.y);
+    public Coordinates(RawData rawData) throws CoordinatesOutOfRangeException {
+        setX(rawData.x);
+        setY(rawData.y);
     }
 
     /**
      * Возвращает значение горизонтальной координаты
-     * @return значение горизонтальной координаты
+     * @return Значение горизонтальной координаты
      * @see #getY()
      * @see #setX(float)
      * @see #setY(float)
@@ -72,7 +75,7 @@ public class Coordinates {
 
     /**
      * Возвращает значение вертикальной координаты
-     * @return значение вертикальной координаты
+     * @return Значение вертикальной координаты
      * @see #getX()
      * @see #setX(float)
      * @see #setY(float)
@@ -82,8 +85,8 @@ public class Coordinates {
     /**
      * Устанавливает значение горизонтальной координаты,
      * если оно находится в пределах [{@link #minX}, {@link #maxX}]
-     * @param x значение горизонтальной координаты
-     * @exception CoordinatesOutOfRangeException выбрасывается,
+     * @param x Вначение горизонтальной координаты
+     * @exception CoordinatesOutOfRangeException Выбрасывается,
      * если аргумент выходит за пределы области допустимых значений.
      * @see #getX()
      * @see #getY()
@@ -100,8 +103,8 @@ public class Coordinates {
     /**
      * Устанавливает значение вертикальной координаты,
      * если оно находится в пределах [{@link #minY}, {@link #maxY}]
-     * @param y значение вертикальной координаты
-     * @exception CoordinatesOutOfRangeException выбрасывается,
+     * @param y Значение вертикальной координаты
+     * @exception CoordinatesOutOfRangeException Выбрасывается,
      * если аргумент выходит за пределы области допустимых значений.
      * @see #getX()
      * @see #getY()
@@ -115,10 +118,16 @@ public class Coordinates {
         }
     }
 
-    public Skeleton toSkeleton() {
-        Skeleton skeleton = new Skeleton();
-        skeleton.x = this.x;
-        skeleton.y = this.y;
-        return skeleton;
+    /**
+     * Преобразует объект класса в
+     * соответсвующий ему объект
+     * класса {@link RawData}
+     * @return Объект класса {@link RawData}
+     */
+    public RawData toRawData() {
+        RawData rawData = new RawData();
+        rawData.x = this.x;
+        rawData.y = this.y;
+        return rawData;
     }
 }

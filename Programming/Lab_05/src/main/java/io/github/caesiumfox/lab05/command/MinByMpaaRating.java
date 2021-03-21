@@ -7,10 +7,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команта вывода записи с минмальной возрастной категорией
+ */
 public class MinByMpaaRating extends Command {
     public MinByMpaaRating(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -27,8 +30,9 @@ public class MinByMpaaRating extends Command {
 
     @Override
     public void getHelp() {
-        output.println("Command: info");
-        output.println("Usage:   info");
-        output.println("  Prints the information about the database.");
+        output.println("Command: min_by_mpaa_rating");
+        output.println("Usage:   min_by_mpaa_rating");
+        output.println("  Prints the entry with the least MPAA rating, or prints a placeholder if the\n" +
+                "  database is empty.");
     }
 }

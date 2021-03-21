@@ -8,12 +8,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда обновления
+ */
 public class Update extends Command {
     private Integer id;
 
     public Update(ArrayList<String> args, Database database,
-                  PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                  PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -42,8 +45,8 @@ public class Update extends Command {
         output.println("Command: update");
         output.println("Usage:   update <id>");
         output.println("  Replaces the current element by the specified key with the new element. The\n" +
-                "  creation date is also updated automatically.\n" +
-                "  To create the new element the command launches an interactive builder that\n" +
-                "  asks for each field of the new element.");
+                "  creation date is also updated automatically. To create the new element the\n" +
+                "  command launches an interactive builder that asks for each field of the new\n" +
+                "  element. The fields are asked in the same order as listed by \"info\" command.");
     }
 }

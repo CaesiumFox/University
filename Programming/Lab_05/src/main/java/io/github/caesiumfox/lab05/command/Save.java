@@ -8,12 +8,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда сохранения
+ */
 public class Save extends Command {
     private String outputFile;
 
     public Save(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -33,6 +36,6 @@ public class Save extends Command {
     public void getHelp() {
         output.println("Command: save");
         output.println("Usage:   save <file name>");
-        output.println("  Saves the database in the specified JSON file.");
+        output.println("  Saves the database in the specified file in JSON format.");
     }
 }

@@ -8,11 +8,14 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда вставки
+ */
 public class Insert extends Command {
     private Integer id;
     public Insert(ArrayList<String> args, Database database,
-                  PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                  PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -45,9 +48,9 @@ public class Insert extends Command {
     public void getHelp() {
         output.println("Command: insert");
         output.println("Usage:   insert [id]");
-        output.println("  Inserts an element in the database with the specified ID or the least unused\n" +
-                "  ID, if not specified.\n" +
-                "  To create the element the command launches an interactive builder that asks\n" +
-                "  for each field of the new element.");
+        output.println("  Inserts an entry in the database with the specified ID or the least unused ID,\n" +
+                "  if not specified. To create the entry the command launches an interactive\n" +
+                "  builder that asks for each field of the new element. The fields are asked in\n" +
+                "  the same order as listed by \"info\" command.");
     }
 }

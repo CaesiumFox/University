@@ -6,10 +6,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Команда информации
+ */
 public class Info extends Command {
     public Info(ArrayList<String> args, Database database,
-                PrintStream output, PrintStream errout, Scanner input) {
-        super(args, database, output, errout, input);
+                PrintStream output, Scanner input) {
+        super(args, database, output, input);
     }
 
     @Override
@@ -24,6 +27,8 @@ public class Info extends Command {
     public void getHelp() {
         output.println("Command: info");
         output.println("Usage:   info");
-        output.println("  Prints the information about the database.");
+        output.println("  Prints the information about the database including input file, creation date,\n" +
+                "  number of entries, maximum ID, type of the collection used in the database and\n" +
+                "  all fields");
     }
 }
