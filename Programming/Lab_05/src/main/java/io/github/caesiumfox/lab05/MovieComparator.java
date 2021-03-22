@@ -9,12 +9,12 @@ import java.util.Comparator;
  * Используется командой remove_lower.
  */
 public class MovieComparator implements Comparator<Movie> {
-    @Override
     /**
      * Сравнивает две записи о фильмах.
      * Результат совпадает с результатом сравнения
      * произвеления полей coordinates.x и coordinates.y.
      */
+    @Override
     public int compare(Movie m1, Movie m2) {
         double area1 = m1.getCoordinates().getX() * m1.getCoordinates().getY();
         double area2 = m2.getCoordinates().getX() * m2.getCoordinates().getY();
