@@ -102,7 +102,7 @@ public class CommandShell {
                     output.flush();
                 }
                 String line = commandInput.nextLine().trim();
-                if(line.isBlank() || line.charAt(0) == '#')
+                if(line.trim().isEmpty() || line.charAt(0) == '#')
                     continue;
                 Pattern pattern = Pattern.compile("\"[^\"]+\"|[^ \"]+");
                 Matcher matcher = pattern.matcher(line);

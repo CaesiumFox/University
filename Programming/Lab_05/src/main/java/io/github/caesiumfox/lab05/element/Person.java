@@ -42,7 +42,7 @@ public class Person {
      */
     public Person() {
         name = "a";
-        passportID = "0".repeat(passportIDMinLen);
+        passportID = "000000";
         hairColor = Color.GREEN;
     }
 
