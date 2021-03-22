@@ -28,11 +28,17 @@ public class RemoveGreaterKey extends Command {
         } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
         }
+        if(id <= 0)
+            throw new InvalidArgumentsException(args);
     }
 
     @Override
     protected void execute() throws CommandExecutionException {
-        database.remove_greater_key(id);
+        try {
+            database.remove_greater_key(id);
+        } catch (NumberOutOfRangeException e) {
+            throw new CommandExecutionException(e);
+        }
     }
 
     @Override

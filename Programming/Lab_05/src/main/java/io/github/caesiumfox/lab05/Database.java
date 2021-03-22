@@ -144,7 +144,7 @@ public class Database {
 
         output.println("  Collection type: LinkedHashMap");
         output.println("  Fields:");
-        output.println("    ID: [0 - 2147483647]");
+        output.println("    ID: [1 - 2147483647]");
         output.println("    Name: Not empty string");
         output.println("    Coordinates:");
         output.format ("      X: [%f, %f]\n", Coordinates.minX, Coordinates.maxX);
@@ -153,9 +153,9 @@ public class Database {
         output.println("    Oscars Count: [1 - 9223372036854775807]");
         output.format ("    Genre: %s\n", MovieGenre.listConstants());
         output.format ("    MPAA Rating: %s\n", MpaaRating.listConstants());
-        output.println("    Director:");
+        output.println("    Director (may be null):");
         output.println("      Name: Not empty string");
-        output.format ("      Passport ID: string with %d to %d characters\n",
+        output.format ("      Passport ID (may be null): string with %d to %d characters\n",
                 Person.passportIDMinLen, Person.passportIDMaxLen);
         output.format ("      Hair Color: %s\n", Color.listConstants());
     }
@@ -189,16 +189,20 @@ public class Database {
      * номер паспорта режиссёра которого совпадает
      * с номером паспорта режиссёра новой записи
      */
-    public void insert(Movie movie) throws RunOutOfIdsException, PassportIdAlreadyExistsException {
+    public void insert(Movie movie) throws RunOutOfIdsException,
+            PassportIdAlreadyExistsException, NumberOutOfRangeException {
         if (maxID == Integer.MAX_VALUE) {
             throw new RunOutOfIdsException();
         }
-        if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
-            throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+        if (movie.hasPassportID()) {
+            if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
+                throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+            }
         }
         movie.setID(++maxID);
         data.put(movie.getID(), movie);
-        knownPassportIDs.add(movie.getDirector().getPassportID());
+        if (movie.hasPassportID())
+            knownPassportIDs.add(movie.getDirector().getPassportID());
     }
 
     /**
@@ -212,21 +216,28 @@ public class Database {
      * в базе данных уже есть запись о фильме,
      * номер паспорта режиссёра которого совпадает
      * с номером паспорта режиссёра новой записи
+     * @throws NumberOutOfRangeException Если ключ не положительный
      */
     public void insert(Integer id, Movie movie)
-            throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException {
+            throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException,
+            NumberOutOfRangeException {
+        if(id <= 0)
+            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         if (data.containsKey(id)) {
             throw new ElementIdAlreadyExistsException(id);
         }
-        if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
-            throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+        if (movie.hasPassportID()) {
+            if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
+                throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+            }
         }
         if (id > maxID) {
             maxID = id;
         }
         movie.setID(id);
         data.put(id, movie);
-        knownPassportIDs.add(movie.getDirector().getPassportID());
+        if (movie.hasPassportID())
+            knownPassportIDs.add(movie.getDirector().getPassportID());
     }
 
     /**
@@ -243,15 +254,23 @@ public class Database {
      * с номером паспорта режиссёра новой записи
      */
     public void update(Integer id, Movie movie)
-            throws NoKeyInDatabaseException, PassportIdAlreadyExistsException {
+            throws NoKeyInDatabaseException, PassportIdAlreadyExistsException,
+            NumberOutOfRangeException {
+        if(id <= 0)
+            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         if (!data.containsKey(id)) {
             throw new NoKeyInDatabaseException(id);
         }
-        if (!data.get(id).getDirector().getPassportID().equals(movie.getDirector().getPassportID())) {
+
+        if(data.get(id).hasPassportID()) {
             knownPassportIDs.remove(data.get(id).getDirector().getPassportID());
-            knownPassportIDs.add(movie.getDirector().getPassportID());
-            throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
         }
+        if(movie.hasPassportID()) {
+            if(hasPassportID(movie.getDirector().getPassportID()))
+                throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+            knownPassportIDs.add(movie.getDirector().getPassportID());
+        }
+
         data.put(id, movie);
     }
 
@@ -261,10 +280,14 @@ public class Database {
      * @throws NoKeyInDatabaseException Если нет
      * зфписи с указанным идентификатором
      */
-    public void remove_key(Integer id) throws NoKeyInDatabaseException {
+    public void remove_key(Integer id) throws NoKeyInDatabaseException,
+            NumberOutOfRangeException {
+        if(id <= 0)
+            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         if (!data.containsKey(id)) {
             throw new NoKeyInDatabaseException(id);
         }
+        if(data.get(id).hasPassportID())
         knownPassportIDs.remove(data.get(id).getDirector().getPassportID());
         data.remove(id);
         if (id == maxID) {
@@ -292,6 +315,7 @@ public class Database {
         MovieComparator comparator = new MovieComparator();
         for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (comparator.compare(data.get(key), movie) < 0) {
+                if(data.get(key).hasPassportID())
                 knownPassportIDs.remove(data.get(key).getDirector().getPassportID());
                 data.remove(key);
             }
@@ -304,9 +328,12 @@ public class Database {
      * которых больше чем заданный.
      * @param id Значение ключа, с которым производится сравнение
      */
-    public void remove_greater_key(Integer id) {
+    public void remove_greater_key(Integer id) throws NumberOutOfRangeException {
+        if(id <= 0)
+            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (key > id) {
+                if(data.get(key).hasPassportID())
                 knownPassportIDs.remove(data.get(key).getDirector().getPassportID());
                 data.remove(key);
             }
@@ -319,9 +346,13 @@ public class Database {
      * которых меньше чем заданный.
      * @param id Значение ключа, с которым производится сравнение
      */
-    public void remove_lower_key(Integer id) {
+    public void remove_lower_key(Integer id) throws NumberOutOfRangeException {
+        if(id <= 0)
+            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (key < id) {
+                if(data.get(key).hasPassportID())
+                if(data.get(key).hasPassportID())
                 knownPassportIDs.remove(data.get(key).getDirector().getPassportID());
                 data.remove(key);
             }

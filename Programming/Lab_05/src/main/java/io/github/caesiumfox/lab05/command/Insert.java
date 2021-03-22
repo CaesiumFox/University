@@ -28,6 +28,8 @@ public class Insert extends Command {
         } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
         }
+        if (id != null && id <= 0)
+            throw new InvalidArgumentsException(args, "ID must be a natural value");
     }
 
     @Override
@@ -39,7 +41,7 @@ public class Insert extends Command {
                 database.insert(id, new Movie(id, output, input, database));
             }
         } catch(RunOutOfIdsException | ElementIdAlreadyExistsException |
-                PassportIdAlreadyExistsException e) {
+                PassportIdAlreadyExistsException | NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);
         }
     }

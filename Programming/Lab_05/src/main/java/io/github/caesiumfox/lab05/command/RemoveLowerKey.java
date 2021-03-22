@@ -3,6 +3,7 @@ package io.github.caesiumfox.lab05.command;
 import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
 import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
+import io.github.caesiumfox.lab05.exceptions.NumberOutOfRangeException;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -29,11 +30,17 @@ public class RemoveLowerKey extends Command {
         } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
         }
+        if(id <= 0)
+            throw new InvalidArgumentsException(args);
     }
 
     @Override
     protected void execute() throws CommandExecutionException {
-        database.remove_lower_key(id);
+        try {
+            database.remove_lower_key(id);
+        } catch (NumberOutOfRangeException e) {
+            throw new CommandExecutionException(e);
+        }
     }
 
     @Override

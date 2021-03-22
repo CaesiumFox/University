@@ -159,40 +159,49 @@ public class Movie {
         }
 
         // director
+        boolean noDirector = false;
         Person director = new Person();
-        output.format("Enter the director's name :\n    ");
+        output.format("Enter the director's name (or empty string if there is no director):\n    ");
         while (true) {
             try {
                 director.setName(input.nextLine().trim());
                 break;
             } catch (StringLengthLimitationException e) {
-                output.println(e.getMessage());
-                output.format("Enter the director's name again:\n    ");
+                noDirector = true;
+                director = null;
+                break;
             }
         }
-        output.format("Enter the director's passport ID (%d to %d symbols):\n    ",
-                Person.passportIDMinLen, Person.passportIDMaxLen);
-        while (true) {
-            try {
-                String passportID = input.nextLine().trim();
-                if (database.hasPassportID(passportID))
-                    throw new PassportIdAlreadyExistsException(passportID);
-                director.setPassportID(passportID);
-                break;
-            } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {
-                output.println(e.getMessage());
-                output.format("Enter the director's passport ID again (%d to %d symbols):\n    ",
-                        Person.passportIDMinLen, Person.passportIDMaxLen);
+        if(!noDirector) {
+            output.format("Enter the director's passport ID (%d to %d symbols, or empty string if " +
+                            "there is no passport ID):\n    ",
+                    Person.passportIDMinLen, Person.passportIDMaxLen);
+            while (true) {
+                try {
+                    String passportID = input.nextLine().trim();
+                    if(passportID.isEmpty()) {
+                        director.setPassportID(null);
+                        break;
+                    }
+                    if (database.hasPassportID(passportID))
+                        throw new PassportIdAlreadyExistsException(passportID);
+                    director.setPassportID(passportID);
+                    break;
+                } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {
+                    output.println(e.getMessage());
+                    output.format("Enter the director's passport ID again (%d to %d symbols):\n    ",
+                            Person.passportIDMinLen, Person.passportIDMaxLen);
+                }
             }
-        }
-        output.format("Enter the director's hair color %s:\n    ", Color.listConstants());
-        while (true) {
-            try {
-                director.setHairColor(Color.fromString(input.nextLine().trim()));
-                break;
-            } catch (WrongEnumInputException e) {
-                output.println(e.getMessage());
-                output.format("Enter the director's hair color again %s:\n    ", Color.listConstants());
+            output.format("Enter the director's hair color %s:\n    ", Color.listConstants());
+            while (true) {
+                try {
+                    director.setHairColor(Color.fromString(input.nextLine().trim()));
+                    break;
+                } catch (WrongEnumInputException e) {
+                    output.println(e.getMessage());
+                    output.format("Enter the director's hair color again %s:\n    ", Color.listConstants());
+                }
             }
         }
         setDirector(director);
@@ -257,7 +266,7 @@ public class Movie {
 
     /**
      * Возвращает режиссёра фильма
-     * @return Режиссёр
+     * @return Режиссёр (может быть null)
      */
     public Person getDirector() {
         return director;
@@ -269,9 +278,12 @@ public class Movie {
      * Проверка на существование идентификатора в
      * базе данных не выполняется.
      * @param id Идентификатор
+     * @throws NumberOutOfRangeException Если ключ неположительный
      */
-    public void setID(Integer id) {
+    public void setID(Integer id) throws NumberOutOfRangeException {
         Objects.requireNonNull(id);
+        if(id <= 0)
+            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         this.id = id;
     }
 
@@ -344,15 +356,25 @@ public class Movie {
      * Устанавливает режиссёра фильма, имя
      * и номер пасспорта которого уже
      * проверены на длину.
-     * @param director Режиссёр фильма
-     * @throws NullPointerException Если
-     * было передано значение null
+     * @param director Режиссёр фильма (может быть null)
      */
     public void setDirector(Person director) {
-        Objects.requireNonNull(director);
         this.director = director;
     }
 
+    /**
+     * Определяет, есть ли у этой записи
+     * значение в поле номера паспорта.
+     * @return true, если паспорт есть
+     */
+    public boolean hasPassportID() {
+        if(director == null)
+            return false;
+        if(director.getPassportID() == null)
+            return false;
+        return true;
+    }
+    
     @Override
     public String toString() {
         final StringBuilder result = new StringBuilder();
@@ -366,10 +388,20 @@ public class Movie {
         result.append("  Oscars Count: ").append(oscarsCount).append('\n');
         result.append("  Genre: ").append(genre).append('\n');
         result.append("  MPAA Rating: ").append(mpaaRating).append('\n');
-        result.append("  Director:\n");
-        result.append("    Name: ").append(director.getName()).append('\n');
-        result.append("    Passport ID: ").append(director.getPassportID()).append('\n');
-        result.append("    Hair Color: ").append(director.getHairColor()).append('\n');
+        if (director == null) {
+            result.append("  Director: <N/A>\n");
+        } else {
+            result.append("  Director:\n");
+            result.append("    Name: ").append(director.getName()).append('\n');
+            result.append("    Passport ID: ");
+            if(director.getPassportID() == null) {
+                result.append("<N/A>");
+            } else {
+                result.append(director.getPassportID());
+            }
+            result.append('\n');
+            result.append("    Hair Color: ").append(director.getHairColor()).append('\n');
+        }
         return result.toString();
     }
 

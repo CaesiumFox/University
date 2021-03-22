@@ -4,6 +4,7 @@ import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
 import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
 import io.github.caesiumfox.lab05.exceptions.NoKeyInDatabaseException;
+import io.github.caesiumfox.lab05.exceptions.NumberOutOfRangeException;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -30,13 +31,15 @@ public class RemoveKey extends Command {
         } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
         }
+        if (id <= 0)
+            throw new InvalidArgumentsException(args, "ID must be a natural value");
     }
 
     @Override
     protected void execute() throws CommandExecutionException {
         try {
             database.remove_key(id);
-        } catch (NoKeyInDatabaseException e) {
+        } catch (NoKeyInDatabaseException | NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);
         }
     }

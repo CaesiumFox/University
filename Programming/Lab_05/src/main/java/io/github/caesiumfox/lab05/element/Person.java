@@ -42,7 +42,7 @@ public class Person {
      */
     public Person() {
         name = "a";
-        passportID = "000000";
+        passportID = null;
         hairColor = Color.GREEN;
     }
 
@@ -88,7 +88,7 @@ public class Person {
 
     /**
      * Возвращает номер пасспорта
-     * @return Номер пасспорта
+     * @return Номер пасспорта (может быть null)
      */
     public String getPassportID() {
         return passportID;
@@ -120,15 +120,16 @@ public class Person {
 
     /**
      * Устанавливает номер паспорта
-     * @param passportID Номер паспорта
+     * @param passportID Номер паспорта (может быть null)
      * @throws StringLengthLimitationException Если
      * номер паспорта выходит за пределы промежутка
      * [{@link #passportIDMinLen}, {@link #passportIDMaxLen}].
-     * @throws NullPointerException Если в качестве
-     * параметра было передано значение null
      */
     public void setPassportID(String passportID) throws StringLengthLimitationException {
-        Objects.requireNonNull(passportID);
+        if(passportID == null) {
+            this.passportID = null;
+            return;
+        }
         if(passportID.length() < passportIDMinLen
                 || passportID.length() > passportIDMaxLen) {
             throw new StringLengthLimitationException(passportID,

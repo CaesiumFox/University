@@ -29,13 +29,16 @@ public class Update extends Command {
         } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
         }
+        if(id <= 0)
+            throw new InvalidArgumentsException(args);
     }
 
     @Override
     protected void execute() throws CommandExecutionException {
         try {
             database.update(id, new Movie(id, output, input, database));
-        } catch (NoKeyInDatabaseException | PassportIdAlreadyExistsException e) {
+        } catch (NoKeyInDatabaseException | PassportIdAlreadyExistsException |
+                NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);
         }
     }

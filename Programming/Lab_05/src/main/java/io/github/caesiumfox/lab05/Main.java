@@ -51,16 +51,16 @@ public class Main {
             Database.RawData rawData = parser.fromJson(reader, Database.RawData.class);
             database = new Database(rawData, new File(inputFile).getAbsolutePath());
         } catch (FileNotFoundException | EnvVariableNotDefinedException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
             System.out.println("An empty database will be initialized");
             database = new Database();
         } catch (NumberOutOfRangeException | StringLengthLimitationException |
                 CoordinatesOutOfRangeException | PassportIdAlreadyExistsException |
                 ElementIdAlreadyExistsException | NullPointerException |
                 JsonParseException e) {
-            System.err.println("It looks like the file is corrupted.");
-            System.err.println("An exception has been caught with this message:");
-            System.err.println(e.getMessage());
+            System.out.println("It looks like the file is corrupted.");
+            System.out.println("An exception has been caught with this message:");
+            System.out.println(e.getMessage());
             System.out.println("An empty database will be initialized");
             database = new Database();
         }
