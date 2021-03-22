@@ -40,6 +40,7 @@ public class Help extends Command {
             return;
         }
 
+        output.println("--- Help ---");
         output.println("help [command]");
         output.println("      - show the help for commands");
         output.println("info");

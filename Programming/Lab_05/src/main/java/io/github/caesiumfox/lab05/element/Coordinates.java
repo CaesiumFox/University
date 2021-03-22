@@ -1,5 +1,6 @@
 package io.github.caesiumfox.lab05.element;
 
+import com.google.gson.JsonParseException;
 import io.github.caesiumfox.lab05.exceptions.CoordinatesOutOfRangeException;
 
 /**

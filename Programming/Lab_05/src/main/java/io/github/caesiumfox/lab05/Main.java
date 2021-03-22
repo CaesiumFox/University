@@ -2,7 +2,8 @@ package io.github.caesiumfox.lab05;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.caesiumfox.lab05.exceptions.EnvVariableNotDefinedException;
+import com.google.gson.JsonParseException;
+import io.github.caesiumfox.lab05.exceptions.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class Main {
      * Точка входа.
      * Инициализирует парсер, базу данных и командную оболочку.
      * Запускает командную оболочку.
+     * @param args Аргументы командной строки
      */
     public static void main(String[] args) {
         parser = new GsonBuilder().setDateFormat(dateFormat).create();
@@ -51,23 +53,29 @@ public class Main {
         } catch (FileNotFoundException | EnvVariableNotDefinedException e) {
             System.err.println(e.getMessage());
             System.out.println("An empty database will be initialized");
-            Database.RawData rawData = new Database.RawData();
-            rawData.creationDate = new Date();
-            rawData.data = new ArrayList<>();
-            database = new Database(rawData, "");
+            database = new Database();
+        } catch (NumberOutOfRangeException | StringLengthLimitationException |
+                CoordinatesOutOfRangeException | PassportIdAlreadyExistsException |
+                ElementIdAlreadyExistsException | NullPointerException |
+                JsonParseException e) {
+            System.err.println("It looks like the file is corrupted.");
+            System.err.println("An exception has been caught with this message:");
+            System.err.println(e.getMessage());
+            System.out.println("An empty database will be initialized");
+            database = new Database();
         }
         shell = new CommandShell(database);
         try {
             shell.run();
         } catch (NoSuchElementException e) {
             String backupName;
-            if(database.getInputFile().length() > 0) {
+            if (database.getInputFile().length() > 0) {
                 backupName = database.getInputFile() + ".bak";
             } else {
                 backupName = "tmp.bak";
             }
 
-            System.out.println("Looks like you have entered an EOF character" +
+            System.out.println("Looks like you have entered an EOF character " +
                     "by pressing Ctrl+D.");
             System.out.println("Unfortunately the program can no longer continue working.");
             System.out.println("The current state of the database will be saved in " + backupName);

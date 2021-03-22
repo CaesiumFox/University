@@ -50,31 +50,39 @@ public class Database {
      * полученными в результате чтения json файла
      * @param rawData Объект класса {@link RawData},
      * содержащий данные из json файла
+     * @param inputFile Полный путь до файла-источника
+     * @throws ElementIdAlreadyExistsException Если в ходе обработки будут повторяющиеся ключи
+     * @throws PassportIdAlreadyExistsException Если в ходе обработки будут повторяющиеся номера паспортов
+     * @throws StringLengthLimitationException Если в ходе обработки будут строки недопустимой длины
+     * @throws CoordinatesOutOfRangeException Если в ходе обработки будут недопустимые значения координат
+     * @throws NumberOutOfRangeException Если в ходе обработки будут недопустимые числовые значения
+     * @throws NullPointerException Если в ходе обработки попадутся нулевые ссылки
      */
-    public Database(RawData rawData, String inputFile) {
+    public Database(RawData rawData, String inputFile) throws
+            ElementIdAlreadyExistsException,
+            PassportIdAlreadyExistsException,
+            StringLengthLimitationException,
+            CoordinatesOutOfRangeException,
+            NumberOutOfRangeException {
         maxID = 0;
         this.inputFile = inputFile;
+        Objects.requireNonNull(rawData.creationDate);
         this.creationDate = rawData.creationDate;
         this.knownPassportIDs = new HashSet<>();
         this.data = new LinkedHashMap<>();
+        Objects.requireNonNull(rawData.data);
         for (Movie.RawData movieRawData : rawData.data) {
-            try {
-                if (this.data.containsKey(movieRawData.id)) {
-                    throw new ElementIdAlreadyExistsException(movieRawData.id);
-                }
-                if (this.knownPassportIDs.contains(movieRawData.director.passportID)) {
-                    throw new PassportIdAlreadyExistsException(movieRawData.director.passportID);
-                }
-                if (movieRawData.id > maxID)
-                    maxID = movieRawData.id;
-                this.knownPassportIDs.add(movieRawData.director.passportID);
-                this.data.put(movieRawData.id, new Movie(movieRawData));
-            } catch (ElementIdAlreadyExistsException | PassportIdAlreadyExistsException |
-                    StringLengthLimitationException | NumberOutOfRangeException |
-                    CoordinatesOutOfRangeException e) {
-                // Do something TODO
-                System.err.println(e.getMessage());
+            if (this.data.containsKey(movieRawData.id)) {
+                throw new ElementIdAlreadyExistsException(movieRawData.id);
             }
+            if (this.knownPassportIDs.contains(movieRawData.director.passportID)) {
+                throw new PassportIdAlreadyExistsException(movieRawData.director.passportID);
+            }
+            Objects.requireNonNull(movieRawData);
+            if (movieRawData.id > maxID)
+                maxID = movieRawData.id;
+            this.knownPassportIDs.add(movieRawData.director.passportID);
+            this.data.put(movieRawData.id, new Movie(movieRawData));
         }
     }
 
@@ -227,8 +235,8 @@ public class Database {
      * Дата создания записи обновляется.
      * @param id Идентификатор
      * @param movie Запись о фильме
-     * @throws ElementIdAlreadyExistsException Если
-     * новый идентификатор уже занят
+     * @throws NoKeyInDatabaseException Если
+     * в базе данных нет такого ключа
      * @throws PassportIdAlreadyExistsException Если
      * в базе данных уже есть запись о фильме,
      * номер паспорта режиссёра которого совпадает

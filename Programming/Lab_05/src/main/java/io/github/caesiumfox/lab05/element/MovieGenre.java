@@ -46,6 +46,7 @@ public enum MovieGenre {
      * "action", "tragedy", "horror", "fantasy"
      * в любом регистре.
      * @return Получившийся жанр
+     * @throws WrongEnumInputException Если строка не преобразуема в константу
      */
     public static MovieGenre fromString(String str) throws WrongEnumInputException {
         String loweredStr = str.toLowerCase().trim();

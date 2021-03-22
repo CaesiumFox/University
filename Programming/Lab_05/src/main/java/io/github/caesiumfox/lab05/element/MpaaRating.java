@@ -45,6 +45,7 @@ public enum MpaaRating {
      * "g", "pg", "pg13", "pg-13", "pg_13", "r"
      * в любом регистре.
      * @return Получившийся цвет
+     * @throws WrongEnumInputException Если строка не преобразуема в константу
      */
     public static MpaaRating fromString(String str) throws WrongEnumInputException {
         String loweredStr = str.toLowerCase().trim();

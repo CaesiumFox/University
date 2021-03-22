@@ -45,10 +45,11 @@ public class Movie {
      * Конструктор, инициализирующий фильм
      * в соответствии с первичными данными,
      * полученными в результате чтения json файла.
-     * @param rawData
-     * @throws StringLengthLimitationException
-     * @throws CoordinatesOutOfRangeException
-     * @throws NumberOutOfRangeException
+     * @param rawData Объект класса {@link RawData},
+     * содержащий данные из json файла
+     * @throws StringLengthLimitationException Если в ходе обработки будут строки недопустимой длины
+     * @throws CoordinatesOutOfRangeException Если в ходе обработки будут недопустимые значения координат
+     * @throws NumberOutOfRangeException Если в ходе обработки будут недопустимые числовые значения
      */
     public Movie(RawData rawData) throws StringLengthLimitationException,
             CoordinatesOutOfRangeException, NumberOutOfRangeException {

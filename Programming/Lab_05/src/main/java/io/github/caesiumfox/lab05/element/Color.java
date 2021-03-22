@@ -53,6 +53,7 @@ public enum Color {
      * "green", "red", "blue", "yellow", "white"
      * в любом регистре.
      * @return Получившийся цвет
+     * @throws WrongEnumInputException Если строка не преобразуема в константу
      */
     public static Color fromString(String str) throws WrongEnumInputException {
         String loweredStr = str.toLowerCase().trim();

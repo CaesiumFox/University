@@ -2,10 +2,33 @@ package io.github.caesiumfox.lab05.exceptions;
 
 import java.util.List;
 
+/**
+ * Выбрасывается, если команде
+ * был передан неправильный набор
+ * аргументов.
+ */
 public class InvalidArgumentsException extends Exception {
+    /**
+     * Создаёт исключение, которое
+     * выбрасывается, если команде
+     * был передан неправильный набор
+     * аргументов.
+     * @param args Аргументы команды
+     */
     public InvalidArgumentsException(List<String> args) {
         super(buildMessage(args));
     }
+
+    /**
+     * Создаёт исключение, которое
+     * выбрасывается, если команде
+     * был передан неправильный набор
+     * аргументов.
+     * @param args Аргументы команды
+     * @param additional Дополнительная
+     * информация, например, описание
+     * правильных аргументов
+     */
     public InvalidArgumentsException(List<String> args, String additional) {
         super(buildMessage(args) + "\n" + additional);
     }
