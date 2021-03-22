@@ -9,6 +9,12 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Класс отвечающий за обработку команд
+ * в текстовом виде и их запуск.
+ * Работает как в интерактивном, так и
+ * в скриптовом режиме.
+ */
 public class CommandShell {
     private boolean scripted;
     private Database database;
@@ -25,6 +31,11 @@ public class CommandShell {
         executingScripts = new HashSet<>();
     }
 
+    /**
+     * Конструктор, инициализирующий командную оболочку
+     * в интерактивном режиме.
+     * @param database База данных, с которой будет работать оболочка
+     */
     public CommandShell(Database database) {
         setDatabase(database);
         commandInput = new Scanner(System.in);
@@ -33,6 +44,13 @@ public class CommandShell {
         running = false;
         scripted = false;
     }
+    
+    /**
+     * Конструктор, инициализирующий командную оболочку
+     * в скриптовом режиме.
+     * @param database База данных, с которой будет работать оболочка
+     * @param reader Источник команд
+     */
     public CommandShell(Database database, FileReader reader) {
         setDatabase(database);
         commandInput = new Scanner(reader);
@@ -42,15 +60,33 @@ public class CommandShell {
         this.scripted = true;
     }
 
+    /**
+     * Возвращает базу данных, с которой работает оболочка.
+     * @return База данных, с которой происходит работа
+     */
     public Database getDatabase() {
         return database;
     }
 
+    /**
+     * Меняет базу данных, с которой будет работать оболочка.
+     * @param database Новая база данных
+     */
     public void setDatabase(Database database) {
         Objects.requireNonNull(database);
         this.database = database;
     }
 
+    /**
+     * Метод, запускающий командную оболочку.
+     * Выполнен в виде цикла, выполняющегося
+     * до тех пор, пока не будет послан сигнал
+     * завершения работы.
+     * Метод может выбросить
+     * {@link NoSuchElementException},
+     * если во время работы были нажаты клавиши
+     * Ctrl+D.
+     */
     public void run() {
         running = true;
         while (running) {
