@@ -4,8 +4,17 @@ import io.github.caesiumfox.lab05.element.Movie;
 
 import java.util.Comparator;
 
+/**
+ * Производит сравнение двух записей о фильмах.
+ * Используется командой remove_lower.
+ */
 public class MovieComparator implements Comparator<Movie> {
     @Override
+    /**
+     * Сравнивает две записи о фильмах.
+     * Результат совпадает с результатом сравнения
+     * произвеления полей coordinates.x и coordinates.y.
+     */
     public int compare(Movie m1, Movie m2) {
         double area1 = m1.getCoordinates().getX() * m1.getCoordinates().getY();
         double area2 = m2.getCoordinates().getX() * m2.getCoordinates().getY();
