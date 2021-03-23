@@ -18,7 +18,7 @@ public class Person {
      */
     public static class RawData {
         public String name;
-        public String passportID;
+        public String passportID; // may be null
         public Color hairColor;
     }
 
@@ -158,7 +158,7 @@ public class Person {
     public RawData toRawData () {
         RawData rawData = new RawData();
         rawData.name = this.name;
-        rawData.passportID = this.passportID;
+        rawData.passportID = this.passportID; // may be null
         rawData.hairColor = this.hairColor;
         return rawData;
     }

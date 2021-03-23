@@ -114,6 +114,9 @@ public class CommandShell {
                         args.add(line.substring(matcher.start(), matcher.end()));
                     }
                 }
+                if(args.size() == 0) {
+                    continue;
+                }
                 Command command = Command.getCommand(args, database, output, input);
                 command.run();
             } catch (InvalidCommandException | InvalidArgumentsException |
