@@ -86,6 +86,14 @@ public class CommandShell {
      * {@link NoSuchElementException},
      * если во время работы были нажаты клавиши
      * Ctrl+D.
+     * Если на вход дана пустая строка или
+     * строка, начинающаяся с символа '#',
+     * командная оболочка её проигнорирует.
+     * Для переноса строк нужно в конец поставить
+     * символ '\'. Если в месте разрыва нужно поставить
+     * пробел, то он ставится перед знаком переноса.
+     * Аргументы, содержащие пробелы могут быть заключены
+     * в кавычки.
      */
     public void run() {
         running = true;
@@ -101,7 +109,16 @@ public class CommandShell {
                     output.print("> ");
                     output.flush();
                 }
-                String line = commandInput.nextLine().trim();
+                StringBuilder lineBuilder =
+                        new StringBuilder(commandInput.nextLine().trim());
+                //
+                while(lineBuilder.length() == 0 || lineBuilder.charAt(lineBuilder.length() - 1) == '\\') {
+                    if(lineBuilder.length() > 0)
+                        lineBuilder.deleteCharAt(lineBuilder.length() - 1);
+                    lineBuilder.append(commandInput.nextLine().trim());
+                }
+                //
+                String line = lineBuilder.toString();
                 if(line.trim().isEmpty() || line.charAt(0) == '#')
                     continue;
                 Pattern pattern = Pattern.compile("\"[^\"]+\"|[^ \"]+");

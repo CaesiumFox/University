@@ -29,6 +29,19 @@ public class Movie {
         public MovieGenre genre;
         public MpaaRating mpaaRating;
         public Person.RawData director;
+
+        /**
+         * Определяет, есть ли у этой записи
+         * значение в поле номера паспорта.
+         * @return true, если паспорт есть
+         */
+        public boolean hasPassportID() {
+            if (director == null)
+                return false;
+            if (director.passportID == null)
+                return false;
+            return true;
+        }
     }
 
 
@@ -42,7 +55,7 @@ public class Movie {
     private Person director;
 
     /**
-     * Конструктор, инициализирующий фильм
+     * Создаёт объект класса {@link Movie}
      * в соответствии с первичными данными,
      * полученными в результате чтения json файла.
      * @param rawData Объект класса {@link RawData},
@@ -60,7 +73,10 @@ public class Movie {
         setOscarsCount(rawData.oscarsCount);
         setGenre(rawData.genre);
         setMpaaRating(rawData.mpaaRating);
-        setDirector(new Person(rawData.director));
+        if(rawData.director == null)
+            setDirector(null);
+        else
+            setDirector(new Person(rawData.director));
     }
 
     /**
@@ -204,6 +220,54 @@ public class Movie {
                 }
             }
         }
+        setDirector(director);
+    }
+
+    /**
+     * Создаёт объект класса {@link Movie}
+     * по аргументам, переданным в команду
+     * insert, update или remove_lower.
+     * @param commandArgs Аргументы команды
+     * @param start Номер первого аргумента,
+     * с которого идёт описание записи
+     */
+    public Movie(ArrayList<String> commandArgs, int start) throws
+            StringLengthLimitationException, CoordinatesOutOfRangeException,
+            NumberOutOfRangeException, WrongEnumInputException,
+            IndexOutOfBoundsException {
+        // id
+        id = 0;
+        // <name>
+        setName(commandArgs.get(start++));
+        // <coordinates.x>
+        Coordinates coordinates = new Coordinates();
+        coordinates.setX(Float.parseFloat(commandArgs.get(start++)));
+        // <coordinates.y>
+        coordinates.setY(Float.parseFloat(commandArgs.get(start++)));
+        setCoordinates(coordinates);
+        // creationDate
+        creationDate = new Date();
+        // <oscarsCount>
+        setOscarsCount(Long.parseLong(commandArgs.get(start++)));
+        // <genre>
+        setGenre(MovieGenre.fromString(commandArgs.get(start++)));
+        // <mpaaRating>
+        setMpaaRating(MpaaRating.fromString(commandArgs.get(start++)));
+        // [<director.name>
+        if (commandArgs.size() <= start) {
+            setDirector(null);
+            return;
+        }
+        Person director = new Person();
+        director.setName(commandArgs.get(start++));
+        // [director.passportId]
+        if (commandArgs.size() <= start + 1) { // one more field to go
+            director.setPassportID(null);
+        } else {
+            director.setPassportID(commandArgs.get(start++));
+        }
+        // <director.hairColor>]
+        director.setHairColor(Color.fromString(commandArgs.get(start++)));
         setDirector(director);
     }
 
@@ -420,7 +484,10 @@ public class Movie {
         rawData.oscarsCount = this.oscarsCount;
         rawData.genre = this.genre;
         rawData.mpaaRating = this.mpaaRating;
-        rawData.director = this.director.toRawData();
+        if (this.director == null)
+            rawData.director = null;
+        else
+            rawData.director = this.director.toRawData();
         return rawData;
     }
 }
