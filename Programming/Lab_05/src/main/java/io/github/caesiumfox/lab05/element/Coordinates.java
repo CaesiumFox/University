@@ -55,10 +55,11 @@ public class Coordinates {
      * Конструктор, инициализирующий координаты
      * в соответствии с первичными данными,
      * полученными в результате чтения json файла
+     *
      * @param rawData Объект класса {@link RawData},
-     * содержащий данные из json файла
-     * @exception CoordinatesOutOfRangeException Выбрасывается,
-     * если координаты выходят за пределы областей допустимых значений.
+     *                содержащий данные из json файла
+     * @throws CoordinatesOutOfRangeException Выбрасывается,
+     *                                        если координаты выходят за пределы областей допустимых значений.
      */
     public Coordinates(RawData rawData) throws CoordinatesOutOfRangeException {
         setX(rawData.x);
@@ -67,34 +68,41 @@ public class Coordinates {
 
     /**
      * Возвращает значение горизонтальной координаты
+     *
      * @return Значение горизонтальной координаты
      * @see #getY()
      * @see #setX(float)
      * @see #setY(float)
      */
-    public float getX() { return x; }
+    public float getX() {
+        return x;
+    }
 
     /**
      * Возвращает значение вертикальной координаты
+     *
      * @return Значение вертикальной координаты
      * @see #getX()
      * @see #setX(float)
      * @see #setY(float)
      */
-    public float getY() { return y; }
+    public float getY() {
+        return y;
+    }
 
     /**
      * Устанавливает значение горизонтальной координаты,
      * если оно находится в пределах [{@link #minX}, {@link #maxX}]
+     *
      * @param x Вначение горизонтальной координаты
-     * @exception CoordinatesOutOfRangeException Выбрасывается,
-     * если аргумент выходит за пределы области допустимых значений.
+     * @throws CoordinatesOutOfRangeException Выбрасывается,
+     *                                        если аргумент выходит за пределы области допустимых значений.
      * @see #getX()
      * @see #getY()
      * @see #setY(float)
      */
     public void setX(float x) throws CoordinatesOutOfRangeException {
-        if(x >= minX && x <= maxX) {
+        if (x >= minX && x <= maxX) {
             this.x = x;
         } else {
             throw new CoordinatesOutOfRangeException(x, minX, maxX);
@@ -104,15 +112,16 @@ public class Coordinates {
     /**
      * Устанавливает значение вертикальной координаты,
      * если оно находится в пределах [{@link #minY}, {@link #maxY}]
+     *
      * @param y Значение вертикальной координаты
-     * @exception CoordinatesOutOfRangeException Выбрасывается,
-     * если аргумент выходит за пределы области допустимых значений.
+     * @throws CoordinatesOutOfRangeException Выбрасывается,
+     *                                        если аргумент выходит за пределы области допустимых значений.
      * @see #getX()
      * @see #getY()
      * @see #setX(float)
      */
     public void setY(float y) throws CoordinatesOutOfRangeException {
-        if(y >= minY && y <= maxY) {
+        if (y >= minY && y <= maxY) {
             this.y = y;
         } else {
             throw new CoordinatesOutOfRangeException(y, minY, maxY);
@@ -123,6 +132,7 @@ public class Coordinates {
      * Преобразует объект класса в
      * соответсвующий ему объект
      * класса {@link RawData}
+     *
      * @return Объект класса {@link RawData}
      */
     public RawData toRawData() {

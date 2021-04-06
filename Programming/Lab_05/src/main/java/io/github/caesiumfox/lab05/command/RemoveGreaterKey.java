@@ -35,7 +35,7 @@ public class RemoveGreaterKey extends Command {
     @Override
     protected void execute() throws CommandExecutionException {
         try {
-            database.remove_greater_key(id);
+            database.removeGreaterKey(id);
         } catch (NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);
         }

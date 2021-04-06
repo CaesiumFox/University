@@ -35,7 +35,7 @@ public class FilterByMpaaRating extends Command {
 
     @Override
     protected void execute() {
-        Set<Movie> set = database.filter_by_mpaa_rating(model);
+        Set<Movie> set = database.filterByMpaaRating(model);
         if (set.size() == 0) {
             output.println("There are no such entries");
         } else {

@@ -22,7 +22,7 @@ public class MinByMpaaRating extends Command {
     @Override
     protected void execute() {
         try {
-            output.println(database.min_by_mpaa_rating());
+            output.println(database.minByMpaaRating());
         } catch (EmptyDatabaseException e) {
             output.println(e.getMessage());
         }

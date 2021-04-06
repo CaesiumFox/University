@@ -37,7 +37,7 @@ public class RemoveLowerKey extends Command {
     @Override
     protected void execute() throws CommandExecutionException {
         try {
-            database.remove_lower_key(id);
+            database.removeLowerKey(id);
         } catch (NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);
         }

@@ -38,7 +38,7 @@ public class RemoveLower extends Command {
     protected void execute() {
         if(inputEntry == null)
             inputEntry = new Movie(0, output, input, database);
-        database.remove_lower(inputEntry);
+        database.removeLower(inputEntry);
     }
 
     @Override

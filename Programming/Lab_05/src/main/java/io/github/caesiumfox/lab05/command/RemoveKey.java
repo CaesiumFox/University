@@ -38,7 +38,7 @@ public class RemoveKey extends Command {
     @Override
     protected void execute() throws CommandExecutionException {
         try {
-            database.remove_key(id);
+            database.removeKey(id);
         } catch (NoKeyInDatabaseException | NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);
         }

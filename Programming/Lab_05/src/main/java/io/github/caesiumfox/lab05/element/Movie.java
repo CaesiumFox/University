@@ -1,5 +1,6 @@
 package io.github.caesiumfox.lab05.element;
 
+import com.google.gson.annotations.JsonAdapter;
 import io.github.caesiumfox.lab05.Database;
 import io.github.caesiumfox.lab05.Main;
 import io.github.caesiumfox.lab05.exceptions.*;
@@ -58,11 +59,12 @@ public class Movie {
      * Создаёт объект класса {@link Movie}
      * в соответствии с первичными данными,
      * полученными в результате чтения json файла.
+     *
      * @param rawData Объект класса {@link RawData},
-     * содержащий данные из json файла
+     *                содержащий данные из json файла
      * @throws StringLengthLimitationException Если в ходе обработки будут строки недопустимой длины
-     * @throws CoordinatesOutOfRangeException Если в ходе обработки будут недопустимые значения координат
-     * @throws NumberOutOfRangeException Если в ходе обработки будут недопустимые числовые значения
+     * @throws CoordinatesOutOfRangeException  Если в ходе обработки будут недопустимые значения координат
+     * @throws NumberOutOfRangeException       Если в ходе обработки будут недопустимые числовые значения
      */
     public Movie(RawData rawData) throws StringLengthLimitationException,
             CoordinatesOutOfRangeException, NumberOutOfRangeException {
@@ -82,12 +84,13 @@ public class Movie {
     /**
      * Создаёт объект класса {@link Movie},
      * запуская интерактивный конструктор
-     * @param newID Новый идентификатор,
-     * совпадающий с ключом в базе данных
-     * @param output Интерактивный вывод
-     * @param input Интерактивный ввод
+     *
+     * @param newID    Новый идентификатор,
+     *                 совпадающий с ключом в базе данных
+     * @param output   Интерактивный вывод
+     * @param input    Интерактивный ввод
      * @param database База данных, в
-     * которую будет сделана запись
+     *                 которую будет сделана запись
      */
     public Movie(Integer newID, PrintStream output, Scanner input, Database database) {
         this.id = newID;
@@ -188,14 +191,14 @@ public class Movie {
                 break;
             }
         }
-        if(!noDirector) {
+        if (!noDirector) {
             output.format("Enter the director's passport ID (%d to %d symbols, or empty string if " +
                             "there is no passport ID):\n    ",
                     Person.passportIDMinLen, Person.passportIDMaxLen);
             while (true) {
                 try {
                     String passportID = input.nextLine().trim();
-                    if(passportID.isEmpty()) {
+                    if (passportID.isEmpty()) {
                         director.setPassportID(null);
                         break;
                     }
@@ -274,6 +277,7 @@ public class Movie {
     /**
      * Возвращает идентификатор, совпадающий
      * с ключом в базе данных
+     *
      * @return Идентификатор
      */
     public Integer getID() {
@@ -282,6 +286,7 @@ public class Movie {
 
     /**
      * Возвращает название фильма
+     *
      * @return Название фильма
      */
     public String getName() {
@@ -290,6 +295,7 @@ public class Movie {
 
     /**
      * Возращает координаты фильма
+     *
      * @return Координаты фильма
      */
     public Coordinates getCoordinates() {
@@ -298,6 +304,7 @@ public class Movie {
 
     /**
      * Возвращает дату создания записи о фильие
+     *
      * @return Дата создания записи
      */
     public Date getCreationDate() {
@@ -306,6 +313,7 @@ public class Movie {
 
     /**
      * Возвращает количество оскаров у фильма
+     *
      * @return Количество оскаров
      */
     public long getOscarsCount() {
@@ -314,6 +322,7 @@ public class Movie {
 
     /**
      * Возвращает жанр фильма
+     *
      * @return Жанр фильма
      */
     public MovieGenre getGenre() {
@@ -322,6 +331,7 @@ public class Movie {
 
     /**
      * Возвращает возрастную категорию MPAA
+     *
      * @return Возрастная категория
      */
     public MpaaRating getMpaaRating() {
@@ -330,6 +340,7 @@ public class Movie {
 
     /**
      * Возвращает режиссёра фильма
+     *
      * @return Режиссёр (может быть null)
      */
     public Person getDirector() {
@@ -341,23 +352,25 @@ public class Movie {
      * Идентификатор может быль любым.
      * Проверка на существование идентификатора в
      * базе данных не выполняется.
+     *
      * @param id Идентификатор
      * @throws NumberOutOfRangeException Если ключ неположительный
      */
     public void setID(Integer id) throws NumberOutOfRangeException {
         Objects.requireNonNull(id);
-        if(id <= 0)
+        if (id <= 0)
             throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
         this.id = id;
     }
 
     /**
      * Устанавливает название фильма
+     *
      * @param name Название фильма
      * @throws StringLengthLimitationException Если
-     * название было пустым
-     * @throws NullPointerException Если
-     * было передано значение null
+     *                                         название было пустым
+     * @throws NullPointerException            Если
+     *                                         было передано значение null
      */
     public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
@@ -371,9 +384,10 @@ public class Movie {
      * Устанавливает координаты фильма, уже
      * проверенные на нахождение в пределах
      * заданных промежутков
+     *
      * @param coordinates Координаты фильма
      * @throws NullPointerException Если
-     * было передано значение null
+     *                              было передано значение null
      */
     public void setCoordinates(Coordinates coordinates) {
         Objects.requireNonNull(coordinates);
@@ -382,10 +396,11 @@ public class Movie {
 
     /**
      * Устанавливает количество оскаров у фильма
+     *
      * @param oscarsCount Количество оскаров
      * @throws NumberOutOfRangeException Если
-     * переданное количество оскаров не является
-     * натуральным числом
+     *                                   переданное количество оскаров не является
+     *                                   натуральным числом
      */
     public void setOscarsCount(long oscarsCount) throws NumberOutOfRangeException {
         if (oscarsCount < 1) {
@@ -396,9 +411,10 @@ public class Movie {
 
     /**
      * Устанавливает жанр фильма
+     *
      * @param genre Жанр фильма
      * @throws NullPointerException Если
-     * было передано значение null
+     *                              было передано значение null
      */
     public void setGenre(MovieGenre genre) {
         Objects.requireNonNull(genre);
@@ -407,9 +423,10 @@ public class Movie {
 
     /**
      * Устанавливает возрастную категорию фильма
+     *
      * @param mpaaRating Возрастная категория фильма
      * @throws NullPointerException Если
-     * было передано значение null
+     *                              было передано значение null
      */
     public void setMpaaRating(MpaaRating mpaaRating) {
         Objects.requireNonNull(mpaaRating);
@@ -420,6 +437,7 @@ public class Movie {
      * Устанавливает режиссёра фильма, имя
      * и номер пасспорта которого уже
      * проверены на длину.
+     *
      * @param director Режиссёр фильма (может быть null)
      */
     public void setDirector(Person director) {
@@ -429,16 +447,17 @@ public class Movie {
     /**
      * Определяет, есть ли у этой записи
      * значение в поле номера паспорта.
+     *
      * @return true, если паспорт есть
      */
     public boolean hasPassportID() {
-        if(director == null)
+        if (director == null)
             return false;
-        if(director.getPassportID() == null)
+        if (director.getPassportID() == null)
             return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
         final StringBuilder result = new StringBuilder();
@@ -458,7 +477,7 @@ public class Movie {
             result.append("  Director:\n");
             result.append("    Name: ").append(director.getName()).append('\n');
             result.append("    Passport ID: ");
-            if(director.getPassportID() == null) {
+            if (director.getPassportID() == null) {
                 result.append("<N/A>");
             } else {
                 result.append(director.getPassportID());
@@ -473,6 +492,7 @@ public class Movie {
      * Преобразует объект класса в
      * соответсвующий ему объект
      * класса {@link RawData}
+     *
      * @return Объект класса {@link RawData}
      */
     public RawData toRawData() {

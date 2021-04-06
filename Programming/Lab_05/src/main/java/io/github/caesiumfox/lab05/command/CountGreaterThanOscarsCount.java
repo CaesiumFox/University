@@ -1,11 +1,7 @@
 package io.github.caesiumfox.lab05.command;
 
 import io.github.caesiumfox.lab05.Database;
-import io.github.caesiumfox.lab05.element.Movie;
-import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
 import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
-import io.github.caesiumfox.lab05.exceptions.NoKeyInDatabaseException;
-import io.github.caesiumfox.lab05.exceptions.PassportIdAlreadyExistsException;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -36,7 +32,7 @@ public class CountGreaterThanOscarsCount extends Command {
 
     @Override
     protected void execute() {
-        output.println(database.count_greater_than_oscars_count(oscarsCount));
+        output.println(database.countGreaterThanOscarsCount(oscarsCount));
     }
 
     @Override
