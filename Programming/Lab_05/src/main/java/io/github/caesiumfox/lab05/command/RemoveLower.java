@@ -44,7 +44,8 @@ public class RemoveLower extends Command {
     @Override
     public void getHelp() {
         output.println("Command: remove_lower");
-        output.println("Usage:   remove_lower");
+        output.println("Usage:   remove_lower [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
+                "         [<director's name> [pasropt ID] <hair color>]]");
         output.println("  Launches an interactive builder that asks for each field of the test element,\n" +
                 "  then removes all elements less that the test element. The fields are asked in\n" +
                 "  the same order as listed by \"info\" command. You can also define the element by\n" +

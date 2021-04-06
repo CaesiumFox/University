@@ -47,9 +47,9 @@ public class Help extends Command {
         output.println("      - print information about the database");
         output.println("show");
         output.println("      - print all database entries");
-        output.println("insert [key]");
+        output.println("insert [key] [--entry ...]");
         output.println("      - add a new entry");
-        output.println("update <key>");
+        output.println("update <key> [--entry ...]");
         output.println("      - replace an existing entry");
         output.println("remove_key <key>");
         output.println("      - remove an existing entry by key");
@@ -61,7 +61,7 @@ public class Help extends Command {
         output.println("      - run script");
         output.println("exit");
         output.println("      - exit program");
-        output.println("remove_lower");
+        output.println("remove_lower [--entry ...]");
         output.println("      - remove all entries less than the specified");
         output.println("remove_greater_key <key>");
         output.println("      - remove all entries with IDs greater that specified");

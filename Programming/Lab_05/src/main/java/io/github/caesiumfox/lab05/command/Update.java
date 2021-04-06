@@ -69,7 +69,8 @@ public class Update extends Command {
     @Override
     public void getHelp() {
         output.println("Command: update");
-        output.println("Usage:   update <id>");
+        output.println("Usage:   update <id> [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
+                "         [<director's name> [pasropt ID] <hair color>]]");
         output.println("  Replaces the current element by the specified key with the new element. The\n" +
                 "  creation date is also updated automatically. To create the new element the\n" +
                 "  command launches an interactive builder that asks for each field of the new\n" +
