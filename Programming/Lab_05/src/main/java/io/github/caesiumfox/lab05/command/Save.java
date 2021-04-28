@@ -24,7 +24,7 @@ public class Save extends Command {
         if (args.size() > 1)
             outputFile = args.get(1);
         else
-            throw new InvalidArgumentsException(args);
+            outputFile = database.getInputFile();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Save extends Command {
     @Override
     public void getHelp() {
         output.println("Command: save");
-        output.println("Usage:   save <file name>");
+        output.println("Usage:   save [file name]");
         output.println("  Saves the database in the specified file in JSON format.");
     }
 }

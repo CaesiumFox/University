@@ -13,6 +13,8 @@ import java.util.Scanner;
  */
 public class Insert extends Command {
     private Integer id;
+    private Movie inputEntry = null;
+
     public Insert(ArrayList<String> args, Database database,
                   PrintStream output, Scanner input) {
         super(args, database, output, input);
@@ -20,25 +22,55 @@ public class Insert extends Command {
 
     @Override
     protected void prepare() throws InvalidArgumentsException {
+        int nextArg = 1;
         try {
-            if (args.size() > 1)
+            if (args.size() > 1 && !args.get(1).equals("--entry")) {
                 id = Integer.parseInt(args.get(1));
-            else
+                nextArg++;
+            } else {
                 id = null; // Is checked for null
+            }
         } catch (NumberFormatException e) {
             throw new InvalidArgumentsException(args);
         }
         if (id != null && id <= 0)
             throw new InvalidArgumentsException(args, "ID must be a natural value");
+
+        try {
+            if (args.size() > nextArg) {
+                if (args.get(nextArg).equals("--entry")) {
+                    inputEntry = new Movie(args, nextArg + 1);
+                }
+                else {
+                    throw new InvalidArgumentsException(args,
+                            "Unknown argument: " + args.get(nextArg));
+                }
+            }
+        } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
+                NumberOutOfRangeException | WrongEnumInputException |
+                IndexOutOfBoundsException e) {
+            throw new InvalidArgumentsException(args,
+                    "Something went wrong during the initialization of inline entry");
+        }
     }
 
     @Override
     protected void execute() throws CommandExecutionException {
         try {
             if (id == null) {
-                database.insert(new Movie(id, output, input, database));
+                if(database.hasRanOutOfIDs()) {
+                    throw new RunOutOfIdsException();
+                }
+                if(inputEntry == null)
+                    inputEntry = new Movie(id, output, input, database);
+                database.insert(inputEntry);
             } else {
-                database.insert(id, new Movie(id, output, input, database));
+                if(database.hasID(id)) {
+                    throw new ElementIdAlreadyExistsException(id);
+                }
+                if(inputEntry == null)
+                    inputEntry = new Movie(id, output, input, database);
+                database.insert(id, inputEntry);
             }
         } catch(RunOutOfIdsException | ElementIdAlreadyExistsException |
                 PassportIdAlreadyExistsException | NumberOutOfRangeException e) {
@@ -49,10 +81,12 @@ public class Insert extends Command {
     @Override
     public void getHelp() {
         output.println("Command: insert");
-        output.println("Usage:   insert [id]");
+        output.println("Usage:   insert [id] [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
+                "         [<director's name> [pasropt ID] <hair color>]]");
         output.println("  Inserts an entry in the database with the specified ID or the least unused ID,\n" +
                 "  if not specified. To create the entry the command launches an interactive\n" +
                 "  builder that asks for each field of the new element. The fields are asked in\n" +
-                "  the same order as listed by \"info\" command.");
+                "  the same order as listed by \"info\" command. You can also define the element by\n" +
+                "  command arguments preceded by \"--entry\" key. The order is listed above.");
     }
 }

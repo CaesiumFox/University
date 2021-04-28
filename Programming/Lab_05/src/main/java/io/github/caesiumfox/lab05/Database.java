@@ -75,13 +75,15 @@ public class Database {
             if (this.data.containsKey(movieRawData.id)) {
                 throw new ElementIdAlreadyExistsException(movieRawData.id);
             }
-            if (this.knownPassportIDs.contains(movieRawData.director.passportID)) {
+            if (movieRawData.hasPassportID() && hasPassportID(movieRawData.director.passportID)) {
                 throw new PassportIdAlreadyExistsException(movieRawData.director.passportID);
             }
             Objects.requireNonNull(movieRawData);
             if (movieRawData.id > maxID)
                 maxID = movieRawData.id;
-            this.knownPassportIDs.add(movieRawData.director.passportID);
+            if(movieRawData.hasPassportID()) {
+                this.knownPassportIDs.add(movieRawData.director.passportID);
+            }
             this.data.put(movieRawData.id, new Movie(movieRawData));
         }
     }
@@ -124,6 +126,13 @@ public class Database {
             if (i > maxID)
                 maxID = i;
         }
+    }
+
+    public boolean hasID(Integer id) {
+        return data.containsKey(id);
+    }
+    public boolean hasRanOutOfIDs() {
+        return maxID == Integer.MAX_VALUE;
     }
 
     /**
@@ -191,11 +200,11 @@ public class Database {
      */
     public void insert(Movie movie) throws RunOutOfIdsException,
             PassportIdAlreadyExistsException, NumberOutOfRangeException {
-        if (maxID == Integer.MAX_VALUE) {
+        if (hasRanOutOfIDs()) {
             throw new RunOutOfIdsException();
         }
         if (movie.hasPassportID()) {
-            if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
+            if(hasPassportID(movie.getDirector().getPassportID())) {
                 throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
             }
         }
@@ -223,11 +232,11 @@ public class Database {
             NumberOutOfRangeException {
         if(id <= 0)
             throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
-        if (data.containsKey(id)) {
+        if (hasID(id)) {
             throw new ElementIdAlreadyExistsException(id);
         }
         if (movie.hasPassportID()) {
-            if (knownPassportIDs.contains(movie.getDirector().getPassportID())) {
+            if (hasPassportID(movie.getDirector().getPassportID())) {
                 throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
             }
         }
@@ -258,7 +267,7 @@ public class Database {
             NumberOutOfRangeException {
         if(id <= 0)
             throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
-        if (!data.containsKey(id)) {
+        if (!hasID(id)) {
             throw new NoKeyInDatabaseException(id);
         }
 
@@ -284,7 +293,7 @@ public class Database {
             NumberOutOfRangeException {
         if(id <= 0)
             throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
-        if (!data.containsKey(id)) {
+        if (!hasID(id)) {
             throw new NoKeyInDatabaseException(id);
         }
         if(data.get(id).hasPassportID())

@@ -55,7 +55,7 @@ public class Help extends Command {
         output.println("      - remove an existing entry by key");
         output.println("clear");
         output.println("      - clear the database");
-        output.println("save <filename>");
+        output.println("save [filename]");
         output.println("      - save the database in the file");
         output.println("execute_script <filename>");
         output.println("      - run script");
