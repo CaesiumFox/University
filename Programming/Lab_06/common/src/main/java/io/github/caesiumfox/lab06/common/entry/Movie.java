@@ -1,11 +1,10 @@
 package io.github.caesiumfox.lab06.common.entry;
 
-import com.google.gson.annotations.JsonAdapter;
-import io.github.caesiumfox.lab05.Database;
-import io.github.caesiumfox.lab05.Main;
-import io.github.caesiumfox.lab05.exceptions.*;
+import io.github.caesiumfox.lab06.common.exceptions.*;
+import io.github.caesiumfox.lab06.common.Database;
 
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -17,11 +16,11 @@ public class Movie {
      * Вспомогательный класс для работы с JSON файлами
      * при помощи библиотеки GSON.
      * GSON работает напосредственно с ним,
-     * преобразование между "скелетом" и
-     * базовым классом (Movie) происходит
+     * преобразование объекта этого класса в
+     * объект базового класса (Movie) происходит
      * отдельно.
      */
-    public static class RawData {
+    public static class RawData implements Serializable {
         public int id;
         public String name;
         public Coordinates.RawData coordinates;
@@ -44,6 +43,7 @@ public class Movie {
             return true;
         }
     }
+    private static String dateFormat;
 
 
     private Integer id;
@@ -467,7 +467,7 @@ public class Movie {
         result.append("    X: ").append(coordinates.getX()).append('\n');
         result.append("    Y: ").append(coordinates.getY()).append('\n');
         result.append("  Creation Date: ").append(
-                new SimpleDateFormat(Main.dateFormat).format(this.creationDate)).append('\n');
+                new SimpleDateFormat(dateFormat).format(this.creationDate)).append('\n');
         result.append("  Oscars Count: ").append(oscarsCount).append('\n');
         result.append("  Genre: ").append(genre).append('\n');
         result.append("  MPAA Rating: ").append(mpaaRating).append('\n');
@@ -509,5 +509,13 @@ public class Movie {
         else
             rawData.director = this.director.toRawData();
         return rawData;
+    }
+
+    public static void setDateFormat(String dateFormat) {
+        Movie.dateFormat = dateFormat;
+    }
+
+    public static String getDateFormat() {
+        return dateFormat;
     }
 }

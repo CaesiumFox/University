@@ -1,7 +1,8 @@
 package io.github.caesiumfox.lab06.common.entry;
 
-import com.google.gson.JsonParseException;
-import io.github.caesiumfox.lab05.exceptions.CoordinatesOutOfRangeException;
+import io.github.caesiumfox.lab06.common.exceptions.CoordinatesOutOfRangeException;
+
+import java.io.Serializable;
 
 /**
  * Класс, описывающий координаты
@@ -15,7 +16,7 @@ public class Coordinates {
      * основным классом ({@link Coordinates}) происходит
      * отдельно.
      */
-    public static class RawData {
+    public static class RawData implements Serializable {
         public float x;
         public float y;
     }

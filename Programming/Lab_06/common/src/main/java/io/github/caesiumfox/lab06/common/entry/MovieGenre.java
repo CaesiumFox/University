@@ -1,14 +1,16 @@
 package io.github.caesiumfox.lab06.common.entry;
 
 import com.google.gson.annotations.SerializedName;
-import io.github.caesiumfox.lab05.exceptions.WrongEnumInputException;
+import io.github.caesiumfox.lab06.common.exceptions.WrongEnumInputException;
+
+import java.io.Serializable;
 
 /**
  * Определяет один из четырёх жанров:
  * action, tragedy, horror, fantasy
  */
 
-public enum MovieGenre {
+public enum MovieGenre implements Serializable {
     @SerializedName("action")
     ACTION {
         @Override

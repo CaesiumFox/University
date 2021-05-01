@@ -1,7 +1,8 @@
 package io.github.caesiumfox.lab06.common.entry;
 
-import io.github.caesiumfox.lab05.exceptions.StringLengthLimitationException;
+import io.github.caesiumfox.lab06.common.exceptions.StringLengthLimitationException;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -16,7 +17,7 @@ public class Person {
      * основным классом ({@link Person}) происходит
      * отдельно.
      */
-    public static class RawData {
+    public static class RawData implements Serializable  {
         public String name;
         public String passportID; // may be null
         public Color hairColor;
@@ -38,7 +39,7 @@ public class Person {
     /**
      * Конструктор по умолчанию.
      * Создаёт человека с зелёными волосами,
-     * именем "a" и паспортным номером "000000".
+     * именем "a" и отсутствующим паспортным.
      */
     public Person() {
         name = "a";
