@@ -1,6 +1,4 @@
-package io.github.caesiumfox.lab06.client.command;
-
-import io.github.caesiumfox.lab06.client.Client;
+package io.github.caesiumfox.lab06.client;
 
 import java.io.IOException;
 import java.net.InetAddress;

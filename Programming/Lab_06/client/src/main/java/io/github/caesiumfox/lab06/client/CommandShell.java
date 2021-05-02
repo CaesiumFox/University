@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import io.github.caesiumfox.lab06.common.Database;
 
 /**
  * Класс отвечающий за обработку команд
@@ -144,12 +145,6 @@ public class CommandShell {
                     output.println(e.getMessage());
                     System.exit(0);
                 }
-            } catch (ShellSignalSaveException e) {
-                if(!scripted)
-                    output.println(e.getMessage());
-                Database.RawData skel = database.toRawData();
-                String newJson = Main.parser.toJson(skel);
-                Main.writeToFile(newJson, e.getOutputFile());
             } catch (ShellSignalException e) {
                 if(!scripted)
                     output.println(e.getMessage());

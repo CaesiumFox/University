@@ -1,6 +1,6 @@
-package io.github.caesiumfox.lab05.command;
+package io.github.caesiumfox.lab06.client.command;
 
-import io.github.caesiumfox.lab05.Database;
+import io.github.caesiumfox.lab06.common.Database;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

@@ -1,9 +1,7 @@
-package io.github.caesiumfox.lab05.command;
+package io.github.caesiumfox.lab06.client.command;
 
-import io.github.caesiumfox.lab05.Database;
-import io.github.caesiumfox.lab05.exceptions.CommandExecutionException;
-import io.github.caesiumfox.lab05.exceptions.InvalidArgumentsException;
-import io.github.caesiumfox.lab05.exceptions.NumberOutOfRangeException;
+import io.github.caesiumfox.lab06.common.Database;
+import io.github.caesiumfox.lab06.common.exceptions.*;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
