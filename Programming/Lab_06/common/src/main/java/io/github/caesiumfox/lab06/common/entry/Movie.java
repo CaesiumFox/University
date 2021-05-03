@@ -102,7 +102,7 @@ public class Movie {
                 setName(input.nextLine().trim());
                 break;
             } catch (StringLengthLimitationException e) {
-                output.println("The name shouldn't be empty.");
+                output.println(e.getMessage());
                 output.format("Enter the name again (not empty):\n    ");
             }
         }
@@ -374,8 +374,8 @@ public class Movie {
      */
     public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
-        if (name.length() == 0) {
-            throw new StringLengthLimitationException(name, 1, -1);
+        if (name.length() <= 0 || name.length() > 1000) {
+            throw new StringLengthLimitationException(name, 1, 1000);
         }
         this.name = name;
     }

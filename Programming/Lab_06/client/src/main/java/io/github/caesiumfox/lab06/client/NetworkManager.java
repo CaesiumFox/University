@@ -48,6 +48,7 @@ public class NetworkManager {
             datagramChannel.connect(socketAddress);
             datagramChannel.configureBlocking(false);
             selector = Selector.open();
+            datagramChannel.register(selector, SelectionKey.OP_WRITE);
         } catch(IOException e) {
             System.out.println("Something gone wrong with opening channel.");
             System.out.println("Try to restart the client.");
@@ -64,7 +65,36 @@ public class NetworkManager {
      * уже будет готов к чтению.
      */
     public static void communicate() throws IOException {
-        datagramChannel.register(selector, SelectionKey.OP_WRITE);
+        selector.select();
+        var iter = selector.selectedKeys().iterator();
+        while (iter.hasNext()) {
+            var key = iter.next();
+            iter.remove();
+            if(key.isValid()) {
+                if(key.isWritable()) {
+                    var channel = (DatagramChannel)key.channel();
+                    int channelReturn = channel.write(byteBuffer);
+                    channel.configureBlocking(false);
+                    channel.register(key.selector(), SelectionKey.OP_READ);
+                }
+            }
+        }
 
+        byteBuffer.clear();
+        selector.select();
+        iter = selector.selectedKeys().iterator();
+        while (iter.hasNext()) {
+            var key = iter.next();
+            iter.remove();
+            if(key.isValid()) {
+                if(key.isReadable()) {
+                    var channel = (DatagramChannel)key.channel();
+                    int channelReturn = channel.read(byteBuffer);
+                    channel.configureBlocking(false);
+                    channel.register(key.selector(), SelectionKey.OP_WRITE);
+                }
+            }
+        }
+        byteBuffer.flip();
     }
 }

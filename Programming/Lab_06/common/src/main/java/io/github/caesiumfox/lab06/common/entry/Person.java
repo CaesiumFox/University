@@ -119,8 +119,8 @@ public class Person {
      */
     public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
-        if (name.length() == 0) {
-            throw new StringLengthLimitationException(name, 1, -1);
+        if (name.length() <= 0 || name.length() > 1000) {
+            throw new StringLengthLimitationException(name, 1, 1000);
         }
         this.name = name;
     }
