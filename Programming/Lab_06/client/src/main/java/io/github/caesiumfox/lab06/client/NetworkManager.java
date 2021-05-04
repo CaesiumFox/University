@@ -58,15 +58,14 @@ public class NetworkManager {
     }
 
     /**
-     * Отправляет серверу сообщение и принимает ответ.
-     * Для отправки и приёма должен быть использован
+     * Отправляет серверу сообщение.
+     * Для отправки должен быть использован
      * буфер {@link NetworkManager#byteBuffer}.
      * До вызова этого метода необходимо вызвать
-     * метод буфера flip(). После буфер
-     * уже будет готов к чтению.
-     */
-    public static void communicate() throws IOException {
-        selector.select();
+     * метод буфера flip().
+     */	
+	public static void send() {
+		selector.select();
         var iter = selector.selectedKeys().iterator();
         while (iter.hasNext()) {
             var key = iter.next();
@@ -80,10 +79,19 @@ public class NetworkManager {
                 }
             }
         }
-
+	}
+	
+	/**
+     * Принимает от сервера ответ.
+     * Для приёма должен быть использован
+     * буфер {@link NetworkManager#byteBuffer}.
+     * После вызова этого метода буфер уже
+     * будет готов к чтению.
+     */	
+    public static void receive() throws IOException {
         byteBuffer.clear();
         selector.select();
-        iter = selector.selectedKeys().iterator();
+        var iter = selector.selectedKeys().iterator();
         while (iter.hasNext()) {
             var key = iter.next();
             iter.remove();
