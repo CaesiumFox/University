@@ -1,6 +1,10 @@
 package io.github.caesiumfox.lab06.client;
 
+import io.github.caesiumfox.lab06.common.entry.Movie;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Scanner;
 
 public class Client {
@@ -10,6 +14,7 @@ public class Client {
     static {
         dateFormat = "dd.MM.yyyy";
         input = new Scanner(System.in);
+        Movie.setDateFormat(dateFormat);
     }
 
     public static void main(String[] args) {
@@ -20,9 +25,20 @@ public class Client {
             NetworkManager.byteBuffer.putDouble(2.5);
             NetworkManager.byteBuffer.flip();
             NetworkManager.communicate();
-            double response = NetworkManager.byteBuffer.getDouble();
-            System.out.println(response);
-        } catch (IOException e) {
+
+            var bb = NetworkManager.byteBuffer.array();
+            for(var b : bb) {
+                System.out.print(b + " ");
+            }
+            System.out.println();
+            System.out.println(bb.length);
+
+            // NetworkManager.byteBuffer.clear();
+            Movie.RawData response = new Movie.RawData();
+            response.getFromByteBuffer(NetworkManager.byteBuffer);
+            Movie m = new Movie(response);
+            System.out.println(m.toString());
+        } catch (Exception e) {
             System.out.println("Something wrong happened:");
             System.out.println(e.getMessage());
         }

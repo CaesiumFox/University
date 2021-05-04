@@ -54,6 +54,7 @@ public class NetworkManager {
             System.out.println("Try to restart the client.");
             System.exit(1);
         }
+        byteBuffer = ByteBuffer.allocate(8192);
     }
 
     /**

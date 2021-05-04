@@ -74,6 +74,18 @@ public enum Color implements Serializable {
         throw new WrongEnumInputException(str);
     }
 
+    public static Color fromOrdinal(int ordinal) {
+        switch(ordinal) {
+            case 0: return GREEN;
+            case 1: return RED;
+            case 2: return BLUE;
+            case 3: return YELLOW;
+            case 4: return WHITE;
+            default:
+                return GREEN;
+        }
+    }
+
     /**
      * Возвращает строку, содержащюю
      * все константы перечисления

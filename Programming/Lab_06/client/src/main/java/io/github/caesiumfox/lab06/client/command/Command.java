@@ -112,8 +112,6 @@ public abstract class Command {
                 return new RemoveKey(args, database, output, input);
             case "clear":
                 return new Clear(args, database, output, input);
-            case "save":
-                return new Save(args, database, output, input);
             case "execute_script":
                 return new ExecuteScript(args, database, output, input);
             case "exit":

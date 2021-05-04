@@ -66,6 +66,17 @@ public enum MpaaRating implements Serializable {
         throw new WrongEnumInputException(str);
     }
 
+    public static MpaaRating fromOrdinal(int ordinal) {
+        switch(ordinal) {
+            case 0: return G;
+            case 1: return PG;
+            case 2: return PG_13;
+            case 3: return R;
+            default:
+                return G;
+        }
+    }
+
     /**
      * Возвращает строку, содержащюю
      * все константы перечисления

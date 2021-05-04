@@ -5,6 +5,7 @@ import io.github.caesiumfox.lab06.common.Database;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,9 +43,81 @@ public class Movie {
                 return false;
             return true;
         }
-    }
-    private static String dateFormat;
 
+        public void putInByteBuffer(ByteBuffer output) {
+            output.putInt(id);
+            output.putInt(name.length());
+            for(int i = 0; i < name.length(); i++)
+                output.putChar(name.charAt(i));
+            output.putFloat(coordinates.x);
+            output.putFloat(coordinates.y);
+            output.putLong(creationDate.getTime());
+            output.putLong(oscarsCount);
+            output.putInt(genre.ordinal());
+            output.putInt(mpaaRating.ordinal());
+            if(director == null) {
+                output.put((byte)0);
+            } else {
+                output.put((byte)1);
+                output.putInt(director.name.length());
+                for(int i = 0; i < director.name.length(); i++)
+                    output.putChar(director.name.charAt(i));
+                if(director.passportID == null) {
+                    output.putInt(0);
+                } else {
+                    output.putInt(director.passportID.length());
+                    for(int i = 0; i < director.passportID.length(); i++)
+                        output.putChar(director.passportID.charAt(i));
+                }
+                output.putInt(director.hairColor.ordinal());
+            }
+        }
+
+        public void getFromByteBuffer(ByteBuffer input) {
+            id = input.getInt();
+            int nameLen = input.getInt();
+            var nameBuilder = new StringBuilder();
+            for (int i = 0; i < nameLen; i++)
+                nameBuilder.append(input.getChar());
+            name = nameBuilder.toString();
+            if (coordinates == null)
+                coordinates = new Coordinates.RawData();
+            coordinates.x = input.getFloat();
+            coordinates.y = input.getFloat();
+            if (creationDate == null)
+                creationDate = new Date();
+            creationDate.setTime(input.getLong());
+            oscarsCount = input.getLong();
+            genre = MovieGenre.fromOrdinal(input.getInt());
+            mpaaRating = MpaaRating.fromOrdinal(input.getInt());
+            byte hasDirector = input.get();
+            if(hasDirector == 0) {
+                director = null;
+            } else {
+                director = new Person.RawData();
+
+                int directorNameLen = input.getInt();
+                var directorNameBuilder = new StringBuilder();
+                for (int i = 0; i < directorNameLen; i++)
+                    directorNameBuilder.append(input.getChar());
+                director.name = directorNameBuilder.toString();
+
+                int directorPIDLen = input.getInt();
+                if (directorPIDLen == 0) {
+                    director.passportID = null;
+                } else {
+                    var directorPIDBuilder = new StringBuilder();
+                    for (int i = 0; i < directorPIDLen; i++)
+                        directorPIDBuilder.append(input.getChar());
+                    director.passportID = directorPIDBuilder.toString();
+                }
+
+                director.hairColor = Color.fromOrdinal(input.getInt());
+            }
+        }
+    }
+
+    private static String dateFormat = "dd.MM.yyyy";
 
     private Integer id;
     private String name;

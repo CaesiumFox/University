@@ -37,15 +37,14 @@ public class NetworkManager {
                 System.out.println(e.getMessage());
                 System.out.println("Enter port again:");
             }
-            socketAddress = new InetSocketAddress(port);
-
-            try {
-                datagramSocket = new DatagramSocket(socketAddress);
-            } catch (IOException e) {
-                System.out.println("Something wrong happened while starting server:");
-                System.out.println(e.getMessage());
-                System.out.println("Try to restart the server.");
-            }
+        }
+        socketAddress = new InetSocketAddress(port);
+        try {
+            datagramSocket = new DatagramSocket(socketAddress);
+        } catch (IOException e) {
+            System.out.println("Something wrong happened while starting server:");
+            System.out.println(e.getMessage());
+            System.out.println("Try to restart the server.");
         }
         recentClient = null;
         bytes = new byte[8192];

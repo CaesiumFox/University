@@ -15,6 +15,12 @@ public class MutableDatabaseInfo implements Serializable {
     private int maxID;
     private int numberOfElements;
 
+    public void putInByteBuffer(ByteBuffer output) {
+        output.putLong(creationDate.getTime());
+        output.putInt(maxID);
+        output.putInt(numberOfElements);
+    }
+
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }

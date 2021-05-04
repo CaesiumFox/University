@@ -65,6 +65,17 @@ public enum MovieGenre implements Serializable {
         throw new WrongEnumInputException(str);
     }
 
+    public static MovieGenre fromOrdinal(int ordinal) {
+        switch(ordinal) {
+            case 0: return ACTION;
+            case 1: return TRAGEDY;
+            case 2: return HORROR;
+            case 3: return FANTASY;
+            default:
+                return ACTION;
+        }
+    }
+
     /**
      * Возвращает строку, содержащюю
      * все константы перечисления
