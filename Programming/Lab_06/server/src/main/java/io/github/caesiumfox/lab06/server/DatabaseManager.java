@@ -1,5 +1,6 @@
 package io.github.caesiumfox.lab06.server;
 
+import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.MovieComparator;
 import io.github.caesiumfox.lab06.common.entry.*;
 import io.github.caesiumfox.lab06.common.exceptions.*;
@@ -12,13 +13,13 @@ import java.util.stream.Collectors;
 /**
  * База данных с которой ведётся работа
  */
-public class DatabaseContainer {
+public class DatabaseManager implements Database {
     /**
      * Вспомогательный класс для работы с JSON файлами
      * при помощи библиотеки GSON.
      * GSON работает напосредственно с ним,
      * преобразование между ним и
-     * основным классом ({@link DatabaseContainer}) происходит
+     * основным классом ({@link DatabaseManager}) происходит
      * отдельно.
      */
     public static class RawData {
@@ -38,12 +39,14 @@ public class DatabaseContainer {
      * данных о файле-источнике, с
      * датой создания равной текущей
      */
-    public DatabaseContainer() {
+    public DatabaseManager() {
+        Server.logger.info("Started database manager initialization");
         inputFile = "";
         creationDate = new Date();
         knownPassportIDs = new HashSet<>();
         data = new LinkedHashMap<>();
         maxID = 0;
+        Server.logger.info("Initialized database manager");
     }
 
     /**
@@ -61,7 +64,7 @@ public class DatabaseContainer {
      * @throws NumberOutOfRangeException        Если в ходе обработки будут недопустимые числовые значения
      * @throws NullPointerException             Если в ходе обработки попадутся нулевые ссылки
      */
-    public DatabaseContainer(RawData rawData, String inputFile) throws
+    public DatabaseManager(RawData rawData, String inputFile) throws
             ElementIdAlreadyExistsException,
             PassportIdAlreadyExistsException,
             StringLengthLimitationException,

@@ -21,23 +21,8 @@ public class Client {
         System.out.println("Starting Client");
         NetworkManager.init(input);
         try {
-            NetworkManager.byteBuffer.clear();
-            NetworkManager.byteBuffer.putDouble(2.5);
-            NetworkManager.byteBuffer.flip();
-            NetworkManager.communicate();
-
-            var bb = NetworkManager.byteBuffer.array();
-            for(var b : bb) {
-                System.out.print(b + " ");
-            }
-            System.out.println();
-            System.out.println(bb.length);
-
-            // NetworkManager.byteBuffer.clear();
-            Movie.RawData response = new Movie.RawData();
-            response.getFromByteBuffer(NetworkManager.byteBuffer);
-            Movie m = new Movie(response);
-            System.out.println(m.toString());
+            DatabaseManager databaseManager = new DatabaseManager();
+            CommandShell shell = new CommandShell(databaseManager);
         } catch (Exception e) {
             System.out.println("Something wrong happened:");
             System.out.println(e.getMessage());
