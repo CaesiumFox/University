@@ -64,7 +64,7 @@ public class NetworkManager {
      * До вызова этого метода необходимо вызвать
      * метод буфера flip().
      */	
-	public static void send() {
+	public static void send() throws IOException {
 		selector.select();
         var iter = selector.selectedKeys().iterator();
         while (iter.hasNext()) {

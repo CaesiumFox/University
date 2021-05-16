@@ -24,7 +24,8 @@ public class Client {
             NetworkManager.byteBuffer.clear();
             NetworkManager.byteBuffer.putDouble(2.5);
             NetworkManager.byteBuffer.flip();
-            NetworkManager.communicate();
+            NetworkManager.send();
+            NetworkManager.receive();
 
             var bb = NetworkManager.byteBuffer.array();
             for(var b : bb) {
