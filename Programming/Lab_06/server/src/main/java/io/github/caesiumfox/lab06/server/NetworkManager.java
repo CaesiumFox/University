@@ -22,6 +22,7 @@ public class NetworkManager {
     public static ByteBuffer byteBuffer;
 
     public static void init(Scanner input) {
+        Server.logger.info("Started NetworkManager initialization");
         System.out.println("Enter port:");
         while (true) {
             try {
@@ -39,16 +40,21 @@ public class NetworkManager {
             }
         }
         socketAddress = new InetSocketAddress(port);
+        Server.logger.info("Port defined: " + port);
         try {
             datagramSocket = new DatagramSocket(socketAddress);
+            Server.logger.info("Initialized datagramSocket");
         } catch (IOException e) {
             System.out.println("Something wrong happened while starting server:");
             System.out.println(e.getMessage());
+            Server.logger.severe("Error: " + e.getMessage());
             System.out.println("Try to restart the server.");
+            System.exit(1);
         }
         recentClient = null;
         bytes = new byte[8192];
         byteBuffer = ByteBuffer.wrap(bytes);
+        Server.logger.info("Finished NetworkManager initialization");
     }
 
     /**
@@ -59,9 +65,11 @@ public class NetworkManager {
      * вызвать метод буфера clear().
      */
     public static void receive() throws IOException {
+        Server.logger.info("Waiting for a datagram...");
         DatagramPacket inPacket = new DatagramPacket(bytes, byteBuffer.limit());
         datagramSocket.receive(inPacket);
         recentClient = inPacket.getSocketAddress();
+        Server.logger.info("Received a datagram from " + recentClient.toString());
     }
 
     /**
@@ -72,9 +80,11 @@ public class NetworkManager {
      * вызвать метод буфера flip().
      */
     public static void send() throws IOException {
+        Server.logger.info("Sending a datagram to " + recentClient.toString());
         if(recentClient == null)
             throw new NoRecentClientException();
         DatagramPacket outPacket = new DatagramPacket(bytes, byteBuffer.limit(), recentClient);
         datagramSocket.send(outPacket);
+        Server.logger.info("Sent the datagram");
     }
 }

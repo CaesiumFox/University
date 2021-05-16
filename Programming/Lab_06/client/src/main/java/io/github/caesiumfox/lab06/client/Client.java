@@ -39,6 +39,8 @@ public class Client {
             response.getFromByteBuffer(NetworkManager.byteBuffer);
             Movie m = new Movie(response);
             System.out.println(m.toString());
+            DatabaseManager databaseManager = new DatabaseManager();
+            CommandShell shell = new CommandShell(databaseManager);
         } catch (Exception e) {
             System.out.println("Something wrong happened:");
             System.out.println(e.getMessage());
