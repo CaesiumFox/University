@@ -1,11 +1,14 @@
 package io.github.caesiumfox.lab06.client;
 
 import io.github.caesiumfox.lab06.common.Database;
+import io.github.caesiumfox.lab06.common.KeyWord;
 import io.github.caesiumfox.lab06.common.MutableDatabaseInfo;
 import io.github.caesiumfox.lab06.common.entry.Movie;
 import io.github.caesiumfox.lab06.common.entry.MpaaRating;
 import io.github.caesiumfox.lab06.common.exceptions.*;
+import sun.nio.ch.Net;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.Set;
@@ -13,13 +16,37 @@ import java.util.Set;
 public class DatabaseManager implements Database {
     MutableDatabaseInfo databaseInfo;
 
-    public DatabaseManager() {
+    public DatabaseManager() throws IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
+        NetworkManager.byteBuffer.flip();
 
+        NetworkManager.send();
+        NetworkManager.receive();
+
+        NetworkManager.byteBuffer.get(); // for SOME_LEFT
+        databaseInfo.getFromByteBuffer(NetworkManager.byteBuffer);
     }
 
     @Override
     public boolean hasPassportID(String passportId) {
-        return false;
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CHECK_PASSPORT_ID));
+        NetworkManager.byteBuffer.putInt(passportId.length());
+        for(int i = 0; i < passportId.length(); i++) {
+            NetworkManager.byteBuffer.putChar(passportId.charAt(i));
+        }
+        NetworkManager.byteBuffer.flip();
+
+        try {
+            NetworkManager.send();
+            NetworkManager.receive();
+        } catch (IOException e) {
+            return false;
+        }
+
+        NetworkManager.byteBuffer.get(); // for SOME_LEFT
+        return NetworkManager.byteBuffer.get() != 0;
     }
 
     @Override
