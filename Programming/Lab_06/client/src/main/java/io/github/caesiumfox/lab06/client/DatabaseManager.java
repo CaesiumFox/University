@@ -9,6 +9,7 @@ import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
@@ -126,7 +127,46 @@ public class DatabaseManager implements Database {
 
     @Override
     public void show(PrintStream output) {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_ALL));
+        NetworkManager.byteBuffer.flip();
 
+        try {
+            boolean isEmpty = true;
+            int corruptedElements = 0;
+            while (true) {
+                NetworkManager.send();
+                NetworkManager.receive();
+
+                KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
+                if (response == KeyWord.SOME_LEFT) {
+                    isEmpty = false;
+                    Movie.RawData entry = new Movie.RawData();
+                    entry.getFromByteBuffer(NetworkManager.byteBuffer);
+                    try {
+                        output.println(new Movie(entry).toString());
+                    } catch (CoordinatesOutOfRangeException | NumberOutOfRangeException |
+                            StringLengthLimitationException e) {
+                        corruptedElements++;
+                    }
+
+                    NetworkManager.byteBuffer.clear();
+                    NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CONTINUE));
+                    NetworkManager.byteBuffer.flip();
+                    // then go send & receive the next iteration
+                } else {
+                    break;
+                }
+            }
+            if (isEmpty) {
+                output.println("  There are No Elements");
+            }
+            if(corruptedElements > 0) {
+                output.println("  There are " + corruptedElements + " corrupted elements");
+            }
+        } catch (IOException e) {
+            System.out.println("A network error occurred during the command execution.");
+        }
     }
 
     @Override
