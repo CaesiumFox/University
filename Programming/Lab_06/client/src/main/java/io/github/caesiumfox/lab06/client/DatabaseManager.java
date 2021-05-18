@@ -51,22 +51,35 @@ public class DatabaseManager implements Database {
 
     @Override
     public String getInputFile() {
-        return null;
+        return databaseInfo.getInputFile();
     }
 
     @Override
     public Date getCreationDate() {
-        return null;
+        return databaseInfo.getCreationDate();
     }
 
     @Override
     public boolean hasID(Integer id) {
-        return false;
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CHECK_PASSPORT_ID));
+        NetworkManager.byteBuffer.putInt(id);
+        NetworkManager.byteBuffer.flip();
+
+        try {
+            NetworkManager.send();
+            NetworkManager.receive();
+        } catch (IOException e) {
+            return false;
+        }
+
+        NetworkManager.byteBuffer.get(); // for SOME_LEFT
+        return NetworkManager.byteBuffer.get() != 0;
     }
 
     @Override
     public boolean hasRanOutOfIDs() {
-        return false;
+        return databaseInfo.getMaxID() == Integer.MAX_VALUE;
     }
 
     @Override
