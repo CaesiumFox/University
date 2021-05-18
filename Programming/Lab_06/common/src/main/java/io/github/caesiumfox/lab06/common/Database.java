@@ -4,16 +4,17 @@ import io.github.caesiumfox.lab06.common.entry.Movie;
 import io.github.caesiumfox.lab06.common.entry.MpaaRating;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.Set;
 
 public interface Database {
-    public boolean hasPassportID(String passportId);
-    public String getInputFile();
-    public Date getCreationDate();
-    public boolean hasID(Integer id);
-    public boolean hasRanOutOfIDs();
+    public boolean hasPassportID(String passportId) throws IOException;
+    public String getInputFile() throws IOException;
+    public Date getCreationDate() throws IOException;
+    public boolean hasID(Integer id) throws IOException;
+    public boolean hasRanOutOfIDs() throws IOException;
 
 
     /**
@@ -22,7 +23,7 @@ public interface Database {
      *
      * @param output Поток вывода
      */
-    public void info(PrintStream output);
+    public void info(PrintStream output) throws IOException;
 
     /**
      * Выводит в поток вывода информацию о каждой
@@ -30,7 +31,7 @@ public interface Database {
      *
      * @param output Поток вывода
      */
-    public void show(PrintStream output);
+    public void show(PrintStream output) throws IOException;
 
     /**
      * Делает запись о фильме в базу данных,
@@ -48,7 +49,8 @@ public interface Database {
      *                                          с номером паспорта режиссёра новой записи
      */
     public void insert(Movie movie) throws RunOutOfIdsException,
-            PassportIdAlreadyExistsException, NumberOutOfRangeException;
+            PassportIdAlreadyExistsException, NumberOutOfRangeException,
+            IOException;
 
     /**
      * Делает запись о фильме в базу данных,
@@ -66,7 +68,7 @@ public interface Database {
      */
     public void insert(Integer id, Movie movie)
             throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException,
-            NumberOutOfRangeException;
+            NumberOutOfRangeException, IOException;
 
     /**
      * Обновляет запись о фильме в базу данных,
@@ -84,7 +86,7 @@ public interface Database {
      */
     public void update(Integer id, Movie movie)
             throws NoKeyInDatabaseException, PassportIdAlreadyExistsException,
-            NumberOutOfRangeException;
+            NumberOutOfRangeException, IOException;
 
     /**
      * Удаляет запись о фильме по его идентификатору (ключу).
@@ -94,13 +96,13 @@ public interface Database {
      *                                  зфписи с указанным идентификатором
      */
     public void removeKey(Integer id) throws NoKeyInDatabaseException,
-            NumberOutOfRangeException;
+            NumberOutOfRangeException, IOException;
 
     /**
      * Очищает базу данных, но сохраняет дату создания
      * и файл-источник.
      */
-    public void clear();
+    public void clear() throws IOException;
 
     /**
      * Удаляет все записи, которые в соответствии
@@ -109,7 +111,7 @@ public interface Database {
      *
      * @param movie Запись, с которой производится сравнение
      */
-    public void removeLower(Movie movie);
+    public void removeLower(Movie movie) throws IOException;
 
     /**
      * Удаляет все записи, идентификатор (ключ)
@@ -117,7 +119,8 @@ public interface Database {
      *
      * @param id Значение ключа, с которым производится сравнение
      */
-    public void removeGreaterKey(Integer id) throws NumberOutOfRangeException;
+    public void removeGreaterKey(Integer id) throws
+            NumberOutOfRangeException, IOException;
 
     /**
      * Удаляет все записи, идентификатор (ключ)
@@ -125,7 +128,8 @@ public interface Database {
      *
      * @param id Значение ключа, с которым производится сравнение
      */
-    public void removeLowerKey(Integer id) throws NumberOutOfRangeException;
+    public void removeLowerKey(Integer id) throws
+            NumberOutOfRangeException, IOException;
 
     /**
      * Возвращает любую запись с наименьшей
@@ -135,7 +139,8 @@ public interface Database {
      * @throws EmptyDatabaseException Если база
      *                                данных пуста
      */
-    public Movie minByMpaaRating() throws EmptyDatabaseException;
+    public Movie minByMpaaRating() throws
+            EmptyDatabaseException, IOException;
 
     /**
      * Возвращает количество записей, в которых
@@ -147,7 +152,7 @@ public interface Database {
      * @return Количество записей с числом оскаров
      * большим чем задано
      */
-    public int countGreaterThanOscarsCount(long oscarsCount);
+    public int countGreaterThanOscarsCount(long oscarsCount) throws IOException;
 
     /**
      * Возвращает множество всех записей с заданной
@@ -157,5 +162,5 @@ public interface Database {
      * @param rating Искомая возрастная категория
      * @return Множество всех записей с заданной возрастной категорией
      */
-    public Set<Movie> filterByMpaaRating(MpaaRating rating);
+    public Set<Movie> filterByMpaaRating(MpaaRating rating) throws IOException;
 }

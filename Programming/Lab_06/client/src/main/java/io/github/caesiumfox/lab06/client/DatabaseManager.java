@@ -5,13 +5,12 @@ import io.github.caesiumfox.lab06.common.KeyWord;
 import io.github.caesiumfox.lab06.common.MutableDatabaseInfo;
 import io.github.caesiumfox.lab06.common.entry.*;
 import io.github.caesiumfox.lab06.common.exceptions.*;
-import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 public class DatabaseManager implements Database {
@@ -95,6 +94,22 @@ public class DatabaseManager implements Database {
         return databaseInfo.getMaxID() == Integer.MAX_VALUE;
     }
 
+    private void handleDichotomousResponse() throws IOException {
+            NetworkManager.send();
+            NetworkManager.receive();
+
+            KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
+            if(response == KeyWord.ERROR) {
+                StringBuilder messageBuilder = new StringBuilder();
+                int messageLen = NetworkManager.byteBuffer.getInt();
+                for (int i = 0; i < messageLen; i++) {
+                    messageBuilder.append(NetworkManager.byteBuffer.getChar());
+                }
+                System.out.println("Server returned an error:");
+                System.out.println(messageBuilder.toString());
+            }
+    }
+
     @Override
     public void info(PrintStream output) {
         output.println("--- Database info ---");
@@ -126,12 +141,11 @@ public class DatabaseManager implements Database {
     }
 
     @Override
-    public void show(PrintStream output) {
+    public void show(PrintStream output) throws IOException {
         NetworkManager.byteBuffer.clear();
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_ALL));
         NetworkManager.byteBuffer.flip();
 
-        try {
             boolean isEmpty = true;
             int corruptedElements = 0;
             while (true) {
@@ -164,72 +178,176 @@ public class DatabaseManager implements Database {
             if(corruptedElements > 0) {
                 output.println("  There are " + corruptedElements + " corrupted elements");
             }
-        } catch (IOException e) {
-            System.out.println("A network error occurred during the command execution.");
-        }
     }
 
     @Override
     public void insert(Movie movie) throws RunOutOfIdsException,
-            PassportIdAlreadyExistsException, NumberOutOfRangeException {
+            PassportIdAlreadyExistsException, NumberOutOfRangeException,
+            IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.INSERT));
+        movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
     public void insert(Integer id, Movie movie) throws
             ElementIdAlreadyExistsException,
             PassportIdAlreadyExistsException,
-            NumberOutOfRangeException {
+            NumberOutOfRangeException,
+            IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.INSERT_ID));
+        movie.setID(id);
+        movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
     public void update(Integer id, Movie movie) throws
             NoKeyInDatabaseException,
             PassportIdAlreadyExistsException,
-            NumberOutOfRangeException {
+            NumberOutOfRangeException,
+            IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.UPDATE));
+        movie.setID(id);
+        movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
     public void removeKey(Integer id) throws
             NoKeyInDatabaseException,
-            NumberOutOfRangeException {
+            NumberOutOfRangeException,
+            IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_LOWER));
+        NetworkManager.byteBuffer.putInt(id);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
-    public void clear() {
+    public void clear() throws IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CLEAR));
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
-    public void removeLower(Movie movie) {
+    public void removeLower(Movie movie) throws Exception {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_LOWER));
+        movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
-    public void removeGreaterKey(Integer id) throws NumberOutOfRangeException {
+    public void removeGreaterKey(Integer id) throws
+            NumberOutOfRangeException, IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_GREATER_KEY));
+        NetworkManager.byteBuffer.putInt(id);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
-    public void removeLowerKey(Integer id) throws NumberOutOfRangeException {
+    public void removeLowerKey(Integer id) throws
+            NumberOutOfRangeException, IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_LOWER_KEY));
+        NetworkManager.byteBuffer.putInt(id);
+        NetworkManager.byteBuffer.flip();
 
+        handleDichotomousResponse();
     }
 
     @Override
-    public Movie minByMpaaRating() throws EmptyDatabaseException {
-        return null;
+    public Movie minByMpaaRating() throws EmptyDatabaseException, IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.MIN_BY_MPAA));
+        NetworkManager.byteBuffer.flip();
+
+        NetworkManager.send();
+        NetworkManager.receive();
+
+        KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
+        if (response == KeyWord.SOME_LEFT) {
+            Movie.RawData entry = new Movie.RawData();
+            entry.getFromByteBuffer(NetworkManager.byteBuffer);
+            try {
+                return new Movie(entry);
+            } catch (CoordinatesOutOfRangeException | NumberOutOfRangeException |
+                    StringLengthLimitationException e) {
+                System.out.println("Corrupted element returned");
+            }
+        } else {
+            throw new EmptyDatabaseException();
+        }
     }
 
     @Override
-    public int countGreaterThanOscarsCount(long oscarsCount) {
-        return 0;
+    public int countGreaterThanOscarsCount(long oscarsCount) throws IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.COUNT_GREATER_OSCARS));
+        NetworkManager.byteBuffer.flip();
+
+        NetworkManager.send();
+        NetworkManager.receive();
+
+        NetworkManager.byteBuffer.get(); // for SOME_LEFT
+        return NetworkManager.byteBuffer.getInt();
     }
 
     @Override
-    public Set<Movie> filterByMpaaRating(MpaaRating rating) {
-        return null;
+    public Set<Movie> filterByMpaaRating(MpaaRating rating) throws IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.FILTER_BY_MPAA));
+        NetworkManager.byteBuffer.putInt(rating.ordinal());
+        NetworkManager.byteBuffer.flip();
+
+        Set<Movie> result = new HashSet<>();
+
+        int corruptedElements = 0;
+        while (true) {
+            NetworkManager.send();
+            NetworkManager.receive();
+
+            KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
+            if(response == KeyWord.SOME_LEFT) {
+                Movie.RawData entry = new Movie.RawData();
+                entry.getFromByteBuffer(NetworkManager.byteBuffer);
+                try {
+                    result.add(new Movie(entry));
+                } catch (CoordinatesOutOfRangeException | NumberOutOfRangeException |
+                        StringLengthLimitationException e) {
+                    corruptedElements++;
+                }
+
+                NetworkManager.byteBuffer.clear();
+                NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CONTINUE));
+                NetworkManager.byteBuffer.flip();
+                // then go send & receive the next iteration
+            } else {
+                break;
+            }
+        }
+        if(corruptedElements > 0) {
+            System.out.println("  There are " + corruptedElements + " corrupted elements");
+        }
     }
 }
