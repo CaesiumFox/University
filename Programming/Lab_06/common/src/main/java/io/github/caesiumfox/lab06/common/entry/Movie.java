@@ -3,6 +3,7 @@ package io.github.caesiumfox.lab06.common.entry;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 import io.github.caesiumfox.lab06.common.Database;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -275,8 +276,10 @@ public class Movie {
                         director.setPassportID(null);
                         break;
                     }
-                    if (database.hasPassportID(passportID))
-                        throw new PassportIdAlreadyExistsException(passportID);
+                    try {
+                        if (database.hasPassportID(passportID))
+                            throw new PassportIdAlreadyExistsException(passportID);
+                    } catch (IOException e) { /* TODO */ }
                     director.setPassportID(passportID);
                     break;
                 } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {

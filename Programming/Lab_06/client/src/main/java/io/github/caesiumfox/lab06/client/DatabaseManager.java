@@ -245,7 +245,7 @@ public class DatabaseManager implements Database {
     }
 
     @Override
-    public void removeLower(Movie movie) throws Exception {
+    public void removeLower(Movie movie) throws IOException {
         NetworkManager.byteBuffer.clear();
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_LOWER));
         movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
@@ -294,6 +294,7 @@ public class DatabaseManager implements Database {
             } catch (CoordinatesOutOfRangeException | NumberOutOfRangeException |
                     StringLengthLimitationException e) {
                 System.out.println("Corrupted element returned");
+                return null;
             }
         } else {
             throw new EmptyDatabaseException();
@@ -349,5 +350,6 @@ public class DatabaseManager implements Database {
         if(corruptedElements > 0) {
             System.out.println("  There are " + corruptedElements + " corrupted elements");
         }
+        return result;
     }
 }
