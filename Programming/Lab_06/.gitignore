@@ -2,3 +2,4 @@
 .reference/
 .texts/
 *.iml
+*.json

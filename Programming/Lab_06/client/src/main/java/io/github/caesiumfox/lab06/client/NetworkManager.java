@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class NetworkManager {
@@ -66,13 +67,13 @@ public class NetworkManager {
      */	
 	public static void send() throws IOException {
 		selector.select();
-        var iter = selector.selectedKeys().iterator();
+        Iterator iter = selector.selectedKeys().iterator();
         while (iter.hasNext()) {
-            var key = iter.next();
+            SelectionKey key = (SelectionKey) iter.next();
             iter.remove();
             if(key.isValid()) {
                 if(key.isWritable()) {
-                    var channel = (DatagramChannel)key.channel();
+                    DatagramChannel channel = (DatagramChannel)key.channel();
                     int channelReturn = channel.write(byteBuffer);
                     channel.configureBlocking(false);
                     channel.register(key.selector(), SelectionKey.OP_READ);
@@ -91,13 +92,13 @@ public class NetworkManager {
     public static void receive() throws IOException {
         byteBuffer.clear();
         selector.select();
-        var iter = selector.selectedKeys().iterator();
+        Iterator iter = selector.selectedKeys().iterator();
         while (iter.hasNext()) {
-            var key = iter.next();
+            SelectionKey key = (SelectionKey) iter.next();
             iter.remove();
             if(key.isValid()) {
                 if(key.isReadable()) {
-                    var channel = (DatagramChannel)key.channel();
+                    DatagramChannel channel = (DatagramChannel)key.channel();
                     int channelReturn = channel.read(byteBuffer);
                     channel.configureBlocking(false);
                     channel.register(key.selector(), SelectionKey.OP_WRITE);

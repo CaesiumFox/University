@@ -3,6 +3,7 @@ package io.github.caesiumfox.lab06.common.entry;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 import io.github.caesiumfox.lab06.common.Database;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -76,7 +77,7 @@ public class Movie {
         public void getFromByteBuffer(ByteBuffer input) {
             id = input.getInt();
             int nameLen = input.getInt();
-            var nameBuilder = new StringBuilder();
+            StringBuilder nameBuilder = new StringBuilder();
             for (int i = 0; i < nameLen; i++)
                 nameBuilder.append(input.getChar());
             name = nameBuilder.toString();
@@ -97,7 +98,7 @@ public class Movie {
                 director = new Person.RawData();
 
                 int directorNameLen = input.getInt();
-                var directorNameBuilder = new StringBuilder();
+                StringBuilder directorNameBuilder = new StringBuilder();
                 for (int i = 0; i < directorNameLen; i++)
                     directorNameBuilder.append(input.getChar());
                 director.name = directorNameBuilder.toString();
@@ -106,7 +107,7 @@ public class Movie {
                 if (directorPIDLen == 0) {
                     director.passportID = null;
                 } else {
-                    var directorPIDBuilder = new StringBuilder();
+                    StringBuilder directorPIDBuilder = new StringBuilder();
                     for (int i = 0; i < directorPIDLen; i++)
                         directorPIDBuilder.append(input.getChar());
                     director.passportID = directorPIDBuilder.toString();
@@ -275,8 +276,10 @@ public class Movie {
                         director.setPassportID(null);
                         break;
                     }
-                    if (database.hasPassportID(passportID))
-                        throw new PassportIdAlreadyExistsException(passportID);
+                    try {
+                        if (database.hasPassportID(passportID))
+                            throw new PassportIdAlreadyExistsException(passportID);
+                    } catch (IOException e) { /* TODO */ }
                     director.setPassportID(passportID);
                     break;
                 } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {
