@@ -2,6 +2,7 @@ package io.github.caesiumfox.lab06.server;
 
 import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.MovieComparator;
+import io.github.caesiumfox.lab06.common.MutableDatabaseInfo;
 import io.github.caesiumfox.lab06.common.entry.*;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
@@ -143,6 +144,19 @@ public class DatabaseManager implements Database {
 
     public boolean hasRanOutOfIDs() {
         return maxID == Integer.MAX_VALUE;
+    }
+
+    public MutableDatabaseInfo getMutableInfo() {
+        MutableDatabaseInfo info = new MutableDatabaseInfo();
+        info.setCreationDate(this.creationDate);
+        info.setInputFile(this.inputFile);
+        info.setMaxID(this.maxID);
+        info.setNumberOfElements(this.data.size());
+        return info;
+    }
+
+    public List<Movie> getAllElements() {
+        return new LinkedList<Movie>(data.values());
     }
 
     /**
@@ -401,18 +415,12 @@ public class DatabaseManager implements Database {
      *                                данных пуста
      */
     public Movie minByMpaaRating() throws EmptyDatabaseException {
-        MpaaRating minRating = MpaaRating.R;
-        Movie minByRating = null;
-        for (Movie movie : data.values()) {
-            if (movie.getMpaaRating().compareTo(minRating) <= 0) {
-                minRating = movie.getMpaaRating();
-                minByRating = movie;
-            }
-        }
-        if (minByRating == null) {
+        if(data.size() == 0)
             throw new EmptyDatabaseException();
-        }
-        return minByRating;
+        return data.values().stream()
+                .min((Movie a, Movie b) -> {
+                    return a.getMpaaRating().ordinal() - b.getMpaaRating().ordinal();
+                }).get();
     }
 
     /**
@@ -426,13 +434,9 @@ public class DatabaseManager implements Database {
      * большим чем задано
      */
     public int countGreaterThanOscarsCount(long oscarsCount) {
-        int counter = 0;
-        for (Movie movie : data.values()) {
-            if (movie.getOscarsCount() > oscarsCount) {
-                counter++;
-            }
-        }
-        return counter;
+        return (int) data.values().stream()
+                .filter((Movie movie) -> { return movie.getOscarsCount() > oscarsCount; })
+                .count();
     }
 
     /**
@@ -444,13 +448,9 @@ public class DatabaseManager implements Database {
      * @return Множество всех записей с заданной возрастной категорией
      */
     public Set<Movie> filterByMpaaRating(MpaaRating rating) {
-        HashSet<Movie> result = new HashSet<>();
-        for (Movie movie : data.values()) {
-            if (movie.getMpaaRating().compareTo(rating) == 0) {
-                result.add(movie);
-            }
-        }
-        return result;
+        return data.values().stream()
+                .filter((Movie movie) -> movie.getMpaaRating() == rating)
+                .collect(Collectors.toSet());
     }
 
     /**
