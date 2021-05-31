@@ -150,7 +150,6 @@ public class CommandManager {
             case REMOVE_KEY: {
                 try {
                     int id = NetworkManager.byteBuffer.getInt();
-                    System.out.println("------------- " + id);
                     database.removeKey(id);
                     sendOk();
                 } catch (NoKeyInDatabaseException | NumberOutOfRangeException e) {
