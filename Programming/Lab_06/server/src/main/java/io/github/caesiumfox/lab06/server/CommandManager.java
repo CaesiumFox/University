@@ -40,9 +40,7 @@ public class CommandManager {
                     }
                     Server.logger.severe("Failed to run command. Error: " + e.getMessage());
                 }
-                System.out.println("A");
                 if(reader.ready()) {
-                    System.out.println("B");
                     String line;
                     try {
                         line = reader.readLine();
