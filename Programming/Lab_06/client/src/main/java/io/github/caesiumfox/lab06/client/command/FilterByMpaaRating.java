@@ -42,7 +42,7 @@ public class FilterByMpaaRating extends Command {
         List<Movie> list = database.filterByMpaaRating(model);
         if (list.size() == 0) {
             if(Client.formattedTerminal)
-                output.println("  \u001b[3mThere are no such entries\u001b[3m");
+                output.println("  \u001b[3mThere are no such entries\u001b[0m");
             else
                 output.println("  There are no such entries");
         } else {
