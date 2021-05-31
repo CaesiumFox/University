@@ -52,7 +52,8 @@ public class Insert extends Command {
                 NumberOutOfRangeException | WrongEnumInputException |
                 IndexOutOfBoundsException e) {
             throw new InvalidArgumentsException(args,
-                    "Something went wrong during the initialization of inline entry");
+                    "Something went wrong during the initialization of inline entry: \n"
+                    + e.getMessage());
         }
     }
 

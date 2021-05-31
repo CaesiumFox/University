@@ -33,7 +33,6 @@ public class Server {
 
     private static DatabaseManager databaseManager;
     private static CommandManager commandManager;
-    private static CommandShell commandShell;
     private static BufferedReader reader;
     private static PrintWriter writer;
     private static String inputFile;
@@ -98,13 +97,7 @@ public class Server {
         }
 
         commandManager = new CommandManager(databaseManager);
-        commandShell = new CommandShell(input);
-
-        commandManager.setCorrespondingShell(commandShell);
-        commandShell.setCorrespondingManager(commandManager);
-
-        commandManager.start();
-        commandShell.start();
+        commandManager.run();
     }
 
     /**

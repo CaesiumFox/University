@@ -45,7 +45,7 @@ public class Client {
         }
 
         try {
-            databaseManager = new DatabaseManager(input);
+            databaseManager = new DatabaseManager();
             shell = new CommandShell(databaseManager);
             shell.run();
         } catch (NoSuchElementException e) {

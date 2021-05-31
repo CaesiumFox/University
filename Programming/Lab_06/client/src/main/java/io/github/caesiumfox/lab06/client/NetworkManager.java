@@ -53,7 +53,7 @@ public class NetworkManager {
             } catch (NumberFormatException e) {
                 if(Client.formattedTerminal) {
                     System.out.println("\u001b[0mIt looks like you didn't enter a number.");
-                    System.out.println("Enter server port again:\u001b[1;32m");
+                    System.out.println("Enter server port again:\u001b[1;34m");
                 } else {
                     System.out.println("It looks like you didn't enter a number.");
                     System.out.println("Enter server port again:");
@@ -110,6 +110,7 @@ public class NetworkManager {
      * будет готов к чтению.
      */	
     public static void receive() throws IOException {
+        boolean throwPortUnreachable = false;
         byteBuffer.clear();
         selector.select();
         Iterator iter = selector.selectedKeys().iterator();
@@ -119,13 +120,20 @@ public class NetworkManager {
             if (key.isValid()) {
                 if (key.isReadable()) {
                     DatagramChannel channel = (DatagramChannel) key.channel();
-                    int channelReturn = channel.read(byteBuffer);
+                    try {
+                        int channelReturn = channel.read(byteBuffer);
+                    } catch(PortUnreachableException e) {
+                        throwPortUnreachable = true;
+                    }
                     channel.configureBlocking(false);
                     channel.register(key.selector(), SelectionKey.OP_WRITE);
                 }
             }
         }
         byteBuffer.flip();
+        if(throwPortUnreachable) {
+            throw new PortUnreachableException();
+        }
     }
 
     public static String getServerString(boolean colored) {

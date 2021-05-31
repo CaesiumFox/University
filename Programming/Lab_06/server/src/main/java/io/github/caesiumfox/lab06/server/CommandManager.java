@@ -6,26 +6,18 @@ import io.github.caesiumfox.lab06.common.MutableDatabaseInfo;
 import io.github.caesiumfox.lab06.common.entry.Movie;
 import io.github.caesiumfox.lab06.common.entry.MpaaRating;
 import io.github.caesiumfox.lab06.common.exceptions.*;
-import sun.nio.ch.Net;
 
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CommandManager extends Thread  {
-    private CommandShell correspondingShell;
+public class CommandManager {
     private DatabaseManager database;
     private boolean running;
-
-    public static volatile boolean itsTimeToSave;
-    public static volatile boolean itsTimeToStop;
-    static {
-        itsTimeToSave = false;
-        itsTimeToStop = false;
-    }
 
     public CommandManager(DatabaseManager database) {
         Server.logger.info("Started command manager initialization");
@@ -33,24 +25,13 @@ public class CommandManager extends Thread  {
         Server.logger.info("Initialized command manager");
     }
 
-    @Override
     public void run() {
         try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             running = true;
             while (running) {
                 try {
                     handleCommands();
-                    if (itsTimeToSave) {
-                        saveDatabase();
-                        itsTimeToSave = false;
-                    }
-                    if (itsTimeToStop) {
-                        saveDatabase();
-                        itsTimeToStop = false;
-                        running = false;
-                        System.out.println("Exiting");
-                        Server.logger.info("Exiting");
-                    }
                 } catch (Exception e) {
                     try {
                         sendError(e.getMessage());
@@ -59,22 +40,42 @@ public class CommandManager extends Thread  {
                     }
                     Server.logger.severe("Failed to run command. Error: " + e.getMessage());
                 }
+                System.out.println("A");
+                if(reader.ready()) {
+                    System.out.println("B");
+                    String line;
+                    try {
+                        line = reader.readLine();
+                    } catch (IOException e) {
+                        continue;
+                    }
+                    if(line == null) continue;
+                    String comm = line.trim().toLowerCase();
+                    switch(comm) {
+                        case "save":
+                            saveDatabase();
+                            break;
+                        case "exit":
+                            saveDatabase();
+                            running = false;
+                            break;
+                        default:
+                            System.out.println("Unknown server command: " + comm);
+                            Server.logger.severe("Unknown server command + comm");
+                            break;
+                    }
+                }
             }
         } catch (Exception e) {
-            if(correspondingShell != null)
-                correspondingShell.urgentStop();
+            this.stopManager();
             System.out.println("Something wrong happened in CommandManager:");
             System.out.println(e.getMessage());
             Server.logger.severe("Error: " + e.getMessage());
         }
     }
 
-    public void urgentStop() {
+    public void stopManager() {
         running = false;
-    }
-
-    public void setCorrespondingShell(CommandShell correspondingShell) {
-        this.correspondingShell = correspondingShell;
     }
 
     private void handleCommands() throws Exception {

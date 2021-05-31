@@ -237,6 +237,7 @@ public class DatabaseManager implements Database {
                 throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
             }
         }
+        movie.updateCreationDate();
         movie.setID(++maxID);
         data.put(movie.getID(), movie);
         data = data.entrySet().stream()
@@ -277,6 +278,7 @@ public class DatabaseManager implements Database {
         if (id > maxID) {
             maxID = id;
         }
+        movie.updateCreationDate();
         movie.setID(id);
         data.put(id, movie);
         if (movie.hasPassportID())
@@ -315,6 +317,7 @@ public class DatabaseManager implements Database {
             knownPassportIDs.add(movie.getDirector().getPassportID());
         }
 
+        movie.updateCreationDate();
         data.put(id, movie);
     }
 
@@ -358,6 +361,7 @@ public class DatabaseManager implements Database {
      * @param movie Запись, с которой производится сравнение
      */
     public void removeLower(Movie movie) {
+        movie.updateCreationDate();
         MovieComparator comparator = new MovieComparator();
         for (Integer key : new HashSet<Integer>(data.keySet())) {
             if (comparator.compare(data.get(key), movie) < 0) {
@@ -416,8 +420,8 @@ public class DatabaseManager implements Database {
      * @throws EmptyDatabaseException Если база
      *                                данных пуста
      */
-    public Movie minByMpaaRating() throws EmptyDatabaseException {
-        if(data.size() == 0)
+    public synchronized Movie minByMpaaRating() throws EmptyDatabaseException {
+        if (data.size() == 0)
             throw new EmptyDatabaseException();
         return data.values().stream()
                 .min((Movie a, Movie b) -> {
@@ -437,7 +441,9 @@ public class DatabaseManager implements Database {
      */
     public int countGreaterThanOscarsCount(long oscarsCount) {
         return (int) data.values().stream()
-                .filter((Movie movie) -> { return movie.getOscarsCount() > oscarsCount; })
+                .filter((Movie movie) -> {
+                    return movie.getOscarsCount() > oscarsCount;
+                })
                 .count();
     }
 

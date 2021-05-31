@@ -18,31 +18,26 @@ import java.util.Scanner;
 public class DatabaseManager implements Database {
     MutableDatabaseInfo databaseInfo;
 
-    public DatabaseManager(Scanner input) throws IOException {
+    public DatabaseManager() throws IOException {
         NetworkManager.byteBuffer.clear();
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
         NetworkManager.byteBuffer.flip();
 
-        NetworkManager.send();
-
-        while (true) {
-            try {
-                NetworkManager.receive();
-                break;
-            } catch (PortUnreachableException e) {
-                if (Client.formattedTerminal) {
-                    System.out.println("\u001b[1;31mCannot receive data from the server.");
-                    System.out.println("Looks like it's shut down or you have unstable " +
-                            "Internet connection.\u001b[0m");
-                    System.out.println("Press \u001b[1mEnter\u001b[0m if you want to try again.");
-                } else {
-                    System.out.println("Cannot receive data from the server.");
-                    System.out.println("Looks like it's shut down or you have unstable " +
-                            "Internet connection.");
-                    System.out.println("Press Enter if you want to try again.");
-                }
-                input.nextLine();
+        try {
+            NetworkManager.send();
+            NetworkManager.receive();
+        } catch (PortUnreachableException e) {
+            if (Client.formattedTerminal) {
+                System.out.println("\u001b[1;31mCannot receive the \u001b[4minitial\u001b[24m data from the server.");
+                System.out.println("Looks like it's shut down or you have unstable " +
+                        "Internet connection.\u001b[0m");
+            } else {
+                System.out.println("Cannot receive the initial data from the server.");
+                System.out.println("Looks like it's shut down or you have unstable " +
+                        "Internet connection.");
             }
+            System.out.println("Try to restart the client");
+            System.exit(2);
         }
 
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
@@ -133,7 +128,18 @@ public class DatabaseManager implements Database {
     }
 
     @Override
-    public void info(PrintStream output) {
+    public void info(PrintStream output) throws IOException {
+        NetworkManager.byteBuffer.clear();
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
+        NetworkManager.byteBuffer.flip();
+
+        NetworkManager.send();
+        NetworkManager.receive();
+
+        NetworkManager.byteBuffer.get(); // for SOME_LEFT
+        databaseInfo = new MutableDatabaseInfo();
+        databaseInfo.getFromByteBuffer(NetworkManager.byteBuffer);
+
         if (Client.formattedTerminal) {
             output.println("    \u001b[1;4mDatabase info\u001b[0m");
             output.print("  Input File:      ");

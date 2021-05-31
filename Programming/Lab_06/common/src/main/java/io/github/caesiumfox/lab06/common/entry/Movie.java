@@ -522,6 +522,10 @@ public class Movie {
         this.director = director;
     }
 
+    public void updateCreationDate() {
+        creationDate = new Date();
+    }
+
     /**
      * Определяет, есть ли у этой записи
      * значение в поле номера паспорта.
@@ -601,25 +605,7 @@ public class Movie {
             result.append("    Hair Color: ")
                     .append("\u001b[1;33m")
                     .append(director.getHairColor())
-                    .append("\u001b[0m \u001b[4");
-            switch(director.getHairColor()) {
-                case RED:
-                    result.append("1");
-                    break;
-                case GREEN:
-                    result.append("2");
-                    break;
-                case YELLOW:
-                    result.append("3");
-                    break;
-                case BLUE:
-                    result.append("4");
-                    break;
-                case WHITE:
-                    result.append("7");
-                    break;
-            }
-            result.append("m  \u001b[0m\n");
+                    .append("\u001b[0m\n");
         }
         return result.toString();
     }
