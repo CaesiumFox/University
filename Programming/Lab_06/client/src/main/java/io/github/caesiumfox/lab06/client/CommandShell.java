@@ -107,7 +107,7 @@ public class CommandShell {
             }
             try {
                 if(!scripted) {
-                    output.print("> ");
+                    output.print(NetworkManager.getServerString(true) + " > ");
                     output.flush();
                 }
                 StringBuilder lineBuilder =
@@ -139,15 +139,28 @@ public class CommandShell {
                 command.run();
             } catch (InvalidCommandException | InvalidArgumentsException |
                     CommandExecutionException e) {
-                output.println(e.getMessage());
+                if(Client.formattedTerminal) {
+                    output.println("\u001b[1;31m" + e.getMessage() + "\u001b[0m");
+                } else {
+                    output.println(e.getMessage());
+                }
             } catch (ShellSignalExitException e) {
                 if(!scripted) {
-                    output.println(e.getMessage());
+                    if(Client.formattedTerminal) {
+                        output.println("\u001b[1;32m" + e.getMessage() + "\u001b[0m");
+                    } else {
+                        output.println(e.getMessage());
+                    }
                     System.exit(0);
                 }
             } catch (ShellSignalException e) {
-                if(!scripted)
-                    output.println(e.getMessage());
+                if(!scripted) {
+                    if(Client.formattedTerminal) {
+                        output.println("\u001b[1;32m" + e.getMessage() + "\u001b[0m");
+                    } else {
+                        output.println(e.getMessage());
+                    }
+                }
             }
             if(!scripted)
                 output.flush();

@@ -168,6 +168,8 @@ public class Movie {
      */
     public Movie(Integer newID, PrintStream output, Scanner input, Database database) {
         this.id = newID;
+        if(this.id == null)
+            this.id = 0;
 
         // name
         output.format("Enter the name (not empty):\n    ");
@@ -532,6 +534,94 @@ public class Movie {
         if (director.getPassportID() == null)
             return false;
         return true;
+    }
+
+    public String toColoredString() {
+        final StringBuilder result = new StringBuilder();
+        result.append("ID: ")
+                .append("\u001b[1;33m")
+                .append(id)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Name: ")
+                .append("\u001b[1;33m")
+                .append(name)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Coordinates:\n");
+        result.append("    X: ")
+                .append("\u001b[1;33m")
+                .append(coordinates.getX())
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("    Y: ")
+                .append("\u001b[1;33m")
+                .append(coordinates.getY())
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Creation Date: ")
+                .append("\u001b[1;33m")
+                .append(new SimpleDateFormat(dateFormat)
+                        .format(this.creationDate))
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Oscars Count: ")
+                .append("\u001b[1;33m")
+                .append(oscarsCount)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Genre: ")
+                .append("\u001b[1;33m")
+                .append(genre)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  MPAA Rating: ")
+                .append("\u001b[1;33m")
+                .append(mpaaRating)
+                .append("\u001b[0m")
+                .append('\n');
+        if (director == null) {
+            result.append("  Director: \u001b[1;31m<N/A>\u001b[0m\n");
+        } else {
+            result.append("  Director:\n");
+            result.append("    Name: ")
+                    .append("\u001b[1;33m")
+                    .append(director.getName())
+                    .append("\u001b[0m")
+                    .append('\n');
+            result.append("    Passport ID: ");
+            if (director.getPassportID() == null) {
+                result.append("\u001b[1;31m<N/A>\u001b[0m");
+            } else {
+                result.append("\u001b[1;33m")
+                        .append(director.getPassportID())
+                        .append("\u001b[0m");
+            }
+            result.append('\n');
+            result.append("    Hair Color: ")
+                    .append("\u001b[1;33m")
+                    .append(director.getHairColor())
+                    .append("\u001b[0m \u001b[4");
+            switch(director.getHairColor()) {
+                case RED:
+                    result.append("1");
+                    break;
+                case GREEN:
+                    result.append("2");
+                    break;
+                case YELLOW:
+                    result.append("3");
+                    break;
+                case BLUE:
+                    result.append("4");
+                    break;
+                case WHITE:
+                    result.append("7");
+                    break;
+            }
+            result.append("m  \u001b[0m\n");
+        }
+        return result.toString();
     }
 
     @Override

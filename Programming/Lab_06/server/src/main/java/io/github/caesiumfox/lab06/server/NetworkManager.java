@@ -66,6 +66,7 @@ public class NetworkManager {
      */
     public static void receive() throws IOException {
         Server.logger.info("Waiting for a datagram...");
+        byteBuffer.clear();
         DatagramPacket inPacket = new DatagramPacket(bytes, byteBuffer.limit());
         datagramSocket.receive(inPacket);
         recentClient = inPacket.getSocketAddress();

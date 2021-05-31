@@ -27,6 +27,7 @@ public class MutableDatabaseInfo implements Serializable {
     }
 
     public void getFromByteBuffer(ByteBuffer input) {
+        creationDate = new Date();
         creationDate.setTime(input.getLong());
         maxID = input.getInt();
         numberOfElements = input.getInt();

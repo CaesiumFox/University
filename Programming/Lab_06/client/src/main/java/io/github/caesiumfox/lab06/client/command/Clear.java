@@ -1,7 +1,11 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
+import io.github.caesiumfox.lab06.common.exceptions.CommandExecutionException;
+import io.github.caesiumfox.lab06.common.exceptions.ShellSignalException;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -19,14 +23,19 @@ public class Clear extends Command {
     protected void prepare() {}
 
     @Override
-    protected void execute() {
+    protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         database.clear();
     }
 
     @Override
     public void getHelp() {
-        output.println("Command: clear");
-        output.println("Usage:   clear");
+        if(Client.formattedTerminal) {
+            output.println("Command: \u001b[1mclear\u001b[0m");
+            output.println("Usage:   \u001b[1mclear\u001b[0m");
+        } else {
+            output.println("Command: clear");
+            output.println("Usage:   clear");
+        }
         output.println("  Removes all entries in the database but keeps the input file and the creation\n" +
                 "  date unchanged.");
     }

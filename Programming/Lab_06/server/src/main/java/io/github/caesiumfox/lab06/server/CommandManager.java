@@ -15,9 +15,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CommandManager {
+public class CommandManager extends Thread  {
+    private CommandShell correspondingShell;
     private DatabaseManager database;
     private boolean running;
+
+    public static volatile boolean itsTimeToSave;
+    public static volatile boolean itsTimeToStop;
+    static {
+        itsTimeToSave = false;
+        itsTimeToStop = false;
+    }
 
     public CommandManager(DatabaseManager database) {
         Server.logger.info("Started command manager initialization");
@@ -25,15 +33,48 @@ public class CommandManager {
         Server.logger.info("Initialized command manager");
     }
 
+    @Override
     public void run() {
-        while(running) {
-            try {
-                handleCommands();
-            } catch (Exception e) {
-                System.out.println("Failed to run command. Error: " + e.getMessage());
-                Server.logger.severe("Failed to run command. Error: " + e.getMessage());
+        try {
+            running = true;
+            while (running) {
+                try {
+                    handleCommands();
+                    if (itsTimeToSave) {
+                        saveDatabase();
+                        itsTimeToSave = false;
+                    }
+                    if (itsTimeToStop) {
+                        saveDatabase();
+                        itsTimeToStop = false;
+                        running = false;
+                        System.out.println("Exiting");
+                        Server.logger.info("Exiting");
+                    }
+                } catch (Exception e) {
+                    try {
+                        sendError(e.getMessage());
+                    } catch (IOException ioe) {
+                        Server.logger.severe("Failed to send error report. Error: " + ioe.getMessage());
+                    }
+                    Server.logger.severe("Failed to run command. Error: " + e.getMessage());
+                }
             }
+        } catch (Exception e) {
+            if(correspondingShell != null)
+                correspondingShell.urgentStop();
+            System.out.println("Something wrong happened in CommandManager:");
+            System.out.println(e.getMessage());
+            Server.logger.severe("Error: " + e.getMessage());
         }
+    }
+
+    public void urgentStop() {
+        running = false;
+    }
+
+    public void setCorrespondingShell(CommandShell correspondingShell) {
+        this.correspondingShell = correspondingShell;
     }
 
     private void handleCommands() throws Exception {
@@ -110,6 +151,7 @@ public class CommandManager {
             case REMOVE_KEY: {
                 try {
                     int id = NetworkManager.byteBuffer.getInt();
+                    System.out.println("------------- " + id);
                     database.removeKey(id);
                     sendOk();
                 } catch (NoKeyInDatabaseException | NumberOutOfRangeException e) {
@@ -204,7 +246,7 @@ public class CommandManager {
                 Server.logger.info("Read something, but not CONTINUE");
                 break;
             } else {
-                Server.logger.info("Written CONTINUE");
+                Server.logger.info("Read CONTINUE");
             }
         }
 
@@ -260,6 +302,8 @@ public class CommandManager {
     }
 
     private void sendError(String message) throws IOException {
+        if(message == null)
+            message = "NULL";
         NetworkManager.byteBuffer.clear();
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.ERROR));
         NetworkManager.byteBuffer.putInt(message.length());
@@ -268,5 +312,17 @@ public class CommandManager {
         NetworkManager.byteBuffer.flip();
         Server.logger.info("Written ERROR: " + message);
         NetworkManager.send();
+    }
+
+    private void saveDatabase() {
+        DatabaseManager.RawData rawData = database.toRawData();
+        String newJson = Server.parser.toJson(rawData);
+        String outputFile = database.getInputFile();
+        if(outputFile.isEmpty()) {
+            outputFile = "db.json";
+        }
+        System.out.println("Saving database in \"" + outputFile + "\"...");
+        Server.logger.info("Saving database in \"" + outputFile + "\"...");
+        Server.writeToFile(newJson, outputFile);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.caesiumfox.lab06.server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import io.github.caesiumfox.lab06.common.entry.*;
 import io.github.caesiumfox.lab06.common.exceptions.*;
@@ -8,10 +9,13 @@ import io.github.caesiumfox.lab06.common.exceptions.*;
 import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class Server {
     public static Logger logger;
+    private static FileHandler loggingFileHandler;
 
     /**
      * Имя переменной окружения, в которой хранится имя входного файла.
@@ -29,6 +33,7 @@ public class Server {
 
     private static DatabaseManager databaseManager;
     private static CommandManager commandManager;
+    private static CommandShell commandShell;
     private static BufferedReader reader;
     private static PrintWriter writer;
     private static String inputFile;
@@ -40,7 +45,18 @@ public class Server {
         input = new Scanner(System.in);
         Movie.setDateFormat(dateFormat);
 
+        parser = new GsonBuilder().setDateFormat(dateFormat).create();
         logger = Logger.getLogger(Server.class.getName());
+        try {
+            loggingFileHandler = new FileHandler("report.log");
+            logger.addHandler(loggingFileHandler);
+            SimpleFormatter formatter = new SimpleFormatter();
+            loggingFileHandler.setFormatter(formatter);
+            logger.setUseParentHandlers(false);
+        } catch (IOException e) {
+            System.out.println("Failed to create/use log file.");
+            System.out.println("Logger output is now stdout.");
+        }
     }
 
     public static void main(String[] args) {
@@ -82,13 +98,29 @@ public class Server {
         }
 
         commandManager = new CommandManager(databaseManager);
+        commandShell = new CommandShell(input);
 
+        commandManager.setCorrespondingShell(commandShell);
+        commandShell.setCorrespondingManager(commandManager);
+
+        commandManager.start();
+        commandShell.start();
+    }
+
+    /**
+     * Записывает строку в файл по его имени.
+     * @param data Строка, которая может также содержать
+     * переносы строк, которая будет записана в файл
+     * @param fileName Имя файла, в который производится запись
+     */
+    public static void writeToFile(String data, String fileName) {
         try {
-            commandManager.run();
-        } catch (Exception e) {
-            System.out.println("Something wrong happened:");
-            System.out.println(e.getMessage());
-            Server.logger.severe("Error: " + e.getMessage());
+            writer = new PrintWriter(new FileWriter(fileName));
+            writer.println(data);
+            writer.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            System.err.println("Aborted writing");
         }
     }
 }

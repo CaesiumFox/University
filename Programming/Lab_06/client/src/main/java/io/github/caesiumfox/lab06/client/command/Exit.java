@@ -1,8 +1,10 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -20,14 +22,19 @@ public class Exit extends Command {
     protected void prepare() {}
 
     @Override
-    protected void execute() throws ShellSignalException {
+    protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         throw new ShellSignalExitException();
     }
 
     @Override
     public void getHelp() {
-        output.println("Command: exit");
-        output.println("Usage:   exit");
-        output.println("  Exits the program. Nothing is saved automatically.");
+        if(Client.formattedTerminal) {
+            output.println("Command: \u001b[1mexit\u001b[0m");
+            output.println("Usage:   \u001b[1mexit\u001b[0m");
+        } else {
+            output.println("Command: exit");
+            output.println("Usage:   exit");
+        }
+        output.println("  Exits the client program.");
     }
 }

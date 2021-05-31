@@ -1,20 +1,32 @@
 package io.github.caesiumfox.lab06.client;
 
 import io.github.caesiumfox.lab06.common.entry.Movie;
+import io.github.caesiumfox.lab06.common.exceptions.EnvVariableNotDefinedException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Client {
+    public static final boolean formattedTerminal;
     public static String dateFormat;
     private static Scanner input;
     private static DatabaseManager databaseManager;
     private static CommandShell shell;
 
     static {
+        String envVariableForFormattedTerminal = "LAB_INPUT_FILE";
+        String formattedTerminalStr = System.getenv().get(envVariableForFormattedTerminal);
+        if(formattedTerminalStr != null) {
+            formattedTerminalStr = formattedTerminalStr.trim().toLowerCase();
+            if (formattedTerminalStr.equals("0") || formattedTerminalStr.equals("false")) {
+                formattedTerminal = false;
+            } else {
+                formattedTerminal = true;
+            }
+        } else {
+            formattedTerminal = true;
+        }
         dateFormat = "dd.MM.yyyy";
         input = new Scanner(System.in);
         Movie.setDateFormat(dateFormat);
@@ -33,7 +45,7 @@ public class Client {
         }
 
         try {
-            databaseManager = new DatabaseManager();
+            databaseManager = new DatabaseManager(input);
             shell = new CommandShell(databaseManager);
             shell.run();
         } catch (NoSuchElementException e) {

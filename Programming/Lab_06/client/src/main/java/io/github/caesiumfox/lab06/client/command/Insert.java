@@ -1,9 +1,11 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.entry.*;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -55,7 +57,7 @@ public class Insert extends Command {
     }
 
     @Override
-    protected void execute() throws CommandExecutionException {
+    protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         try {
             if (id == null) {
                 if(database.hasRanOutOfIDs()) {
@@ -80,13 +82,25 @@ public class Insert extends Command {
 
     @Override
     public void getHelp() {
-        output.println("Command: insert");
-        output.println("Usage:   insert [id] [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
-                "         [<director's name> [pasropt ID] <hair color>]]");
-        output.println("  Inserts an entry in the database with the specified ID or the least unused ID,\n" +
-                "  if not specified. To create the entry the command launches an interactive\n" +
-                "  builder that asks for each field of the new element. The fields are asked in\n" +
-                "  the same order as listed by \"info\" command. You can also define the element by\n" +
-                "  command arguments preceded by \"--entry\" key. The order is listed above.");
+        if (Client.formattedTerminal) {
+            output.println("Command: \u001b[1minsert\u001b[0m");
+            output.println("Usage:   \u001b[1minsert\u001b[0m \u001b[36m[id]\u001b[0m " +
+                    "\u001b[36m[--entry \u001b[33m<movie name> <x> <y> <oscars> <genre> <rating>\u001b[36m\n" +
+                    "         [\u001b[33m<director's name>\u001b[36m [passport ID] \u001b[33m<hair color>\u001b[36m]]\u001b[0m");
+            output.println("  Inserts an entry in the database with the specified ID or the least unused ID,\n" +
+                    "  if not specified. To create the entry the command launches an interactive\n" +
+                    "  builder that asks for each field of the new element. The fields are asked in\n" +
+                    "  the same order as listed by \u001b[1minfo\u001b[0m command. You can also define the element by\n" +
+                    "  command arguments preceded by \u001b[36m--entry\u001b[0m key. The order is listed above.");
+        } else {
+            output.println("Command: insert");
+            output.println("Usage:   insert [id] [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
+                    "         [<director's name> [passport ID] <hair color>]]");
+            output.println("  Inserts an entry in the database with the specified ID or the least unused ID,\n" +
+                    "  if not specified. To create the entry the command launches an interactive\n" +
+                    "  builder that asks for each field of the new element. The fields are asked in\n" +
+                    "  the same order as listed by \"info\" command. You can also define the element by\n" +
+                    "  command arguments preceded by \"--entry\" key. The order is listed above.");
+        }
     }
 }

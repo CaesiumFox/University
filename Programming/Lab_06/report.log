@@ -1,0 +1,26 @@
+мая 31, 2021 7:48:53 PM io.github.caesiumfox.lab06.server.Server main
+INFO: Starting Server
+мая 31, 2021 7:48:53 PM io.github.caesiumfox.lab06.server.NetworkManager init
+INFO: Started NetworkManager initialization
+мая 31, 2021 7:48:57 PM io.github.caesiumfox.lab06.server.NetworkManager init
+INFO: Port defined: 3333
+мая 31, 2021 7:48:57 PM io.github.caesiumfox.lab06.server.NetworkManager init
+INFO: Initialized datagramSocket
+мая 31, 2021 7:48:57 PM io.github.caesiumfox.lab06.server.NetworkManager init
+INFO: Finished NetworkManager initialization
+мая 31, 2021 7:48:57 PM io.github.caesiumfox.lab06.server.CommandManager <init>
+INFO: Started command manager initialization
+мая 31, 2021 7:48:57 PM io.github.caesiumfox.lab06.server.CommandManager <init>
+INFO: Initialized command manager
+мая 31, 2021 7:48:57 PM io.github.caesiumfox.lab06.server.NetworkManager receive
+INFO: Waiting for a datagram...
+мая 31, 2021 7:49:08 PM io.github.caesiumfox.lab06.server.NetworkManager receive
+INFO: Received a datagram from /[0:0:0:0:0:0:0:1]:57657
+мая 31, 2021 7:49:08 PM io.github.caesiumfox.lab06.server.CommandManager sendInfo
+INFO: Written info
+мая 31, 2021 7:49:08 PM io.github.caesiumfox.lab06.server.NetworkManager send
+INFO: Sending a datagram to /[0:0:0:0:0:0:0:1]:57657
+мая 31, 2021 7:49:08 PM io.github.caesiumfox.lab06.server.NetworkManager send
+INFO: Sent the datagram
+мая 31, 2021 7:49:08 PM io.github.caesiumfox.lab06.server.NetworkManager receive
+INFO: Waiting for a datagram...

@@ -156,7 +156,9 @@ public class DatabaseManager implements Database {
     }
 
     public List<Movie> getAllElements() {
-        return new LinkedList<Movie>(data.values());
+        return data.values().stream()
+                .sorted(new MovieComparator())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -447,10 +449,10 @@ public class DatabaseManager implements Database {
      * @param rating Искомая возрастная категория
      * @return Множество всех записей с заданной возрастной категорией
      */
-    public Set<Movie> filterByMpaaRating(MpaaRating rating) {
+    public List<Movie> filterByMpaaRating(MpaaRating rating) {
         return data.values().stream()
                 .filter((Movie movie) -> movie.getMpaaRating() == rating)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**

@@ -7,7 +7,7 @@ import io.github.caesiumfox.lab06.common.exceptions.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 public interface Database {
     public boolean hasPassportID(String passportId) throws IOException;
@@ -162,5 +162,5 @@ public interface Database {
      * @param rating Искомая возрастная категория
      * @return Множество всех записей с заданной возрастной категорией
      */
-    public Set<Movie> filterByMpaaRating(MpaaRating rating) throws IOException;
+    public List<Movie> filterByMpaaRating(MpaaRating rating) throws IOException;
 }

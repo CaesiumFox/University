@@ -1,9 +1,12 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -44,7 +47,7 @@ public abstract class Command {
      * @throws CommandExecutionException Если
      * произошла неполадка при выполнении команды
      */
-    protected abstract void execute() throws ShellSignalException, CommandExecutionException;
+    protected abstract void execute() throws ShellSignalException, CommandExecutionException, IOException;
 
     /**
      * Запуск команды
@@ -58,7 +61,21 @@ public abstract class Command {
     public final void run() throws ShellSignalException,
             CommandExecutionException, InvalidArgumentsException {
         prepare();
-        execute();
+        try {
+            execute();
+        } catch (PortUnreachableException e) {
+            if (Client.formattedTerminal) {
+                System.out.println("\u001b[1;31mCannot receive data from the server.");
+                System.out.println("Looks like it's shut down or you have unstable " +
+                        "Internet connection.\u001b[0m");
+            } else {
+                System.out.println("Cannot receive data from the server.");
+                System.out.println("Looks like it's shut down or you have unstable " +
+                        "Internet connection.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

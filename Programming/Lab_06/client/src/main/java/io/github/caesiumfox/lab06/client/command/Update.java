@@ -1,9 +1,11 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.entry.*;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -52,7 +54,7 @@ public class Update extends Command {
     }
 
     @Override
-    protected void execute() throws CommandExecutionException {
+    protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         try {
             if(!database.hasID(id)) {
                 throw new NoKeyInDatabaseException(id);
@@ -68,14 +70,27 @@ public class Update extends Command {
 
     @Override
     public void getHelp() {
-        output.println("Command: update");
-        output.println("Usage:   update <id> [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
-                "         [<director's name> [pasropt ID] <hair color>]]");
-        output.println("  Replaces the current element by the specified key with the new element. The\n" +
-                "  creation date is also updated automatically. To create the new element the\n" +
-                "  command launches an interactive builder that asks for each field of the new\n" +
-                "  element. The fields are asked in the same order as listed by \"info\" command.\n" +
-                "  You can also define the element by command arguments preceded by \"--entry\"\n" +
-                "  key. The order is listed above.");
+        if (Client.formattedTerminal) {
+            output.println("Command: \u001b[1mupdate\u001b[0m");
+            output.println("Usage:   \u001b[1mupdate\u001b[0m \u001b[36m<id>\u001b[0m " +
+                    "\u001b[36m[--entry \u001b[33m<movie name> <x> <y> <oscars> <genre> <rating>\u001b[36m\n" +
+                    "         [\u001b[33m<director's name>\u001b[36m [passport ID] \u001b[33m<hair color>\u001b[36m]]\u001b[0m");
+            output.println("  Replaces the current element by the specified key with the new element. The\n" +
+                    "  creation date is also updated automatically. To create the new element the\n" +
+                    "  command launches an interactive builder that asks for each field of the new\n" +
+                    "  element. The fields are asked in the same order as listed by \u001b[1minfo\u001b[0m command.\n" +
+                    "  You can also define the element by command arguments preceded by \u001b[36m--entry\u001b[0m\n" +
+                    "  key. The order is listed above.");
+        } else {
+            output.println("Command: update");
+            output.println("Usage:   update <id> [--entry <movie name> <x> <y> <oscars> <genre> <rating>\n" +
+                    "         [<director's name> [passport ID] <hair color>]]");
+            output.println("  Replaces the current element by the specified key with the new element. The\n" +
+                    "  creation date is also updated automatically. To create the new element the\n" +
+                    "  command launches an interactive builder that asks for each field of the new\n" +
+                    "  element. The fields are asked in the same order as listed by \"info\" command.\n" +
+                    "  You can also define the element by command arguments preceded by \"--entry\"\n" +
+                    "  key. The order is listed above.");
+        }
     }
 }

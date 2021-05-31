@@ -1,8 +1,10 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
 import io.github.caesiumfox.lab06.common.exceptions.*;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -33,7 +35,7 @@ public class RemoveLowerKey extends Command {
     }
 
     @Override
-    protected void execute() throws CommandExecutionException {
+    protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         try {
             database.removeLowerKey(id);
         } catch (NumberOutOfRangeException e) {
@@ -43,8 +45,13 @@ public class RemoveLowerKey extends Command {
 
     @Override
     public void getHelp() {
-        output.println("Command: remove_lower_key");
-        output.println("Usage:   remove_lower_key <id>");
+        if(Client.formattedTerminal) {
+            output.println("Command: \u001b[1mremove_lower_key\u001b[0m");
+            output.println("Usage:   \u001b[1mremove_lower_key\u001b[0m \u001b[36m<id>\u001b[0m");
+        } else {
+            output.println("Command: remove_lower_key");
+            output.println("Usage:   remove_lower_key <id>");
+        }
         output.println("  Removes all entries with the key less than the specified.");
     }
 }

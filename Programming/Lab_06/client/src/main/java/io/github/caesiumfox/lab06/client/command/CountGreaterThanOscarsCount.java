@@ -1,8 +1,12 @@
 package io.github.caesiumfox.lab06.client.command;
 
+import io.github.caesiumfox.lab06.client.Client;
 import io.github.caesiumfox.lab06.common.Database;
+import io.github.caesiumfox.lab06.common.exceptions.CommandExecutionException;
 import io.github.caesiumfox.lab06.common.exceptions.InvalidArgumentsException;
+import io.github.caesiumfox.lab06.common.exceptions.ShellSignalException;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -31,14 +35,19 @@ public class CountGreaterThanOscarsCount extends Command {
     }
 
     @Override
-    protected void execute() {
+    protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         output.println(database.countGreaterThanOscarsCount(oscarsCount));
     }
 
     @Override
     public void getHelp() {
-        output.println("Command: count_greater_than_oscars_count");
-        output.println("Usage:   count_greater_than_oscars_count <count>");
+        if(Client.formattedTerminal) {
+            output.println("Command: \u001b[1mcount_greater_than_oscars_count\u001b[0m");
+            output.println("Usage:   \u001b[1mcount_greater_than_oscars_count\u001b[0m \u001b[33m<count>\u001b[0m");
+        } else {
+            output.println("Command: count_greater_than_oscars_count");
+            output.println("Usage:   count_greater_than_oscars_count <count>");
+        }
         output.println("  Prints the number of entries for which the oscars count is greater that the\n" +
                 "  specified number. Prints 0 if the database is empty or if there are no such\n" +
                 "  entries.");
