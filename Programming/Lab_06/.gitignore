@@ -1,0 +1,7 @@
+.idea/
+reference/
+texts/
+*.iml
+*.json
+*.script
+*.log

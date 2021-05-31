@@ -1,11 +1,12 @@
-package io.github.caesiumfox.lab05.element;
+package io.github.caesiumfox.lab06.common.entry;
 
-import com.google.gson.annotations.JsonAdapter;
-import io.github.caesiumfox.lab05.Database;
-import io.github.caesiumfox.lab05.Main;
-import io.github.caesiumfox.lab05.exceptions.*;
+import io.github.caesiumfox.lab06.common.exceptions.*;
+import io.github.caesiumfox.lab06.common.Database;
 
+import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -17,11 +18,11 @@ public class Movie {
      * Вспомогательный класс для работы с JSON файлами
      * при помощи библиотеки GSON.
      * GSON работает напосредственно с ним,
-     * преобразование между "скелетом" и
-     * базовым классом (Movie) происходит
+     * преобразование объекта этого класса в
+     * объект базового класса (Movie) происходит
      * отдельно.
      */
-    public static class RawData {
+    public static class RawData implements Serializable {
         public int id;
         public String name;
         public Coordinates.RawData coordinates;
@@ -30,7 +31,6 @@ public class Movie {
         public MovieGenre genre;
         public MpaaRating mpaaRating;
         public Person.RawData director;
-        public Person.RawData director; // may be null
 
         /**
          * Определяет, есть ли у этой записи
@@ -44,8 +44,81 @@ public class Movie {
                 return false;
             return true;
         }
+
+        public void putInByteBuffer(ByteBuffer output) {
+            output.putInt(id);
+            output.putInt(name.length());
+            for(int i = 0; i < name.length(); i++)
+                output.putChar(name.charAt(i));
+            output.putFloat(coordinates.x);
+            output.putFloat(coordinates.y);
+            output.putLong(creationDate.getTime());
+            output.putLong(oscarsCount);
+            output.putInt(genre.ordinal());
+            output.putInt(mpaaRating.ordinal());
+            if(director == null) {
+                output.put((byte)0);
+            } else {
+                output.put((byte)1);
+                output.putInt(director.name.length());
+                for(int i = 0; i < director.name.length(); i++)
+                    output.putChar(director.name.charAt(i));
+                if(director.passportID == null) {
+                    output.putInt(0);
+                } else {
+                    output.putInt(director.passportID.length());
+                    for(int i = 0; i < director.passportID.length(); i++)
+                        output.putChar(director.passportID.charAt(i));
+                }
+                output.putInt(director.hairColor.ordinal());
+            }
+        }
+
+        public void getFromByteBuffer(ByteBuffer input) {
+            id = input.getInt();
+            int nameLen = input.getInt();
+            StringBuilder nameBuilder = new StringBuilder();
+            for (int i = 0; i < nameLen; i++)
+                nameBuilder.append(input.getChar());
+            name = nameBuilder.toString();
+            if (coordinates == null)
+                coordinates = new Coordinates.RawData();
+            coordinates.x = input.getFloat();
+            coordinates.y = input.getFloat();
+            if (creationDate == null)
+                creationDate = new Date();
+            creationDate.setTime(input.getLong());
+            oscarsCount = input.getLong();
+            genre = MovieGenre.fromOrdinal(input.getInt());
+            mpaaRating = MpaaRating.fromOrdinal(input.getInt());
+            byte hasDirector = input.get();
+            if(hasDirector == 0) {
+                director = null;
+            } else {
+                director = new Person.RawData();
+
+                int directorNameLen = input.getInt();
+                StringBuilder directorNameBuilder = new StringBuilder();
+                for (int i = 0; i < directorNameLen; i++)
+                    directorNameBuilder.append(input.getChar());
+                director.name = directorNameBuilder.toString();
+
+                int directorPIDLen = input.getInt();
+                if (directorPIDLen == 0) {
+                    director.passportID = null;
+                } else {
+                    StringBuilder directorPIDBuilder = new StringBuilder();
+                    for (int i = 0; i < directorPIDLen; i++)
+                        directorPIDBuilder.append(input.getChar());
+                    director.passportID = directorPIDBuilder.toString();
+                }
+
+                director.hairColor = Color.fromOrdinal(input.getInt());
+            }
+        }
     }
 
+    private static String dateFormat = "dd.MM.yyyy";
 
     private Integer id;
     private String name;
@@ -95,6 +168,8 @@ public class Movie {
      */
     public Movie(Integer newID, PrintStream output, Scanner input, Database database) {
         this.id = newID;
+        if(this.id == null)
+            this.id = 0;
 
         // name
         output.format("Enter the name (not empty):\n    ");
@@ -103,7 +178,7 @@ public class Movie {
                 setName(input.nextLine().trim());
                 break;
             } catch (StringLengthLimitationException e) {
-                output.println("The name shouldn't be empty.");
+                output.println(e.getMessage());
                 output.format("Enter the name again (not empty):\n    ");
             }
         }
@@ -203,8 +278,10 @@ public class Movie {
                         director.setPassportID(null);
                         break;
                     }
-                    if (database.hasPassportID(passportID))
-                        throw new PassportIdAlreadyExistsException(passportID);
+                    try {
+                        if (database.hasPassportID(passportID))
+                            throw new PassportIdAlreadyExistsException(passportID);
+                    } catch (IOException e) { /* TODO */ }
                     director.setPassportID(passportID);
                     break;
                 } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {
@@ -375,8 +452,8 @@ public class Movie {
      */
     public void setName(String name) throws StringLengthLimitationException {
         Objects.requireNonNull(name);
-        if (name.length() == 0) {
-            throw new StringLengthLimitationException(name, 1, -1);
+        if (name.length() <= 0 || name.length() > 1000) {
+            throw new StringLengthLimitationException(name, 1, 1000);
         }
         this.name = name;
     }
@@ -445,6 +522,10 @@ public class Movie {
         this.director = director;
     }
 
+    public void updateCreationDate() {
+        creationDate = new Date();
+    }
+
     /**
      * Определяет, есть ли у этой записи
      * значение в поле номера паспорта.
@@ -459,6 +540,76 @@ public class Movie {
         return true;
     }
 
+    public String toColoredString() {
+        final StringBuilder result = new StringBuilder();
+        result.append("ID: ")
+                .append("\u001b[1;33m")
+                .append(id)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Name: ")
+                .append("\u001b[1;33m")
+                .append(name)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Coordinates:\n");
+        result.append("    X: ")
+                .append("\u001b[1;33m")
+                .append(coordinates.getX())
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("    Y: ")
+                .append("\u001b[1;33m")
+                .append(coordinates.getY())
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Creation Date: ")
+                .append("\u001b[1;33m")
+                .append(new SimpleDateFormat(dateFormat)
+                        .format(this.creationDate))
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Oscars Count: ")
+                .append("\u001b[1;33m")
+                .append(oscarsCount)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  Genre: ")
+                .append("\u001b[1;33m")
+                .append(genre)
+                .append("\u001b[0m")
+                .append('\n');
+        result.append("  MPAA Rating: ")
+                .append("\u001b[1;33m")
+                .append(mpaaRating)
+                .append("\u001b[0m")
+                .append('\n');
+        if (director == null) {
+            result.append("  Director: \u001b[1;31m<N/A>\u001b[0m\n");
+        } else {
+            result.append("  Director:\n");
+            result.append("    Name: ")
+                    .append("\u001b[1;33m")
+                    .append(director.getName())
+                    .append("\u001b[0m")
+                    .append('\n');
+            result.append("    Passport ID: ");
+            if (director.getPassportID() == null) {
+                result.append("\u001b[1;31m<N/A>\u001b[0m");
+            } else {
+                result.append("\u001b[1;33m")
+                        .append(director.getPassportID())
+                        .append("\u001b[0m");
+            }
+            result.append('\n');
+            result.append("    Hair Color: ")
+                    .append("\u001b[1;33m")
+                    .append(director.getHairColor())
+                    .append("\u001b[0m\n");
+        }
+        return result.toString();
+    }
+
     @Override
     public String toString() {
         final StringBuilder result = new StringBuilder();
@@ -468,7 +619,7 @@ public class Movie {
         result.append("    X: ").append(coordinates.getX()).append('\n');
         result.append("    Y: ").append(coordinates.getY()).append('\n');
         result.append("  Creation Date: ").append(
-                new SimpleDateFormat(Main.dateFormat).format(this.creationDate)).append('\n');
+                new SimpleDateFormat(dateFormat).format(this.creationDate)).append('\n');
         result.append("  Oscars Count: ").append(oscarsCount).append('\n');
         result.append("  Genre: ").append(genre).append('\n');
         result.append("  MPAA Rating: ").append(mpaaRating).append('\n');
@@ -510,5 +661,13 @@ public class Movie {
         else
             rawData.director = this.director.toRawData();
         return rawData;
+    }
+
+    public static void setDateFormat(String dateFormat) {
+        Movie.dateFormat = dateFormat;
+    }
+
+    public static String getDateFormat() {
+        return dateFormat;
     }
 }
