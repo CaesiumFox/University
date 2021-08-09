@@ -1,14 +1,11 @@
 package io.github.caesiumfox.lab07.server;
 
-import io.github.caesiumfox.lab07.common.Database;
 import io.github.caesiumfox.lab07.common.MovieComparator;
 import io.github.caesiumfox.lab07.common.MutableDatabaseInfo;
 import io.github.caesiumfox.lab07.common.entry.*;
 import io.github.caesiumfox.lab07.common.exceptions.*;
 
-import java.io.PrintStream;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,7 +18,7 @@ public class DatabaseManager {
     /**
      * Вспомогательный класс для работы с JSON файлами
      * при помощи библиотеки GSON.
-     * GSON работает напосредственно с ним,
+     * GSON работает непосредственно с ним,
      * преобразование между ним и
      * основным классом ({@link DatabaseManager}) происходит
      * отдельно.
@@ -32,9 +29,11 @@ public class DatabaseManager {
     }
 
     private final java.util.Date creationDate;
-    private LinkedHashMap<Integer, Movie> data;
+    private final LinkedHashMap<Integer, Movie> data;
+    private final Set<String> knownPassportIDs;
     private int maxID;
     private final ReentrantLock dataLock;
+    private final ReentrantLock passportLock;
     private final ReentrantLock creationDateLock;
     private final ReentrantLock maxIdLock;
 
@@ -44,7 +43,12 @@ public class DatabaseManager {
      * данных о файле-источнике, с
      * датой создания равной текущей
      */
-    public DatabaseManager(Scanner input) throws java.sql.SQLException {
+    public DatabaseManager(Scanner input) throws java.sql.SQLException,
+            ElementIdAlreadyExistsException,
+            PassportIdAlreadyExistsException,
+            StringLengthLimitationException,
+            CoordinatesOutOfRangeException,
+            NumberOutOfRangeException {
         Server.logger.info("Started database manager initialization");
 
         ResultSet creationDateResultSet = Server.universalStatement.executeQuery("select * from meta;");
@@ -55,8 +59,37 @@ public class DatabaseManager {
         }
         updateMaxID();
         dataLock = new ReentrantLock();
+        passportLock = new ReentrantLock();
         creationDateLock = new ReentrantLock();
         maxIdLock = new ReentrantLock();
+
+        this.knownPassportIDs = new HashSet<>();
+        this.data = new LinkedHashMap<>();
+
+        ResultSet dbResultSet = Server.universalStatement.executeQuery("select * from movies;");
+        while(dbResultSet.next()) {
+            Movie.RawData movieRawData = new Movie.RawData();
+            movieRawData.id = dbResultSet.getInt("id");
+            movieRawData.name = dbResultSet.getString("name");
+            movieRawData.coordinates = new Coordinates.RawData();
+            movieRawData.coordinates.x = dbResultSet.getFloat("x");
+            movieRawData.coordinates.y = dbResultSet.getFloat("y");
+            movieRawData.creationDate = dbResultSet.getDate("creationdate");
+            movieRawData.oscarsCount = dbResultSet.getLong("oscars");
+            movieRawData.genre = MovieGenre.fromOrdinal(dbResultSet.getInt("genre"));
+            movieRawData.mpaaRating = MpaaRating.fromOrdinal(dbResultSet.getInt("rating"));
+            String directorName = dbResultSet.getString("dirname");
+            if(directorName == null) {
+                movieRawData.director = null;
+            } else {
+                movieRawData.director = new Person.RawData();
+                movieRawData.director.name = directorName;
+                movieRawData.director.passportID = dbResultSet.getString("dirpassport");
+                movieRawData.director.hairColor = Color.fromOrdinal(dbResultSet.getInt("dirhaircol"));
+            }
+            data.put(movieRawData.id, new Movie(movieRawData));
+        }
+
         Server.logger.info("Initialized database manager");
     }
 
@@ -86,42 +119,44 @@ public class DatabaseManager {
      * @param passportID Номер проверяемого паспорта
      * @return true, если паспорт есть, false, если нет
      */
-    public boolean hasPassportID(String passportID) throws SQLException {
-        synchronized (this) {
-            return Server.universalStatement
-                    .executeQuery("select dirpassport from movies where dirpassport='"
-                            + passportID + "'").next();
-        }
+    public boolean hasPassportID(String passportID) {
+        passportLock.lock();
+        boolean result = knownPassportIDs.contains(passportID);
+        passportLock.unlock();
+        return result;
     }
 
     public boolean hasID(Integer id) {
-        synchronized (this) {
-            return data.containsKey(id);
-        }
+        dataLock.lock();
+        boolean result = data.containsKey(id);
+        dataLock.unlock();
+        return result;
     }
 
     public boolean hasRanOutOfIDs() {
-        synchronized (this) {
-            return maxID == Integer.MAX_VALUE;
-        }
+        maxIdLock.lock();
+        boolean result = (maxID == Integer.MAX_VALUE);
+        maxIdLock.unlock();
+        return result;
     }
 
     public MutableDatabaseInfo getMutableInfo() {
-        synchronized (this) {
-            MutableDatabaseInfo info = new MutableDatabaseInfo();
-            info.setCreationDate(this.creationDate);
-            info.setMaxID(this.maxID);
-            info.setNumberOfElements(this.data.size());
-            return info;
-        }
+        MutableDatabaseInfo info = new MutableDatabaseInfo();
+        info.setCreationDate(this.creationDate);
+        info.setMaxID(this.maxID);
+        dataLock.lock();
+        info.setNumberOfElements(this.data.size());
+        dataLock.unlock();
+        return info;
     }
 
     public List<Movie> getAllElements() {
-        synchronized (this) {
-            return data.values().stream()
-                    .sorted(new MovieComparator())
-                    .collect(Collectors.toList());
-        }
+        dataLock.lock();
+        List<Movie> result = data.values().stream()
+                .sorted(new MovieComparator())
+                .collect(Collectors.toList());
+        dataLock.unlock();
+        return result;
     }
 
     /**
@@ -139,50 +174,47 @@ public class DatabaseManager {
      *                                          номер паспорта режиссёра которого совпадает
      *                                          с номером паспорта режиссёра новой записи
      */
-    public void insert(Movie movie) throws RunOutOfIdsException,
-            PassportIdAlreadyExistsException, NumberOutOfRangeException {
-        try {
-            /*
-            if (hasRanOutOfIDs()) {
-                throw new RunOutOfIdsException();
-            }
-            if (movie.hasPassportID()) {
-                if (hasPassportID(movie.getDirector().getPassportID())) {
-                    throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
-                }
-            }
-            movie.updateCreationDate();
-            movie.setID(++maxID);
-            data.put(movie.getID(), movie);
-            data = data.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                            (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-            */
-            PreparedStatement insertStatement = Server.connection.prepareStatement(
-                    "insert into movies values (nextval('IntID')," +
-                    "?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            insertStatement.setString(1, movie.getName());
-            insertStatement.setFloat(2, movie.getCoordinates().getX());
-            insertStatement.setFloat(3, movie.getCoordinates().getY());
-            insertStatement.setDate(4, new java.sql.Date(movie.getCreationDate().getTime()));
-            insertStatement.setLong(5, movie.getOscarsCount());
-            insertStatement.setInt(6, movie.getGenre().ordinal());
-            insertStatement.setInt(7, movie.getMpaaRating().ordinal());
-            if(movie.getDirector() == null) {
-                insertStatement.setString(8, null);
-                insertStatement.setString(9, null);
-                insertStatement.setString(10, null);
-            } else {
-                insertStatement.setString(8, movie.getDirector().getName());
-                insertStatement.setString(9, movie.getDirector().getPassportID());
-                insertStatement.setInt(10, movie.getDirector().getHairColor().ordinal());
-            }
-            boolean ok = insertStatement.execute();
-            // if inserting is correct
-            maxID++;
-        } catch (SQLException e) {
+    public void insert(Movie movie, String owner) throws RunOutOfIdsException,
+            PassportIdAlreadyExistsException, NumberOutOfRangeException, SQLException {
+        // TODO
+        if (hasRanOutOfIDs()) {
+            throw new RunOutOfIdsException();
         }
+        if (movie.hasPassportID()) {
+            if (hasPassportID(movie.getDirector().getPassportID())) {
+                throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+            }
+        }
+        movie.updateCreationDate();
+
+
+        PreparedStatement insertStatement = Server.connection.prepareStatement(
+                "insert into movies values (nextval('IntID')," +
+                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        insertStatement.setString(1, movie.getName());
+        insertStatement.setFloat(2, movie.getCoordinates().getX());
+        insertStatement.setFloat(3, movie.getCoordinates().getY());
+        insertStatement.setDate(4, new java.sql.Date(movie.getCreationDate().getTime()));
+        insertStatement.setLong(5, movie.getOscarsCount());
+        insertStatement.setInt(6, movie.getGenre().ordinal());
+        insertStatement.setInt(7, movie.getMpaaRating().ordinal());
+        if (movie.getDirector() == null) {
+            insertStatement.setString(8, null);
+            insertStatement.setString(9, null);
+            insertStatement.setString(10, null);
+        } else {
+            insertStatement.setString(8, movie.getDirector().getName());
+            insertStatement.setString(9, movie.getDirector().getPassportID());
+            insertStatement.setInt(10, movie.getDirector().getHairColor().ordinal());
+        }
+        boolean ok = insertStatement.execute();
+        // if inserting is correct
+        maxID++;
+        data.put(movie.getID(), movie);
+        /*data = data.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));*/
     }
 
     /**
@@ -199,7 +231,7 @@ public class DatabaseManager {
      *                                          с номером паспорта режиссёра новой записи
      * @throws NumberOutOfRangeException        Если ключ не положительный
      */
-    public void insert(Integer id, Movie movie)
+    public void insert(Integer id, Movie movie, String owner)
             throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException,
             NumberOutOfRangeException, SQLException {
         // TODO
@@ -235,7 +267,7 @@ public class DatabaseManager {
      *                                          номер паспорта режиссёра которого совпадает
      *                                          с номером паспорта режиссёра новой записи
      */
-    public void update(Integer id, Movie movie)
+    public void update(Integer id, Movie movie, String owner)
             throws NoKeyInDatabaseException, PassportIdAlreadyExistsException,
             NumberOutOfRangeException, SQLException {
         // TODO
@@ -259,9 +291,9 @@ public class DatabaseManager {
      *
      * @param id Идентификатор записи, которую нужно удалить
      * @throws NoKeyInDatabaseException Если нет
-     *                                  зфписи с указанным идентификатором
+     *                                  записи с указанным идентификатором
      */
-    public void removeKey(Integer id) throws NoKeyInDatabaseException,
+    public void removeKey(Integer id, String owner) throws NoKeyInDatabaseException,
             NumberOutOfRangeException, SQLException {
         // TODO
         if (id <= 0)
@@ -279,10 +311,22 @@ public class DatabaseManager {
      * Очищает базу данных, но сохраняет дату создания
      * и файл-источник.
      */
-    public void clear() throws SQLException {
-        // TODo
-        data.clear();
-        maxID = 0;
+    public void clear(String owner) throws SQLException {
+        // TODO
+        try {
+            dataLock.lock();
+            passportLock.lock();
+            maxIdLock.lock();
+
+
+            data.clear();
+            knownPassportIDs.clear();
+            maxID = 0;
+        } finally {
+            dataLock.unlock();
+            passportLock.unlock();
+            maxIdLock.unlock();
+        }
     }
 
     /**
@@ -292,7 +336,7 @@ public class DatabaseManager {
      *
      * @param movie Запись, с которой производится сравнение
      */
-    public void removeLower(Movie movie) throws SQLException {
+    public void removeLower(Movie movie, String owner) throws SQLException {
         // TODO
         movie.updateCreationDate();
         MovieComparator comparator = new MovieComparator();
@@ -310,7 +354,7 @@ public class DatabaseManager {
      *
      * @param id Значение ключа, с которым производится сравнение
      */
-    public void removeGreaterKey(Integer id)
+    public void removeGreaterKey(Integer id, String owner)
             throws NumberOutOfRangeException, SQLException {
         // TODO
         if (id <= 0)
@@ -329,7 +373,7 @@ public class DatabaseManager {
      *
      * @param id Значение ключа, с которым производится сравнение
      */
-    public void removeLowerKey(Integer id)
+    public void removeLowerKey(Integer id, String owner)
             throws NumberOutOfRangeException, SQLException {
         // TODO
         if (id <= 0)
@@ -347,19 +391,24 @@ public class DatabaseManager {
      * Возвращает любую запись с наименьшей
      * возрастной категорией
      *
-     * @return Запись с наименьшей возрастной категорей
+     * @return Запись с наименьшей возрастной категорией
      * @throws EmptyDatabaseException Если база
      *                                данных пуста
      */
     public synchronized Movie minByMpaaRating()
-            throws EmptyDatabaseException, SQLException {
-        // TODO
-        if (data.size() == 0)
-            throw new EmptyDatabaseException();
-        return data.values().stream()
-                .min((Movie a, Movie b) -> {
-                    return a.getMpaaRating().ordinal() - b.getMpaaRating().ordinal();
-                }).get();
+            throws EmptyDatabaseException {
+        try {
+            dataLock.lock();
+            if (data.size() == 0)
+                throw new EmptyDatabaseException();
+            Movie result = data.values().stream()
+                    .min((Movie a, Movie b) -> {
+                        return a.getMpaaRating().ordinal() - b.getMpaaRating().ordinal();
+                    }).get();
+            return result;
+        } finally {
+            dataLock.unlock();
+        }
     }
 
     /**
@@ -372,14 +421,15 @@ public class DatabaseManager {
      * @return Количество записей с числом оскаров
      * большим чем задано
      */
-    public int countGreaterThanOscarsCount(long oscarsCount)
-            throws SQLException {
-        // TODO
-        return (int) data.values().stream()
+    public int countGreaterThanOscarsCount(long oscarsCount) {
+        dataLock.lock();
+        int result = (int) data.values().stream()
                 .filter((Movie movie) -> {
                     return movie.getOscarsCount() > oscarsCount;
                 })
                 .count();
+        dataLock.unlock();
+        return result;
     }
 
     /**
@@ -390,17 +440,38 @@ public class DatabaseManager {
      * @param rating Искомая возрастная категория
      * @return Множество всех записей с заданной возрастной категорией
      */
-    public List<Movie> filterByMpaaRating(MpaaRating rating)
-            throws SQLException {
-        // TODO
-        return data.values().stream()
+    public List<Movie> filterByMpaaRating(MpaaRating rating) {
+        dataLock.lock();
+        List<Movie> result = data.values().stream()
                 .filter((Movie movie) -> movie.getMpaaRating() == rating)
                 .collect(Collectors.toList());
+        dataLock.unlock();
+        return result;
+    }
+
+    int generateNewId() throws SQLException {
+        try {
+            dataLock.lock();
+            while (true) {
+                ResultSet nextInt = Server.universalStatement
+                        .executeQuery("select nextval('intid')");
+                if(nextInt.next()) {
+                    int id = nextInt.getInt(1);
+                    if (!data.containsKey(id)) {
+                        return id;
+                    }
+                } else {
+                    throw new SQLException("ID sequence error");
+                }
+            }
+        } finally {
+            dataLock.unlock();
+        }
     }
 
     /**
      * Преобразует объект класса в
-     * соответсвующий ему объект
+     * соответствующий ему объект
      * класса {@link RawData}
      *
      * @return Объект класса {@link RawData}
