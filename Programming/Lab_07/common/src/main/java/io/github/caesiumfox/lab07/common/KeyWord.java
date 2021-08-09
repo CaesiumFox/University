@@ -4,7 +4,9 @@ import io.github.caesiumfox.lab07.common.entry.Movie;
 import io.github.caesiumfox.lab07.common.entry.MpaaRating;
 
 /**
- * Первый байт любой датаграммы является
+ * Первые 8 байт любой датаграмы --
+ * ID сессии, либо 0, если сессия не открыта.
+ * Девятый байт любой датаграммы является
  * ключевым словом по которому определяются
  * дальнейшие действия того, кто эту
  * датаграмму принял.
@@ -55,36 +57,7 @@ public enum KeyWord {
      * иное - зарегестрировано.
      */
     CHECK_ID,
-    /**
-     * Отправляется клиентом серверу для
-     * продолжения пересылки объектов по
-     * одному из некоторого массива.
-     * Отправляется только если предыдущее
-     * сообщение от сервера начиналось со
-     * слова
-     * {@link #SOME_LEFT}
-     */
-    CONTINUE,
-    /**
-     * Отправляется сервером при пересылке массива данных.
-     * Может быть ответом на запрос отправки данных с
-     * сервера. Отправляется только если остались
-     * ещё элементы в коллекции.
-     * После идёт очередной элемент коллекции.
-     * Передача элементов заканчивается сообщением,
-     * начинающегося с {@link #NOTHING_LEFT}.
-     *
-     * Также используется для передачи одиночных объектов.
-     * В этом случае {@link #NOTHING_LEFT} не посылается.
-     */
-    SOME_LEFT,
-    /**
-     * Отправляется сервером при пересылке массива данных.
-     * Может быть ответом на запрос отправки данных с
-     * сервера. Отправляется, если не осталось больше
-     * элементов в коллекции. На этом сообщение заканчивается.
-     */
-    NOTHING_LEFT,
+
     /**
      * Отправляется клиентом серверу для
      * получения всех элементов коллекции.
@@ -195,6 +168,63 @@ public enum KeyWord {
      * Далее идёт передача записей.
      */
     FILTER_BY_MPAA,
+
+    /**
+     * Отправляется клиентом серверу для
+     * продолжения пересылки объектов по
+     * одному из некоторого массива.
+     * Отправляется только если предыдущее
+     * сообщение от сервера начиналось со
+     * слова
+     * {@link #SOME_LEFT}
+     */
+    CONTINUE,
+    /**
+     * Отправляется сервером при пересылке массива данных.
+     * Может быть ответом на запрос отправки данных с
+     * сервера. Отправляется только если остались
+     * ещё элементы в коллекции.
+     * После идёт очередной элемент коллекции.
+     * Передача элементов заканчивается сообщением,
+     * начинающегося с {@link #NOTHING_LEFT}.
+     *
+     * Также используется для передачи одиночных объектов.
+     * В этом случае {@link #NOTHING_LEFT} не посылается.
+     */
+    SOME_LEFT,
+    /**
+     * Отправляется сервером при пересылке массива данных.
+     * Может быть ответом на запрос отправки данных с
+     * сервера. Отправляется, если не осталось больше
+     * элементов в коллекции. На этом сообщение заканчивается.
+     */
+    NOTHING_LEFT,
+
+    /**
+     * Отправляется клиентом серверу
+     * для проверки входа.
+     * Отправляется только при входе
+     * в учётную запись на стороне клиента
+     * вместо NO_OPERATION.
+     */
+    LOGIN_CHECK,
+    /**
+     * Отправляется сервером клиенту
+     * в случае неправильного входа.
+     */
+    LOGIN_INCORRECT,
+    /**
+     * Отправляется сервером клиенту
+     * в случае перегруженности сервера.
+     */
+    SERVER_OVERLOADED,
+    /**
+     * Отправляется сервером клиенту
+     * в случае приёма неправильного
+     * номера сессии.
+     */
+    INVALID_SESSION,
+
     /**
      * Если команда от клиента серверу
      * не требует особого ответа, то
@@ -219,26 +249,30 @@ public enum KeyWord {
         switch (keyWord) {
             default:
             case NO_OPERATION:         return (byte)0x00;
-            case GET_INFO:             return (byte)0x01;
-            case CHECK_PASSPORT_ID:    return (byte)0x02;
-            case CHECK_ID:             return (byte)0x03;
-            case CONTINUE:             return (byte)0x04;
-            case SOME_LEFT:            return (byte)0x05;
-            case NOTHING_LEFT:         return (byte)0x06;
-            case GET_ALL:              return (byte)0x07;
-            case INSERT:               return (byte)0x08;
-            case INSERT_ID:            return (byte)0x09;
-            case UPDATE:               return (byte)0x0A;
-            case REMOVE_KEY:           return (byte)0x0B;
-            case REMOVE_LOWER:         return (byte)0x0C;
-            case REMOVE_LOWER_KEY:     return (byte)0x0D;
-            case REMOVE_GREATER_KEY:   return (byte)0x0E;
-            case CLEAR:                return (byte)0x0F;
-            case MIN_BY_MPAA:          return (byte)0x10;
-            case COUNT_GREATER_OSCARS: return (byte)0x11;
-            case FILTER_BY_MPAA:       return (byte)0x12;
-            case OK:                   return (byte)0x13;
-            case ERROR:                return (byte)0x14;
+            case GET_INFO:             return (byte)0x10;
+            case CHECK_PASSPORT_ID:    return (byte)0x11;
+            case CHECK_ID:             return (byte)0x12;
+            case GET_ALL:              return (byte)0x21;
+            case INSERT:               return (byte)0x22;
+            case INSERT_ID:            return (byte)0x23;
+            case UPDATE:               return (byte)0x24;
+            case REMOVE_KEY:           return (byte)0x25;
+            case REMOVE_LOWER:         return (byte)0x26;
+            case REMOVE_LOWER_KEY:     return (byte)0x27;
+            case REMOVE_GREATER_KEY:   return (byte)0x28;
+            case CLEAR:                return (byte)0x29;
+            case MIN_BY_MPAA:          return (byte)0x2A;
+            case COUNT_GREATER_OSCARS: return (byte)0x2B;
+            case FILTER_BY_MPAA:       return (byte)0x2C;
+            case CONTINUE:             return (byte)0x30;
+            case SOME_LEFT:            return (byte)0x31;
+            case NOTHING_LEFT:         return (byte)0x32;
+            case LOGIN_CHECK:          return (byte)0x40;
+            case LOGIN_INCORRECT:      return (byte)0x41;
+            case SERVER_OVERLOADED:    return (byte)0x42;
+            case INVALID_SESSION:      return (byte)0x43;
+            case OK:                   return (byte)0xFE;
+            case ERROR:                return (byte)0xFF;
         }
     }
 
@@ -246,26 +280,30 @@ public enum KeyWord {
         switch (code) {
             default:
             case (byte)0x00: return NO_OPERATION;
-            case (byte)0x01: return GET_INFO;
-            case (byte)0x02: return CHECK_PASSPORT_ID;
-            case (byte)0x03: return CHECK_ID;
-            case (byte)0x04: return CONTINUE;
-            case (byte)0x05: return SOME_LEFT;
-            case (byte)0x06: return NOTHING_LEFT;
-            case (byte)0x07: return GET_ALL;
-            case (byte)0x08: return INSERT;
-            case (byte)0x09: return INSERT_ID;
-            case (byte)0x0A: return UPDATE;
-            case (byte)0x0B: return REMOVE_KEY;
-            case (byte)0x0C: return REMOVE_LOWER;
-            case (byte)0x0D: return REMOVE_LOWER_KEY;
-            case (byte)0x0E: return REMOVE_GREATER_KEY;
-            case (byte)0x0F: return CLEAR;
-            case (byte)0x10: return MIN_BY_MPAA;
-            case (byte)0x11: return COUNT_GREATER_OSCARS;
-            case (byte)0x12: return FILTER_BY_MPAA;
-            case (byte)0x13: return OK;
-            case (byte)0x14: return ERROR;
+            case (byte)0x10: return GET_INFO;
+            case (byte)0x11: return CHECK_PASSPORT_ID;
+            case (byte)0x12: return CHECK_ID;
+            case (byte)0x21: return GET_ALL;
+            case (byte)0x22: return INSERT;
+            case (byte)0x23: return INSERT_ID;
+            case (byte)0x24: return UPDATE;
+            case (byte)0x25: return REMOVE_KEY;
+            case (byte)0x26: return REMOVE_LOWER;
+            case (byte)0x27: return REMOVE_LOWER_KEY;
+            case (byte)0x28: return REMOVE_GREATER_KEY;
+            case (byte)0x29: return CLEAR;
+            case (byte)0x2A: return MIN_BY_MPAA;
+            case (byte)0x2B: return COUNT_GREATER_OSCARS;
+            case (byte)0x2C: return FILTER_BY_MPAA;
+            case (byte)0x30: return CONTINUE;
+            case (byte)0x31: return SOME_LEFT;
+            case (byte)0x32: return NOTHING_LEFT;
+            case (byte)0x40: return LOGIN_CHECK;
+            case (byte)0x41: return LOGIN_INCORRECT;
+            case (byte)0x42: return SERVER_OVERLOADED;
+            case (byte)0x43: return INVALID_SESSION;
+            case (byte)0xFE: return OK;
+            case (byte)0xFF: return ERROR;
         }
     }
 }

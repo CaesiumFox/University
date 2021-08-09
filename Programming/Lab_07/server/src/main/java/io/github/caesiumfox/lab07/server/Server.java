@@ -4,44 +4,42 @@ import io.github.caesiumfox.lab07.common.entry.Movie;
 import io.github.caesiumfox.lab07.common.exceptions.*;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class Server {
+    public static volatile boolean running;
+
     public static Logger logger;
     private static FileHandler loggingFileHandler;
 
-    /**
-     * Имя переменной окружения, в которой хранится имя входного файла.
-     */
-    public static final String envVariableForInputFileName;
-    /**
-     * Формат дат, используемый при вводе и выводе дат,
-     * а также при чтении и записи JSON файлов.
-     */
     public static String dateFormat;
-    /**
-     * JSON парсер.
-     */
-    //public static Gson parser;
 
-    private static DatabaseManager databaseManager;
-    private static CommandManager commandManager;
-    //private static BufferedReader reader;
+    public static Connection connection;
+    public static Statement universalStatement;
+    private static String adminUser;
+    private static String databaseUrl;
+
     private static PrintWriter writer;
-    //private static String inputFile;
 	private static Scanner input;
 
+	static NetworkManager networkManager;
+	static SessionController sessionController;
+	static DatabaseManager database;
+
     static {
-        envVariableForInputFileName = "LAB_INPUT_FILE";
-        dateFormat = "dd.MM.yyyy";
         input = new Scanner(System.in);
         Movie.setDateFormat(dateFormat);
 
-        //parser = new GsonBuilder().setDateFormat(dateFormat).create();
         logger = Logger.getLogger(Server.class.getName());
         try {
             loggingFileHandler = new FileHandler("report.log");
@@ -59,7 +57,7 @@ public class Server {
         System.out.println("Starting Server");
         logger.info("Starting Server");
         try {
-            NetworkManager.init(input);
+            networkManager = new NetworkManager(input);
         } catch (NoSuchElementException e) {
             System.out.println("Looks like you have entered an EOF character " +
                     "by pressing Ctrl+D.");
@@ -67,47 +65,77 @@ public class Server {
             System.exit(1);
         }
 
-        try {
-            //inputFile = System.getenv().get(envVariableForInputFileName);
-            //if (inputFile == null)
-                throw new EnvVariableNotDefinedException(envVariableForInputFileName);
-            //reader = new BufferedReader(new FileReader(inputFile));
-            //DatabaseManager.RawData rawData = parser.fromJson(reader, DatabaseManager.RawData.class);
-            //databaseManager = new DatabaseManager(rawData, new File(inputFile).getAbsolutePath());
-        } catch (EnvVariableNotDefinedException e) {
-            System.out.println(e.getMessage());
-            System.out.println("An empty database will be initialized");
-            databaseManager = new DatabaseManager();
-        } catch (NullPointerException e) {
-            System.out.println("It looks like the file is corrupted.");
+        try  {
+            System.out.println("Enter database URL:");
+            // jdbc:postgresql://localhost:5432/studs
+            databaseUrl = input.nextLine().trim();
+            System.out.println("Enter username:");
+            adminUser = input.nextLine().trim();
+            System.out.println("Enter password:");
+            String password = new String(System.console().readPassword());
+            connection = java.sql.DriverManager.getConnection(databaseUrl, adminUser, password);
+            universalStatement = connection.createStatement();
+
+            database = new DatabaseManager(input);
+            sessionController = new SessionController();
+
+            networkManager.start();
+            sessionController.start();
+
+        } catch (SQLException e) {
             System.out.println("An exception has been caught with this message:");
             System.out.println(e.getMessage());
-            System.out.println("An empty database will be initialized");
-            databaseManager = new DatabaseManager();
+            System.out.println("Looks like the database isn't set properly.");
+            System.out.println("Make sure the database follows these requirements:");
+            System.out.println("  - the name of the database is 'studs'");
+            System.out.println("  - it has a table called 'users' with the following fields:");
+            System.out.println("    * Username varchar(64) not null primary key,");
+            System.out.println("    * PWHashStr char(32) null,");
+            System.out.println("    * Salt varchar(64) null");
+            System.out.println("  - it has a table called 'movies' with the following fields:");
+            System.out.println("    * ID integer not null primary key,");
+            System.out.println("    * Name varchar(1000) not null,");
+            System.out.println("    * X real not null,");
+            System.out.println("    * Y real not null,");
+            System.out.println("    * CreationDate date not null,");
+            System.out.println("    * Oscars bigint not null,");
+            System.out.println("    * Genre integer not null,");
+            System.out.println("    * Rating integer not null,");
+            System.out.println("    * DirName varchar(1000) null,");
+            System.out.println("    * DirPassport varchar(46) null unique,");
+            System.out.println("    * DirHairCol integer null");
+            System.out.println("  - it has a table called 'owners' with the following fields:");
+            System.out.println("    * Username varchar(64) not null,");
+            System.out.println("    * MovieID integer not null,");
+            System.out.println("    * primary key (Username, MovieID)");
+            System.out.println("  - it has a table called 'meta' with one field and entry:");
+            System.out.println("    * CreationDate date not null");
+            System.out.println("  - it has a sequence called 'IntID'");
+            System.out.println();
         } catch (Exception e) {
             System.out.println("Something wrong happened:");
             System.out.println(e.getMessage());
             Server.logger.severe("Error: " + e.getMessage());
         }
 
-        commandManager = new CommandManager(databaseManager);
-        commandManager.run();
+        try {
+            sessionController.join();
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    /**
-     * Записывает строку в файл по его имени.
-     * @param data Строка, которая может также содержать
-     * переносы строк, которая будет записана в файл
-     * @param fileName Имя файла, в который производится запись
-     */
-    public static void writeToFile(String data, String fileName) {
-        try {
-            writer = new PrintWriter(new FileWriter(fileName));
-            writer.println(data);
-            writer.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.err.println("Aborted writing");
-        }
+    public static String readString(ByteBuffer buffer) {
+        int length = buffer.getInt();
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < length; i++)
+            builder.append(buffer.getChar());
+        return builder.toString();
+    }
+
+    public static void writeString(ByteBuffer buffer, String str) {
+        buffer.putInt(str.length());
+        for (int i = 0; i < str.length(); i++)
+            buffer.putChar(str.charAt(i));
     }
 }

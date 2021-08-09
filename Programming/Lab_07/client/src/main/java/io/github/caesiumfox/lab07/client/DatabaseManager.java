@@ -78,11 +78,6 @@ public class DatabaseManager implements Database {
     }
 
     @Override
-    public String getInputFile() {
-        return databaseInfo.getInputFile();
-    }
-
-    @Override
     public Date getCreationDate() {
         return databaseInfo.getCreationDate();
     }
@@ -142,9 +137,9 @@ public class DatabaseManager implements Database {
         if (Client.formattedTerminal) {
             output.println("    \u001b[1;4mDatabase info\u001b[0m");
             output.print("  Input File:      ");
-            output.println(databaseInfo.getInputFile().length() == 0 ?
-                    "\u001b[1;31m<N/A>\u001b[0m" :
-                    "\u001b[1;33m" + databaseInfo.getInputFile() + "\u001b[0m");
+            //output.println(databaseInfo.getInputFile().length() == 0 ?
+            //        "\u001b[1;31m<N/A>\u001b[0m" :
+            //        "\u001b[1;33m" + databaseInfo.getInputFile() + "\u001b[0m");
             output.print("  Creation Date:   ");
             output.println("\u001b[1;33m" + new SimpleDateFormat(Client.dateFormat)
                     .format(databaseInfo.getCreationDate()) + "\u001b[0m");
@@ -173,7 +168,7 @@ public class DatabaseManager implements Database {
         } else {
             output.println("--- Database info ---");
             output.print("  Input File:      ");
-            output.println(databaseInfo.getInputFile().length() == 0 ? "<N/A>" : databaseInfo.getInputFile());
+            //output.println(databaseInfo.getInputFile().length() == 0 ? "<N/A>" : databaseInfo.getInputFile());
             output.print("  Creation Date:   ");
             output.println(new SimpleDateFormat(Client.dateFormat).format(databaseInfo.getCreationDate()));
             output.print("  Max ID:          ");

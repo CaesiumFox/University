@@ -1,37 +1,30 @@
 package io.github.caesiumfox.lab07.common.entry;
 
-import com.google.gson.annotations.SerializedName;
 import io.github.caesiumfox.lab07.common.exceptions.WrongEnumInputException;
-
-import java.io.Serializable;
 
 /**
  * Определяет одну из четырёх возрастных
  * категорий MPAA: G, PG, PG-13, R.
  */
 public enum MpaaRating implements Serializable {
-    @SerializedName("g")
     G {
         @Override
         public String toString() {
             return "G";
         }
     },
-    @SerializedName("pg")
     PG {
         @Override
         public String toString() {
             return "PG";
         }
     },
-    @SerializedName("pg13")
     PG_13 {
         @Override
         public String toString() {
             return "PG-13";
         }
     },
-    @SerializedName("r")
     R {
         @Override
         public String toString() {

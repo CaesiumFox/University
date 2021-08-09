@@ -1,25 +1,35 @@
 package io.github.caesiumfox.lab07.server;
 
-import io.github.caesiumfox.lab07.common.exceptions.NoRecentClientException;
 import io.github.caesiumfox.lab07.common.exceptions.NumberOutOfRangeException;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.net.*;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class NetworkManager {
-    private static DatagramSocket datagramSocket;
-    private static int port;
-    private static SocketAddress socketAddress;
-    private static SocketAddress recentClient;
-    private static byte[] bytes;
-    public static ByteBuffer byteBuffer;
+public class NetworkManager extends Thread {
+    public static class Packet {
+        public SocketAddress client;
+        public ByteBuffer buffer;
+        public Packet(byte[] bytes, SocketAddress client) {
+            this.client = client;
+            buffer = ByteBuffer.wrap(bytes);
+        }
+    };
 
-    public static void init(Scanner input) {
+    public static final int BUFFER_SIZE = 8192; // 2**13
+    private DatagramSocket datagramSocket;
+    public final Queue<Packet> received;
+    public final Queue<Packet> toBeSent;
+    private final Object receivingMutex, sendingMutex;
+
+    public NetworkManager(Scanner input) {
+        int port;
+        SocketAddress socketAddress;
         Server.logger.info("Started NetworkManager initialization");
         System.out.println("Enter port:");
         while (true) {
@@ -49,41 +59,92 @@ public class NetworkManager {
             System.out.println("Try to restart the server.");
             System.exit(1);
         }
-        recentClient = null;
-        bytes = new byte[8192];
-        byteBuffer = ByteBuffer.wrap(bytes);
+
+        received = new LinkedList<>();
+        toBeSent = new LinkedList<>();
+        receivingMutex = new Object();
+        sendingMutex = new Object();
+
         Server.logger.info("Finished NetworkManager initialization");
     }
 
+    public void run() {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        executor.submit(() -> {
+            while (Server.running) {
+                try {
+                    receiveInQueue();
+                } catch (IOException e) {
+                    Server.logger.info("IO Exception in receive module: " + e.getMessage());
+                }
+            }
+        });
+        executor.submit(() -> {
+            while (Server.running) {
+                try {
+                    sendFromQueue();
+                } catch (IOException e) {
+                    Server.logger.info("IO Exception in send module: " + e.getMessage());
+                }
+            }
+        });
+        executor.shutdown();
+    }
+
+
+
     /**
      * Принимает от клиента сообщение.
-     * Для приёма должен быть использован
-     * буфер {@link NetworkManager#byteBuffer}.
      * До вызова этого метода необходимо вручную
      * вызвать метод буфера clear().
      */
-    public static void receive() throws IOException {
-        Server.logger.info("Waiting for a datagram...");
-        byteBuffer.clear();
-        DatagramPacket inPacket = new DatagramPacket(bytes, byteBuffer.limit());
-        datagramSocket.receive(inPacket);
-        recentClient = inPacket.getSocketAddress();
-        Server.logger.info("Received a datagram from " + recentClient.toString());
+    private void receiveInQueue() throws IOException {
+        synchronized (received) {
+            byte[] bytes = new byte[NetworkManager.BUFFER_SIZE];
+            DatagramPacket inPacket = new DatagramPacket(bytes, NetworkManager.BUFFER_SIZE);
+            Server.logger.info("Waiting for a datagram...");
+            datagramSocket.receive(inPacket);
+            SocketAddress recentClient = inPacket.getSocketAddress();
+            received.add(new Packet(bytes, recentClient));
+            Server.logger.info("Received a datagram from " + recentClient);
+        }
     }
 
     /**
      * Отправляет клиенту ответ.
-     * Для приёма должен быть использован
-     * буфер {@link NetworkManager#byteBuffer}.
      * До вызова этого метода необходимо вручную
      * вызвать метод буфера flip().
      */
-    public static void send() throws IOException {
-        Server.logger.info("Sending a datagram to " + recentClient.toString());
-        if(recentClient == null)
-            throw new NoRecentClientException();
-        DatagramPacket outPacket = new DatagramPacket(bytes, byteBuffer.limit(), recentClient);
-        datagramSocket.send(outPacket);
-        Server.logger.info("Sent the datagram");
+    private void sendFromQueue() throws IOException {
+        synchronized (toBeSent) {
+            while (toBeSent.isEmpty()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+            ByteBuffer buffer = toBeSent.peek().buffer;
+            SocketAddress recentClient = toBeSent.poll().client;
+            Server.logger.info("Sending a datagram to " + recentClient.toString());
+            DatagramPacket outPacket = new DatagramPacket(buffer.array(), buffer.limit(), recentClient);
+            datagramSocket.send(outPacket);
+            Server.logger.info("Sent the datagram");
+        }
+    }
+
+    public SocketAddress receive(ByteBuffer buffer) throws InterruptedException {
+        synchronized (receivingMutex) {
+            while (received.isEmpty()) {
+                Thread.sleep(100);
+            }
+            buffer.put(received.peek().buffer);
+            return received.poll().client;
+        }
+    }
+    public void send(ByteBuffer buffer, SocketAddress address) {
+        synchronized (sendingMutex) {
+            toBeSent.add(new Packet(buffer.array(), address));
+        }
     }
 }

@@ -107,7 +107,14 @@ public class CommandShell {
             }
             try {
                 if(!scripted) {
-                    output.print(NetworkManager.getServerString(true) + " > ");
+                    if (Client.formattedTerminal)
+                        output.print("\u001b[1;33m");
+                    output.print(Client.getUsername());
+                    if (Client.formattedTerminal)
+                        output.print("\u001b[0m");
+                    output.print("@");
+                    output.print(NetworkManager.getServerString(Client.formattedTerminal));
+                    output.print(" > ");
                     output.flush();
                 }
                 StringBuilder lineBuilder =

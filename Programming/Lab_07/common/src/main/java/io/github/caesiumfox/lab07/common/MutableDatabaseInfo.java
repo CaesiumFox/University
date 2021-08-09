@@ -14,16 +14,16 @@ public class MutableDatabaseInfo implements Serializable {
     private Date creationDate;
     private int maxID;
     private int numberOfElements;
-    private String inputFile;
+    //private String inputFile;
 
     public void putInByteBuffer(ByteBuffer output) {
         output.putLong(creationDate.getTime());
         output.putInt(maxID);
         output.putInt(numberOfElements);
-        output.putInt(inputFile.length());
-        for(int i = 0; i < inputFile.length(); i++) {
-            output.putChar(inputFile.charAt(i));
-        }
+        //output.putInt(inputFile.length());
+        //for(int i = 0; i < inputFile.length(); i++) {
+        //    output.putChar(inputFile.charAt(i));
+        //}
     }
 
     public void getFromByteBuffer(ByteBuffer input) {
@@ -31,12 +31,12 @@ public class MutableDatabaseInfo implements Serializable {
         creationDate.setTime(input.getLong());
         maxID = input.getInt();
         numberOfElements = input.getInt();
-        StringBuilder inputFileBuilder = new StringBuilder();
-        int inputFileLength = input.getInt();
-        for(int i = 0; i < inputFileLength; i++) {
-            inputFileBuilder.append(input.getChar());
-        }
-        inputFile = inputFileBuilder.toString();
+        //StringBuilder inputFileBuilder = new StringBuilder();
+        //int inputFileLength = input.getInt();
+        //for(int i = 0; i < inputFileLength; i++) {
+        //    inputFileBuilder.append(input.getChar());
+        //}
+        //inputFile = inputFileBuilder.toString();
     }
 
     public void setCreationDate(Date creationDate) {
@@ -51,10 +51,6 @@ public class MutableDatabaseInfo implements Serializable {
         this.numberOfElements = numberOfElements;
     }
 
-    public void setInputFile(String inputFile) {
-        this.inputFile = inputFile;
-    }
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -65,9 +61,5 @@ public class MutableDatabaseInfo implements Serializable {
 
     public int getNumberOfElements() {
         return numberOfElements;
-    }
-
-    public String getInputFile() {
-        return inputFile;
     }
 }

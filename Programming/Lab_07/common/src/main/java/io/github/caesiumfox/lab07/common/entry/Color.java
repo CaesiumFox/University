@@ -1,6 +1,5 @@
 package io.github.caesiumfox.lab07.common.entry;
 
-import com.google.gson.annotations.SerializedName;
 import io.github.caesiumfox.lab07.common.exceptions.WrongEnumInputException;
 
 import java.io.Serializable;
@@ -10,36 +9,31 @@ import java.io.Serializable;
  * green, red, blue, yellow, white
  */
 
-public enum Color implements Serializable {
-    @SerializedName("green")
+public enum Color {
     GREEN {
         @Override
         public String toString() {
             return "Green";
         }
     },
-    @SerializedName("red")
     RED {
         @Override
         public String toString() {
             return "Red";
         }
     },
-    @SerializedName("blue")
     BLUE {
         @Override
         public String toString() {
             return "Blue";
         }
     },
-    @SerializedName("yellow")
     YELLOW {
         @Override
         public String toString() {
             return "Yellow";
         }
     },
-    @SerializedName("white")
     WHITE {
         @Override
         public String toString() {
