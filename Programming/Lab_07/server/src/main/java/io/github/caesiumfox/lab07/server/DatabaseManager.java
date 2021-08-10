@@ -179,45 +179,15 @@ public class DatabaseManager {
      */
     public void insert(Movie movie, String owner) throws RunOutOfIdsException,
             PassportIdAlreadyExistsException, NumberOutOfRangeException, SQLException {
-        // TODO
         if (hasRanOutOfIDs()) {
             throw new RunOutOfIdsException();
         }
-        if (movie.hasPassportID()) {
-            if (hasPassportID(movie.getDirector().getPassportID())) {
-                throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
-            }
+        while (true) {
+            try {
+                insert(generateNewId(), movie, owner);
+                break;
+            } catch (ElementIdAlreadyExistsException ignored) {}
         }
-        movie.updateCreationDate();
-
-
-        PreparedStatement insertStatement = Server.connection.prepareStatement(
-                "insert into movies values (nextval('IntID')," +
-                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        insertStatement.setString(1, movie.getName());
-        insertStatement.setFloat(2, movie.getCoordinates().getX());
-        insertStatement.setFloat(3, movie.getCoordinates().getY());
-        insertStatement.setDate(4, new java.sql.Date(movie.getCreationDate().getTime()));
-        insertStatement.setLong(5, movie.getOscarsCount());
-        insertStatement.setInt(6, movie.getGenre().ordinal());
-        insertStatement.setInt(7, movie.getMpaaRating().ordinal());
-        if (movie.getDirector() == null) {
-            insertStatement.setString(8, null);
-            insertStatement.setString(9, null);
-            insertStatement.setString(10, null);
-        } else {
-            insertStatement.setString(8, movie.getDirector().getName());
-            insertStatement.setString(9, movie.getDirector().getPassportID());
-            insertStatement.setInt(10, movie.getDirector().getHairColor().ordinal());
-        }
-        boolean ok = insertStatement.execute();
-        // if inserting is correct
-        maxID++;
-        data.put(movie.getID(), movie);
-        /*data = data.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));*/
     }
 
     /**
@@ -237,23 +207,55 @@ public class DatabaseManager {
     public void insert(Integer id, Movie movie, String owner)
             throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException,
             NumberOutOfRangeException, SQLException {
-        // TODO
-        if (id <= 0)
-            throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
-        if (hasID(id)) {
-            throw new ElementIdAlreadyExistsException(id);
-        }
-        if (movie.hasPassportID()) {
-            if (hasPassportID(movie.getDirector().getPassportID())) {
-                throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+        try {
+            dataLock.lock();
+            if (id <= 0)
+                throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
+            if (hasID(id)) {
+                throw new ElementIdAlreadyExistsException(id);
             }
+            if (movie.hasPassportID()) {
+                if (hasPassportID(movie.getDirector().getPassportID())) {
+                    throw new PassportIdAlreadyExistsException(movie.getDirector().getPassportID());
+                }
+            }
+
+            movie.updateCreationDate();
+            movie.setID(id);
+
+            PreparedStatement insertStatement = Server.connection.prepareStatement(
+                    "insert into movies values " +
+                            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            insertStatement.setInt(1, id);
+            insertStatement.setString(2, movie.getName());
+            insertStatement.setFloat(3, movie.getCoordinates().getX());
+            insertStatement.setFloat(4, movie.getCoordinates().getY());
+            insertStatement.setDate(5, new java.sql.Date(movie.getCreationDate().getTime()));
+            insertStatement.setLong(6, movie.getOscarsCount());
+            insertStatement.setInt(7, movie.getGenre().ordinal());
+            insertStatement.setInt(8, movie.getMpaaRating().ordinal());
+            if (movie.getDirector() == null) {
+                insertStatement.setString(9, null);
+                insertStatement.setString(10, null);
+                insertStatement.setString(11, null);
+            } else {
+                insertStatement.setString(9, movie.getDirector().getName());
+                insertStatement.setString(10, movie.getDirector().getPassportID());
+                insertStatement.setInt(11, movie.getDirector().getHairColor().ordinal());
+            }
+            insertStatement.execute();
+
+            data.put(id, movie);
+            if (movie.hasPassportID())
+                knownPassportIDs.add(movie.getDirector().getPassportID());
+            owners.put(id, owner);
+            maxIdLock.lock();
+            if (id > maxID)
+                maxID = id;
+            maxIdLock.unlock();
+        } finally {
+            dataLock.unlock();
         }
-        if (id > maxID) {
-            maxID = id;
-        }
-        movie.updateCreationDate();
-        movie.setID(id);
-        data.put(id, movie);
     }
 
     /**
@@ -312,14 +314,17 @@ public class DatabaseManager {
             updateStatement.setInt(11, id);
             updateStatement.execute();
             Movie prev = data.put(id, movie);
-            passportLock.lock();
             assert prev != null;
-            if (prev.hasPassportID())
-                knownPassportIDs.remove(prev.getDirector().getPassportID());
-            if (movie.hasPassportID())
-                knownPassportIDs.add(movie.getDirector().getPassportID());
+            try {
+                passportLock.lock();
+                if (prev.hasPassportID())
+                    knownPassportIDs.remove(prev.getDirector().getPassportID());
+                if (movie.hasPassportID())
+                    knownPassportIDs.add(movie.getDirector().getPassportID());
+            } finally {
+                passportLock.unlock();
+            }
         } finally {
-            passportLock.unlock();
             dataLock.unlock();
         }
     }
