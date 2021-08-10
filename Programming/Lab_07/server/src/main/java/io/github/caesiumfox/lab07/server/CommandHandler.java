@@ -29,19 +29,6 @@ public class CommandHandler implements Runnable {
         ByteBuffer buffer = Server.sessionController.getSessionBuffer(session);
         KeyWord code = KeyWord.getKeyWord(buffer.get());
         switch (code) {
-            case SOME_LEFT:    // is not supposed to be received from client
-            case NOTHING_LEFT: // is not supposed to be received from client
-            case CONTINUE:     // is handled separately
-            case OK:           // is not supposed to be received from client
-            case ERROR:        // is not supposed to be received from client
-            {
-                try {
-                    sendError("Unexpected command: " + code.name());
-                } catch (IOException e) {
-                    Server.logger.severe("Failed to send message");
-                }
-                break;
-            }
             case NO_OPERATION: {
                 try {
                     sendKeyWord(NO_OPERATION);
@@ -267,9 +254,24 @@ public class CommandHandler implements Runnable {
                 }
                 break;
             }
-            default:
+            case LOGIN_CHECK: {
+                try {
+                    sendOk();
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
+            }
+            default: {
+                try {
+                    sendError("Unexpected command: " + code.name());
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
+                break;
+            }
         }
+        Server.sessionController.freeSession(session);
     }
 
     private void sendElements(List<Movie> movies) throws IOException, InterruptedException {

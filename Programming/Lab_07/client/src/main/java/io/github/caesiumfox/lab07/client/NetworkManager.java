@@ -138,23 +138,19 @@ public class NetworkManager {
 
     public static String getServerString(boolean colored) {
         StringBuilder result = new StringBuilder();
-        if(colored)
-            result.append("\u001b[1;32m");
 
+        if(colored) result.append("\u001b[1;32m");
         String serverString = serverAddress.getHostName();
         if(serverString.contains(":"))
             result.append('[').append(serverString).append(']');
         else
             result.append(serverString);
 
-        if(colored)
-            result.append("\u001b[0m");
+        if(colored) result.append("\u001b[0m");
         result.append(":");
-        if(colored)
-            result.append("\u001b[1;34m");
+        if(colored) result.append("\u001b[1;34m");
         result.append(serverPort);
-        if(colored)
-            result.append("\u001b[0m");
+        if(colored) result.append("\u001b[0m");
 
         return result.toString();
     }

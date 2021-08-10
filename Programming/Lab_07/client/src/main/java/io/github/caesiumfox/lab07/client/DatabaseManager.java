@@ -19,6 +19,7 @@ public class DatabaseManager implements Database {
 
     public DatabaseManager() throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
         NetworkManager.byteBuffer.flip();
 
@@ -39,6 +40,7 @@ public class DatabaseManager implements Database {
             System.exit(2);
         }
 
+        NetworkManager.byteBuffer.getLong(); // for session number
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
         databaseInfo = new MutableDatabaseInfo();
         databaseInfo.getFromByteBuffer(NetworkManager.byteBuffer);
@@ -46,12 +48,14 @@ public class DatabaseManager implements Database {
 
     public void updateDatabaseInfo() throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
         NetworkManager.byteBuffer.flip();
 
         NetworkManager.send();
         NetworkManager.receive();
 
+        NetworkManager.byteBuffer.getLong(); // for session number
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
         databaseInfo.getFromByteBuffer(NetworkManager.byteBuffer);
     }
@@ -59,6 +63,7 @@ public class DatabaseManager implements Database {
     @Override
     public boolean hasPassportID(String passportId) {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CHECK_PASSPORT_ID));
         NetworkManager.byteBuffer.putInt(passportId.length());
         for(int i = 0; i < passportId.length(); i++) {
@@ -73,6 +78,7 @@ public class DatabaseManager implements Database {
             return false;
         }
 
+        NetworkManager.byteBuffer.getLong(); // for session number
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
         return NetworkManager.byteBuffer.get() != 0;
     }
@@ -85,6 +91,7 @@ public class DatabaseManager implements Database {
     @Override
     public boolean hasID(Integer id) {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CHECK_ID));
         NetworkManager.byteBuffer.putInt(id);
         NetworkManager.byteBuffer.flip();
@@ -96,6 +103,7 @@ public class DatabaseManager implements Database {
             return false;
         }
 
+        NetworkManager.byteBuffer.getLong(); // for session number
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
         return NetworkManager.byteBuffer.get() != 0;
     }
@@ -106,24 +114,26 @@ public class DatabaseManager implements Database {
     }
 
     private void handleDichotomousResponse() throws IOException {
-            NetworkManager.send();
-            NetworkManager.receive();
+        NetworkManager.send();
+        NetworkManager.receive();
 
-            KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
-            if(response == KeyWord.ERROR) {
-                StringBuilder messageBuilder = new StringBuilder();
-                int messageLen = NetworkManager.byteBuffer.getInt();
-                for (int i = 0; i < messageLen; i++) {
-                    messageBuilder.append(NetworkManager.byteBuffer.getChar());
-                }
-                System.out.println("Server returned an error:");
-                System.out.println(messageBuilder.toString());
+        NetworkManager.byteBuffer.getLong(); // for session number
+        KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
+        if(response == KeyWord.ERROR) {
+            StringBuilder messageBuilder = new StringBuilder();
+            int messageLen = NetworkManager.byteBuffer.getInt();
+            for (int i = 0; i < messageLen; i++) {
+                messageBuilder.append(NetworkManager.byteBuffer.getChar());
             }
+            System.out.println("Server returned an error:");
+            System.out.println(messageBuilder.toString());
+        }
     }
 
     @Override
     public void info(PrintStream output) throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
         NetworkManager.byteBuffer.flip();
 
@@ -198,6 +208,7 @@ public class DatabaseManager implements Database {
     @Override
     public void show(PrintStream output) throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_ALL));
         NetworkManager.byteBuffer.flip();
 
@@ -207,6 +218,7 @@ public class DatabaseManager implements Database {
             NetworkManager.send();
             NetworkManager.receive();
 
+            long session = NetworkManager.byteBuffer.getLong();
             KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
             if (response == KeyWord.SOME_LEFT) {
                 isEmpty = false;
@@ -223,6 +235,7 @@ public class DatabaseManager implements Database {
                 }
 
                 NetworkManager.byteBuffer.clear();
+                Client.initiateBuffer(NetworkManager.byteBuffer, session);
                 NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CONTINUE));
                 NetworkManager.byteBuffer.flip();
                 // then go send & receive the next iteration
@@ -249,6 +262,7 @@ public class DatabaseManager implements Database {
             PassportIdAlreadyExistsException, NumberOutOfRangeException,
             IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.INSERT));
         movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
         NetworkManager.byteBuffer.flip();
@@ -263,6 +277,7 @@ public class DatabaseManager implements Database {
             NumberOutOfRangeException,
             IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.INSERT_ID));
         movie.setID(id);
         movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
@@ -278,6 +293,7 @@ public class DatabaseManager implements Database {
             NumberOutOfRangeException,
             IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.UPDATE));
         movie.setID(id);
         movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
@@ -292,6 +308,7 @@ public class DatabaseManager implements Database {
             NumberOutOfRangeException,
             IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_KEY));
         NetworkManager.byteBuffer.putInt(id);
         NetworkManager.byteBuffer.flip();
@@ -302,6 +319,7 @@ public class DatabaseManager implements Database {
     @Override
     public void clear() throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CLEAR));
         NetworkManager.byteBuffer.flip();
 
@@ -311,6 +329,7 @@ public class DatabaseManager implements Database {
     @Override
     public void removeLower(Movie movie) throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_LOWER));
         movie.toRawData().putInByteBuffer(NetworkManager.byteBuffer);
         NetworkManager.byteBuffer.flip();
@@ -322,6 +341,7 @@ public class DatabaseManager implements Database {
     public void removeGreaterKey(Integer id) throws
             NumberOutOfRangeException, IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_GREATER_KEY));
         NetworkManager.byteBuffer.putInt(id);
         NetworkManager.byteBuffer.flip();
@@ -333,6 +353,7 @@ public class DatabaseManager implements Database {
     public void removeLowerKey(Integer id) throws
             NumberOutOfRangeException, IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.REMOVE_LOWER_KEY));
         NetworkManager.byteBuffer.putInt(id);
         NetworkManager.byteBuffer.flip();
@@ -343,12 +364,14 @@ public class DatabaseManager implements Database {
     @Override
     public Movie minByMpaaRating() throws EmptyDatabaseException, IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.MIN_BY_MPAA));
         NetworkManager.byteBuffer.flip();
 
         NetworkManager.send();
         NetworkManager.receive();
 
+        NetworkManager.byteBuffer.getLong(); // for session number
         KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
         if (response == KeyWord.SOME_LEFT) {
             Movie.RawData entry = new Movie.RawData();
@@ -370,12 +393,14 @@ public class DatabaseManager implements Database {
     @Override
     public int countGreaterThanOscarsCount(long oscarsCount) throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.COUNT_GREATER_OSCARS));
         NetworkManager.byteBuffer.flip();
 
         NetworkManager.send();
         NetworkManager.receive();
 
+        NetworkManager.byteBuffer.getLong(); // for session number
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
         return NetworkManager.byteBuffer.getInt();
     }
@@ -383,6 +408,7 @@ public class DatabaseManager implements Database {
     @Override
     public List<Movie> filterByMpaaRating(MpaaRating rating) throws IOException {
         NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.FILTER_BY_MPAA));
         NetworkManager.byteBuffer.putInt(rating.ordinal());
         NetworkManager.byteBuffer.flip();
@@ -394,6 +420,7 @@ public class DatabaseManager implements Database {
             NetworkManager.send();
             NetworkManager.receive();
 
+            long session = NetworkManager.byteBuffer.getLong();
             KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
             if(response == KeyWord.SOME_LEFT) {
                 Movie.RawData entry = new Movie.RawData();
@@ -406,6 +433,7 @@ public class DatabaseManager implements Database {
                 }
 
                 NetworkManager.byteBuffer.clear();
+                Client.initiateBuffer(NetworkManager.byteBuffer, session);
                 NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CONTINUE));
                 NetworkManager.byteBuffer.flip();
                 // then go send & receive the next iteration

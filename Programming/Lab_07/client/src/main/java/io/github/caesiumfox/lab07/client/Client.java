@@ -44,16 +44,7 @@ public class Client {
 
         try {
             NetworkManager.init(input);
-        } catch (NoSuchElementException e) {
-            System.out.println("Looks like you have entered an EOF character " +
-                    "by pressing Ctrl+D.");
-            System.out.println("Unfortunately the program can no longer continue working.");
-            System.exit(1);
-        }
-
-        init();
-
-        try {
+            login();
             databaseManager = new DatabaseManager();
             shell = new CommandShell(databaseManager);
             shell.run();
@@ -66,23 +57,26 @@ public class Client {
         } catch (Exception e) {
             System.out.println("Something wrong happened:");
             System.out.println(e.getMessage());
+            System.exit(1);
         }
     }
 
-    private static void init() {
+    private static void login() {
         while (true) {
             try {
-                System.out.print("Username: "
-                        + (Client.formattedTerminal ? "\u001b[1;33m" : ""));
+                System.out.print("Username: ");
+                if (Client.formattedTerminal) System.out.print("\u001b[1;33m");
                 username = input.nextLine().trim();
-                System.out.print("\u001b[m");
+                if(Client.formattedTerminal) System.out.print("\u001b[m");
+                System.out.println();
                 password = new String(System.console().readPassword("Password: "));
 
-                NetworkManager.byteBuffer.clear();
-                putLogin(NetworkManager.byteBuffer, false);
+                initiateBuffer(NetworkManager.byteBuffer, 0L);
+                NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.LOGIN_CHECK));
                 NetworkManager.byteBuffer.flip();
                 NetworkManager.send();
                 NetworkManager.receive();
+                long newSession = NetworkManager.byteBuffer.getLong();
                 KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
                 if (response == KeyWord.OK) {
                     break;
@@ -92,6 +86,11 @@ public class Client {
                     for (int i = 0; i < errorLength; i++)
                         errorBuilder.append(NetworkManager.byteBuffer.getChar());
                     System.out.println(errorBuilder.toString());
+                } else if (response == KeyWord.LOGIN_INCORRECT) {
+                    if (formattedTerminal)
+                        System.out.println("\u001b[1;31mLogin incorrect\u001b[m");
+                    else
+                        System.out.println("Login incorrect");
                 } else {
                     System.out.println("Invalid response from the server");
                 }
@@ -106,16 +105,24 @@ public class Client {
         return username;
     }
 
-    public static void putLogin(ByteBuffer buffer, boolean toRun) {
-        if (toRun)
-            buffer.put(KeyWord.getCode(KeyWord.LOGIN_RUN));
-        else
-            buffer.put(KeyWord.getCode(KeyWord.LOGIN_CHECK));
-        buffer.putInt(username.length());
-        for (int i = 0; i < username.length(); i++)
-            buffer.putChar(username.charAt(i));
-        buffer.putInt(password.length());
-        for (int i = 0; i < password.length(); i++)
-            buffer.putChar(password.charAt(i));
+    public static void initiateBuffer(ByteBuffer buffer, long session) {
+        buffer.clear();
+        writeString(buffer, username);
+        writeString(buffer, password);
+        buffer.putLong(session);
+    }
+
+    public static String readString(ByteBuffer buffer) {
+        int length = buffer.getInt();
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < length; i++)
+            builder.append(buffer.getChar());
+        return builder.toString();
+    }
+
+    public static void writeString(ByteBuffer buffer, String str) {
+        buffer.putInt(str.length());
+        for (int i = 0; i < str.length(); i++)
+            buffer.putChar(str.charAt(i));
     }
 }
