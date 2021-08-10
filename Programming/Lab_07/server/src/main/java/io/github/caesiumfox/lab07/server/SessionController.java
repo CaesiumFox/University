@@ -74,7 +74,8 @@ public class SessionController extends Thread {
                     }
                 }
                 if (!accepted) {
-                    ByteBuffer response = ByteBuffer.allocate(1);
+                    ByteBuffer response = ByteBuffer.allocate(NetworkManager.BUFFER_SIZE);
+                    response.putLong(0L);
                     response.put(KeyWord.getCode(KeyWord.LOGIN_INCORRECT));
                     Server.networkManager.send(response, client);
                 }
@@ -133,6 +134,13 @@ public class SessionController extends Thread {
         }
     }
 
+    /**
+     * Ожидает установки нового значения буфера;
+     * рекомендуется выполнять перед
+     * {@link #getSessionBuffer(long)}
+     * @param ID идентификатор сессии
+     * @throws InterruptedException
+     */
     public void waitForStateUpdate(long ID) throws InterruptedException {
         while (getSessionOldnessState(ID)) {
             Thread.sleep(10);

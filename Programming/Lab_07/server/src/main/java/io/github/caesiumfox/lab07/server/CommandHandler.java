@@ -7,17 +7,13 @@ import io.github.caesiumfox.lab07.common.entry.Movie;
 import io.github.caesiumfox.lab07.common.entry.MpaaRating;
 import io.github.caesiumfox.lab07.common.exceptions.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
+
+import static io.github.caesiumfox.lab07.common.KeyWord.NO_OPERATION;
 
 public class CommandHandler implements Runnable {
     private DatabaseManager database;
@@ -38,136 +34,237 @@ public class CommandHandler implements Runnable {
             case CONTINUE:     // is handled separately
             case OK:           // is not supposed to be received from client
             case ERROR:        // is not supposed to be received from client
-            case NO_OPERATION:
+            {
+                try {
+                    sendError("Unexpected command: " + code.name());
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
+            }
+            case NO_OPERATION: {
+                try {
+                    sendKeyWord(NO_OPERATION);
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
+                break;
+            }
             case GET_INFO: {
-                sendInfo(Server.networkManager, database.getMutableInfo());
+                try {
+                    sendInfo(database.getMutableInfo());
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             case CHECK_PASSPORT_ID: {
-                String passportID = Server.readString(buffer);
-                sendBool(Server.networkManager, database.hasPassportID(passportID));
+                try {
+                    String passportID = Server.readString(buffer);
+                    sendBool(database.hasPassportID(passportID));
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             case CHECK_ID: {
-                int id = buffer.getInt();
-                sendBool(Server.networkManager, database.hasID(id));
+                try {
+                    int id = buffer.getInt();
+                    sendBool(database.hasID(id));
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             case GET_ALL: {
-                sendElements(Server.networkManager, database.getAllElements());
+                try {
+                    try {
+                        sendElements(database.getAllElements());
+                    } catch (InterruptedException e) {
+                        sendError("Server interrupted");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             case INSERT: {
                 try {
-                    Movie.RawData rawData = new Movie.RawData();
-                    rawData.getFromByteBuffer(buffer);
-                    Movie movie = new Movie(rawData);
-                    database.insert(movie);
-                    sendOk(Server.networkManager);
-                } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
-                        NumberOutOfRangeException | RunOutOfIdsException |
-                        PassportIdAlreadyExistsException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        Movie.RawData rawData = new Movie.RawData();
+                        rawData.getFromByteBuffer(buffer);
+                        Movie movie = new Movie(rawData);
+                        database.insert(movie, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
+                            NumberOutOfRangeException | RunOutOfIdsException |
+                            PassportIdAlreadyExistsException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case INSERT_ID: {
                 try {
-                    Movie.RawData rawData = new Movie.RawData();
-                    rawData.getFromByteBuffer(buffer);
-                    Movie movie = new Movie(rawData);
-                    database.insert(rawData.id, movie);
-                    sendOk(Server.networkManager);
-                } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
-                        NumberOutOfRangeException | ElementIdAlreadyExistsException |
-                        PassportIdAlreadyExistsException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        Movie.RawData rawData = new Movie.RawData();
+                        rawData.getFromByteBuffer(buffer);
+                        Movie movie = new Movie(rawData);
+                        database.insert(rawData.id, movie, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
+                            NumberOutOfRangeException | ElementIdAlreadyExistsException |
+                            PassportIdAlreadyExistsException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case UPDATE: {
                 try {
-                    Movie.RawData rawData = new Movie.RawData();
-                    rawData.getFromByteBuffer(buffer);
-                    Movie movie = new Movie(rawData);
-                    database.update(rawData.id, movie);
-                    sendOk(Server.networkManager);
-                } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
-                        NumberOutOfRangeException | NoKeyInDatabaseException |
-                        PassportIdAlreadyExistsException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        Movie.RawData rawData = new Movie.RawData();
+                        rawData.getFromByteBuffer(buffer);
+                        Movie movie = new Movie(rawData);
+                        database.update(rawData.id, movie, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
+                            NumberOutOfRangeException | NoKeyInDatabaseException |
+                            PassportIdAlreadyExistsException | NotAnOwnerException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case REMOVE_KEY: {
                 try {
-                    int id = buffer.getInt();
-                    database.removeKey(id);
-                    sendOk(Server.networkManager);
-                } catch (NoKeyInDatabaseException | NumberOutOfRangeException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        int id = buffer.getInt();
+                        database.removeKey(id, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (NoKeyInDatabaseException | NumberOutOfRangeException |
+                            NotAnOwnerException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case REMOVE_LOWER: {
                 try {
-                    Movie.RawData rawData = new Movie.RawData();
-                    rawData.getFromByteBuffer(buffer);
-                    Movie movie = new Movie(rawData);
-                    database.removeLower(movie);
-                    sendOk(Server.networkManager);
-                } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
-                        NumberOutOfRangeException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        Movie.RawData rawData = new Movie.RawData();
+                        rawData.getFromByteBuffer(buffer);
+                        Movie movie = new Movie(rawData);
+                        database.removeLower(movie, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (StringLengthLimitationException | CoordinatesOutOfRangeException |
+                            NumberOutOfRangeException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case REMOVE_LOWER_KEY: {
                 try {
-                    int id = buffer.getInt();
-                    database.removeLowerKey(id);
-                    sendOk(Server.networkManager);
-                } catch (NumberOutOfRangeException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        int id = buffer.getInt();
+                        database.removeLowerKey(id, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (NumberOutOfRangeException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case REMOVE_GREATER_KEY: {
                 try {
-                    int id = buffer.getInt();
-                    database.removeGreaterKey(id);
-                    sendOk(Server.networkManager);
-                } catch (NumberOutOfRangeException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        int id = buffer.getInt();
+                        database.removeGreaterKey(id, Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (NumberOutOfRangeException e) {
+                        sendError(e.getMessage());
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case CLEAR: {
-                database.clear();
-                sendOk(Server.networkManager);
+                try {
+                    try {
+                        database.clear(Server.sessionController.getSessionUsername(session));
+                        sendOk();
+                    } catch (SQLException e) {
+                        sendError("Database error");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             case MIN_BY_MPAA: {
                 try {
-                    sendElement(Server.networkManager, database.minByMpaaRating());
-                } catch (EmptyDatabaseException e) {
-                    sendError(Server.networkManager, e.getMessage());
+                    try {
+                        sendElement(database.minByMpaaRating());
+                    } catch (EmptyDatabaseException e) {
+                        sendError(e.getMessage());
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
                 }
                 break;
             }
             case COUNT_GREATER_OSCARS: {
-                long oscarsCount = buffer.getLong();
-                sendInt(Server.networkManager, database.countGreaterThanOscarsCount(oscarsCount));
+                try {
+                    long oscarsCount = buffer.getLong();
+                    sendInt(database.countGreaterThanOscarsCount(oscarsCount));
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             case FILTER_BY_MPAA: {
-                MpaaRating rating = MpaaRating.fromOrdinal(buffer.getInt());
-                List<Movie> list = database.filterByMpaaRating(rating)
-                        .stream()
-                        .sorted(new MovieComparator())
-                        .collect(Collectors.toList());
-                sendElements(Server.networkManager, list);
+                try {
+                    try {
+                        MpaaRating rating = MpaaRating.fromOrdinal(buffer.getInt());
+                        List<Movie> list = database.filterByMpaaRating(rating)
+                                .stream()
+                                .sorted(new MovieComparator())
+                                .collect(Collectors.toList());
+                        sendElements(list);
+                    } catch (InterruptedException e) {
+                        sendError("Server interrupted");
+                    }
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
                 break;
             }
             default:
@@ -175,9 +272,9 @@ public class CommandHandler implements Runnable {
         }
     }
 
-    private void sendElements(List<Movie> movies) throws IOException {
+    private void sendElements(List<Movie> movies) throws IOException, InterruptedException {
         for (Movie movie : movies) {
-            ByteBuffer buffer = ByteBuffer.allocate(NetworkManager.BUFFER_SIZE);
+            ByteBuffer buffer = prepareBuffer();
             buffer.clear();
             buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
             movie.toRawData().putInByteBuffer(buffer);
@@ -185,78 +282,103 @@ public class CommandHandler implements Runnable {
             Server.logger.info("Written movie (ID: " + movie.getID() + ")");
             Server.sessionController.sendResponse(buffer, session);
             buffer.clear();
-            .receive(buffer);
+            Server.sessionController.waitForStateUpdate(session);
+            buffer = Server.sessionController.getSessionBuffer(session);
 
-            KeyWord code = KeyWord.getKeyWord(currentNM.byteBuffer.get());
+            KeyWord code = KeyWord.getKeyWord(buffer.get());
             if (code != KeyWord.CONTINUE) {
-                Server.logger.info("Read something, but not CONTINUE");
+                Server.logger.info("Have read something, but not CONTINUE");
+                sendError("Expected CONTINUE");
                 break;
             } else {
-                Server.logger.info("Read CONTINUE");
+                Server.logger.info("Have read CONTINUE");
             }
         }
 
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.NOTHING_LEFT));
-        currentNM.byteBuffer.flip();
+        ByteBuffer buffer = prepareBuffer();
+        buffer.clear();
+        buffer.put(KeyWord.getCode(KeyWord.NOTHING_LEFT));
+        buffer.flip();
         Server.logger.info("Written NOTHING_LEFT");
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
     }
 
-    private void sendElement(NetworkManager currentNM, Movie movie) throws IOException {
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
-        movie.toRawData().putInByteBuffer(currentNM.byteBuffer);
-        currentNM.byteBuffer.flip();
+    private void sendElement(Movie movie) throws IOException {
+        ByteBuffer buffer = prepareBuffer();
+        buffer.clear();
+        buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
+        movie.toRawData().putInByteBuffer(buffer);
+        buffer.flip();
         Server.logger.info("Written single movie (ID: " + movie.getID() + ")");
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
     }
 
-    private void sendInfo(NetworkManager currentNM, MutableDatabaseInfo info) throws IOException {
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
-        info.putInByteBuffer(currentNM.byteBuffer);
-        currentNM.byteBuffer.flip();
+    private void sendInfo(MutableDatabaseInfo info) throws IOException {
+        ByteBuffer buffer = prepareBuffer();
+        buffer.clear();
+        buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
+        info.putInByteBuffer(buffer);
+        buffer.flip();
         Server.logger.info("Written info");
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
     }
 
-    private void sendInt(NetworkManager currentNM, int value) throws IOException {
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
-        currentNM.byteBuffer.putInt(value);
-        currentNM.byteBuffer.flip();
+    private void sendInt(int value) throws IOException {
+        ByteBuffer buffer = prepareBuffer();
+        buffer.clear();
+        buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
+        buffer.putInt(value);
+        buffer.flip();
         Server.logger.info("Written int: " + value);
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
     }
 
-    private void sendBool(NetworkManager currentNM, boolean value) throws IOException {
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
-        currentNM.byteBuffer.put(value ? (byte)1 : (byte)0);
-        currentNM.byteBuffer.flip();
+    private void sendBool(boolean value) throws IOException {
+        ByteBuffer buffer = prepareBuffer();
+        buffer.clear();
+        buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
+        buffer.put(value ? (byte)1 : (byte)0);
+        buffer.flip();
         Server.logger.info("Written boolean: " + value);
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
     }
 
-    private void sendOk(NetworkManager currentNM) throws IOException {
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.OK));
-        currentNM.byteBuffer.flip();
+    private void sendOk() throws IOException {
+        sendKeyWord(KeyWord.OK);
+    }
+
+    private void sendKeyWord(KeyWord word) throws IOException {
+        ByteBuffer buffer = prepareBuffer();
+        buffer.clear();
+        buffer.put(KeyWord.getCode(word));
+        buffer.flip();
         Server.logger.info("Written OK");
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
     }
 
-    private void sendError(NetworkManager currentNM, String message) throws IOException {
+    private void sendError(String message) throws IOException {
+        ByteBuffer buffer = prepareBuffer();
         if(message == null)
-            message = "NULL";
-        currentNM.byteBuffer.clear();
-        currentNM.byteBuffer.put(KeyWord.getCode(KeyWord.ERROR));
-        currentNM.byteBuffer.putInt(message.length());
-        for(int i = 0; i < message.length(); i++)
-            currentNM.byteBuffer.putChar(message.charAt(i));
-        currentNM.byteBuffer.flip();
+            message = "";
+        buffer.clear();
+        buffer.put(KeyWord.getCode(KeyWord.ERROR));
+        Server.writeString(buffer, message);
+        buffer.flip();
         Server.logger.info("Written ERROR: " + message);
-        currentNM.send();
+        Server.sessionController.sendResponse(buffer, session);
+    }
+
+    private ByteBuffer prepareBuffer(int size) {
+        ByteBuffer buffer = ByteBuffer.allocate(size);
+        buffer.putLong(session);
+        return buffer;
+    }
+
+    private ByteBuffer prepareBuffer() {
+        return prepareBuffer(NetworkManager.BUFFER_SIZE);
+    }
+
+    private void putKeyWord(ByteBuffer buffer, KeyWord kw) {
+        buffer.put(KeyWord.getCode(kw));
     }
 }
