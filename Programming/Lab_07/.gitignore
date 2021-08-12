@@ -5,3 +5,7 @@ texts/
 *.json
 *.script
 *.log
+*.script
+*test*
+*.log.*
+server_config

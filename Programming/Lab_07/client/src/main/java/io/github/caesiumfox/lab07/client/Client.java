@@ -68,7 +68,6 @@ public class Client {
                 if (Client.formattedTerminal) System.out.print("\u001b[1;33m");
                 username = input.nextLine().trim();
                 if(Client.formattedTerminal) System.out.print("\u001b[m");
-                System.out.println();
                 password = new String(System.console().readPassword("Password: "));
 
                 initiateBuffer(NetworkManager.byteBuffer, 0L);
@@ -92,7 +91,7 @@ public class Client {
                     else
                         System.out.println("Login incorrect");
                 } else {
-                    System.out.println("Invalid response from the server");
+                    System.out.println("Invalid response from the server: " + response.toString());
                 }
             } catch (IOException e) {
                 System.out.println("Something wrong happened during logging in:");

@@ -31,6 +31,7 @@ public class Movie {
         public MovieGenre genre;
         public MpaaRating mpaaRating;
         public Person.RawData director;
+        public String metaOwner = "";
 
         /**
          * Определяет, есть ли у этой записи
@@ -47,6 +48,10 @@ public class Movie {
 
         public void putInByteBuffer(ByteBuffer output) {
             output.putInt(id);
+            output.putInt(metaOwner.length());
+            for(int i = 0; i < metaOwner.length(); i++)
+                output.putChar(metaOwner.charAt(i));
+
             output.putInt(name.length());
             for(int i = 0; i < name.length(); i++)
                 output.putChar(name.charAt(i));
@@ -76,6 +81,13 @@ public class Movie {
 
         public void getFromByteBuffer(ByteBuffer input) {
             id = input.getInt();
+
+            int ownerLen = input.getInt();
+            StringBuilder ownerBuilder = new StringBuilder();
+            for (int i = 0; i < ownerLen; i++)
+                ownerBuilder.append(input.getChar());
+            metaOwner = ownerBuilder.toString();
+
             int nameLen = input.getInt();
             StringBuilder nameBuilder = new StringBuilder();
             for (int i = 0; i < nameLen; i++)
@@ -129,6 +141,8 @@ public class Movie {
     private MpaaRating mpaaRating;
     private Person director;
 
+    private String metaOwner;
+
     /**
      * Создаёт объект класса {@link Movie}
      * в соответствии с первичными данными,
@@ -153,6 +167,7 @@ public class Movie {
             setDirector(null);
         else
             setDirector(new Person(rawData.director));
+        metaOwner = rawData.metaOwner;
     }
 
     /**
@@ -167,6 +182,7 @@ public class Movie {
      *                 которую будет сделана запись
      */
     public Movie(Integer newID, PrintStream output, Scanner input, Database database) {
+        metaOwner = "";
         this.id = newID;
         if(this.id == null)
             this.id = 0;
@@ -316,6 +332,7 @@ public class Movie {
             StringLengthLimitationException, CoordinatesOutOfRangeException,
             NumberOutOfRangeException, WrongEnumInputException,
             IndexOutOfBoundsException {
+        metaOwner = "";
         // id
         id = 0;
         // <name>
@@ -423,6 +440,15 @@ public class Movie {
      */
     public Person getDirector() {
         return director;
+    }
+
+
+    public String getMetaOwner() {
+        return metaOwner;
+    }
+
+    public void setMetaOwner(String metaOwner) {
+        this.metaOwner = metaOwner;
     }
 
     /**
@@ -541,12 +567,13 @@ public class Movie {
     }
 
     public String toColoredString() {
-        final StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         result.append("ID: ")
                 .append("\u001b[1;33m")
                 .append(id)
-                .append("\u001b[0m")
-                .append('\n');
+                .append("\u001b[0m (\u001b[1;33m")
+                .append(metaOwner)
+                .append("\u001b[0m)\n");
         result.append("  Name: ")
                 .append("\u001b[1;33m")
                 .append(name)
@@ -612,8 +639,9 @@ public class Movie {
 
     @Override
     public String toString() {
-        final StringBuilder result = new StringBuilder();
-        result.append("ID: ").append(id).append('\n');
+        StringBuilder result = new StringBuilder();
+        result.append("ID: ").append(id);
+        result.append(" (").append(metaOwner).append(")\n");
         result.append("  Name: ").append(name).append('\n');
         result.append("  Coordinates:\n");
         result.append("    X: ").append(coordinates.getX()).append('\n');
@@ -660,6 +688,7 @@ public class Movie {
             rawData.director = null;
         else
             rawData.director = this.director.toRawData();
+        rawData.metaOwner = this.metaOwner;
         return rawData;
     }
 

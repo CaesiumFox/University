@@ -21,7 +21,7 @@ public class NetworkManager {
     public static ByteBuffer byteBuffer;
 
     public static void init(Scanner input) {
-        System.out.println("Enter server address:"
+        System.out.print("Enter server address: "
                 + (Client.formattedTerminal ? "\u001b[1;32m" : ""));
         while (true) {
             try {
@@ -42,7 +42,7 @@ public class NetworkManager {
         }
         if(Client.formattedTerminal)
             System.out.print("\u001b[0m");
-        System.out.println("Enter server port:");
+        System.out.print("Enter server port: ");
         if(Client.formattedTerminal)
             System.out.print("\u001b[1;34m");
         while (true) {

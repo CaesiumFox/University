@@ -6,7 +6,7 @@ import io.github.caesiumfox.lab07.common.exceptions.WrongEnumInputException;
  * Определяет одну из четырёх возрастных
  * категорий MPAA: G, PG, PG-13, R.
  */
-public enum MpaaRating implements Serializable {
+public enum MpaaRating {
     G {
         @Override
         public String toString() {

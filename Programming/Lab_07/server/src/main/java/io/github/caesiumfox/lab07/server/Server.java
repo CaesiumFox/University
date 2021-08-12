@@ -1,17 +1,13 @@
 package io.github.caesiumfox.lab07.server;
 
 import io.github.caesiumfox.lab07.common.entry.Movie;
-import io.github.caesiumfox.lab07.common.exceptions.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -25,16 +21,15 @@ public class Server {
     public static String dateFormat;
 
     public static Connection connection;
-    public static Statement universalStatement;
     private static String adminUser;
     private static String databaseUrl;
 
-    private static PrintWriter writer;
-	private static Scanner input;
+	private final static Scanner input;
 
 	static NetworkManager networkManager;
 	static SessionController sessionController;
 	static DatabaseManager database;
+	static Shell shell;
 
     static {
         input = new Scanner(System.in);
@@ -51,6 +46,7 @@ public class Server {
             System.out.println("Failed to create/use log file.");
             System.out.println("Logger output is now stdout.");
         }
+        Movie.setDateFormat("dd.MM.yyyy");
     }
 
     public static void main(String[] args) {
@@ -74,14 +70,17 @@ public class Server {
             System.out.println("Enter password:");
             String password = new String(System.console().readPassword());
             connection = java.sql.DriverManager.getConnection(databaseUrl, adminUser, password);
-            universalStatement = connection.createStatement();
 
-            database = new DatabaseManager(input);
+            database = new DatabaseManager();
             sessionController = new SessionController();
+            shell = new Shell(input);
 
+            running = true;
             networkManager.start();
             sessionController.start();
+            shell.start();
 
+            System.out.println("Successfully started server.");
         } catch (SQLException e) {
             System.out.println("An exception has been caught with this message:");
             System.out.println(e.getMessage());
@@ -112,14 +111,21 @@ public class Server {
             System.out.println("    * CreationDate date not null");
             System.out.println("  - it has a sequence called 'IntID'");
             System.out.println();
+            System.exit(2);
         } catch (Exception e) {
             System.out.println("Something wrong happened:");
             System.out.println(e.getMessage());
             Server.logger.severe("Error: " + e.getMessage());
+            System.exit(-1);
         }
 
         try {
             sessionController.join();
+            System.out.println("Joined sessionController");
+            networkManager.join();
+            System.out.println("Joined networkManager");
+            shell.join();
+            System.out.println("Joined shell");
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
@@ -137,5 +143,9 @@ public class Server {
         buffer.putInt(str.length());
         for (int i = 0; i < str.length(); i++)
             buffer.putChar(str.charAt(i));
+    }
+
+    public static synchronized void stop() {
+        running = false;
     }
 }

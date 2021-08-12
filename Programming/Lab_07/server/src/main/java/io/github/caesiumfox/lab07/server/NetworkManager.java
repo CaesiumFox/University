@@ -19,7 +19,7 @@ public class NetworkManager extends Thread {
             this.client = client;
             buffer = ByteBuffer.wrap(bytes);
         }
-    };
+    }
 
     public static final int BUFFER_SIZE = 8192; // 2**13
     private DatagramSocket datagramSocket;
@@ -138,7 +138,10 @@ public class NetworkManager extends Thread {
             while (received.isEmpty()) {
                 Thread.sleep(100);
             }
-            buffer.put(received.peek().buffer);
+            buffer.clear();
+            buffer.put(received.peek().buffer.array());
+            buffer.flip();
+            assert received.peek() != null;
             return received.poll().client;
         }
     }

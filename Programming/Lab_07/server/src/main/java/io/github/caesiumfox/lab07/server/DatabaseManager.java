@@ -15,22 +15,9 @@ import java.util.stream.Collectors;
  * База данных с которой ведётся работа
  */
 public class DatabaseManager {
-    /**
-     * Вспомогательный класс для работы с JSON файлами
-     * при помощи библиотеки GSON.
-     * GSON работает непосредственно с ним,
-     * преобразование между ним и
-     * основным классом ({@link DatabaseManager}) происходит
-     * отдельно.
-     */
-    public static class RawData {
-        public Date creationDate;
-        public List<Movie.RawData> data;
-    }
-
     private final java.util.Date creationDate;
     private final LinkedHashMap<Integer, Movie> data;
-    private final LinkedHashMap<Integer, String> owners;
+    //private final LinkedHashMap<Integer, String> owners;
     private final Set<String> knownPassportIDs;
     private int maxID;
     private final ReentrantLock dataLock;
@@ -43,15 +30,14 @@ public class DatabaseManager {
      * данных о файле-источнике, с
      * датой создания равной текущей
      */
-    public DatabaseManager(Scanner input) throws java.sql.SQLException,
-            ElementIdAlreadyExistsException,
-            PassportIdAlreadyExistsException,
+    public DatabaseManager() throws java.sql.SQLException,
             StringLengthLimitationException,
             CoordinatesOutOfRangeException,
             NumberOutOfRangeException {
         Server.logger.info("Started database manager initialization");
 
-        ResultSet creationDateResultSet = Server.universalStatement.executeQuery("select * from meta;");
+        Statement creationDateStatement = Server.connection.createStatement();
+        ResultSet creationDateResultSet = creationDateStatement.executeQuery("select * from meta;");
         if(creationDateResultSet.next()) {
             creationDate = creationDateResultSet.getDate(1);
         } else {
@@ -63,9 +49,12 @@ public class DatabaseManager {
 
         this.knownPassportIDs = new HashSet<>();
         this.data = new LinkedHashMap<>();
-        this.owners = new LinkedHashMap<>();
 
-        ResultSet dbResultSet = Server.universalStatement.executeQuery("select * from movies;");
+        Statement dbStatement = Server.connection.createStatement();
+        Statement ownersStatement = Server.connection.createStatement();
+        ResultSet dbResultSet = dbStatement.executeQuery("select * from movies;");
+        ResultSet ownersResultSet = ownersStatement.executeQuery("select * from owners;");
+
         while(dbResultSet.next()) {
             Movie.RawData movieRawData = new Movie.RawData();
             movieRawData.id = dbResultSet.getInt("id");
@@ -88,11 +77,11 @@ public class DatabaseManager {
             }
             data.put(movieRawData.id, new Movie(movieRawData));
         }
-        ResultSet ownersResultSet = Server.universalStatement.executeQuery("select * from owners;");
-        while(dbResultSet.next()) {
+
+        while(ownersResultSet.next()) {
             int id = ownersResultSet.getInt("movieid");
-            String name = ownersResultSet.getString("username");
-            owners.put(id, name);
+            String username = ownersResultSet.getString("username");
+            data.get(id).setMetaOwner(username);
         }
         updateMaxID();
 
@@ -208,6 +197,8 @@ public class DatabaseManager {
             throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException,
             NumberOutOfRangeException, SQLException {
         try {
+            System.out.println("A: " + id + " : " + owner);
+            System.out.println(movie);
             dataLock.lock();
             if (id <= 0)
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
@@ -226,6 +217,9 @@ public class DatabaseManager {
             PreparedStatement insertStatement = Server.connection.prepareStatement(
                     "insert into movies values " +
                             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement newOwnerStatement = Server.connection.prepareStatement(
+                    "insert into owners values " +
+                            "(?, ?)");
             insertStatement.setInt(1, id);
             insertStatement.setString(2, movie.getName());
             insertStatement.setFloat(3, movie.getCoordinates().getX());
@@ -234,21 +228,24 @@ public class DatabaseManager {
             insertStatement.setLong(6, movie.getOscarsCount());
             insertStatement.setInt(7, movie.getGenre().ordinal());
             insertStatement.setInt(8, movie.getMpaaRating().ordinal());
+            newOwnerStatement.setInt(1, id);
+            newOwnerStatement.setString(2, owner);
             if (movie.getDirector() == null) {
                 insertStatement.setString(9, null);
                 insertStatement.setString(10, null);
-                insertStatement.setString(11, null);
+                insertStatement.setNull(11, Types.INTEGER);
             } else {
                 insertStatement.setString(9, movie.getDirector().getName());
                 insertStatement.setString(10, movie.getDirector().getPassportID());
                 insertStatement.setInt(11, movie.getDirector().getHairColor().ordinal());
             }
             insertStatement.execute();
+            newOwnerStatement.execute();
 
             data.put(id, movie);
+            data.get(id).setMetaOwner(owner);
             if (movie.hasPassportID())
                 knownPassportIDs.add(movie.getDirector().getPassportID());
-            owners.put(id, owner);
             maxIdLock.lock();
             if (id > maxID)
                 maxID = id;
@@ -281,7 +278,7 @@ public class DatabaseManager {
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
             if (!hasID(id))
                 throw new NoKeyInDatabaseException(id);
-            if (!owners.get(id).equals(owner))
+            if (!data.get(id).getMetaOwner().equals(owner))
                 throw new NotAnOwnerException(owner, id);
             if (movie.hasPassportID()) {
                 if (hasPassportID(movie.getDirector().getPassportID()))
@@ -305,7 +302,7 @@ public class DatabaseManager {
             if (movie.getDirector() == null) {
                 updateStatement.setString(8, null);
                 updateStatement.setString(9, null);
-                updateStatement.setString(10, null);
+                updateStatement.setNull(10, Types.INTEGER);
             } else {
                 updateStatement.setString(8, movie.getDirector().getName());
                 updateStatement.setString(9, movie.getDirector().getPassportID());
@@ -314,6 +311,7 @@ public class DatabaseManager {
             updateStatement.setInt(11, id);
             updateStatement.execute();
             Movie prev = data.put(id, movie);
+            data.get(id).setMetaOwner(owner);
             assert prev != null;
             try {
                 passportLock.lock();
@@ -343,7 +341,7 @@ public class DatabaseManager {
             passportLock.lock();
             maxIdLock.lock();
 
-            if (owners.get(id).equals(owner)) {
+            if (data.get(id).getMetaOwner().equals(owner)) {
                 removeElement(id);
             } else {
                 throw new NotAnOwnerException(owner, id);
@@ -368,8 +366,8 @@ public class DatabaseManager {
             passportLock.lock();
             maxIdLock.lock();
 
-            for (Integer key : new HashSet<Integer>(data.keySet())) {
-                if (owners.get(key).equals(owner)) {
+            for (Integer key : new HashSet<>(data.keySet())) {
+                if (data.get(key).getMetaOwner().equals(owner)) {
                     removeElement(key);
                 }
             }
@@ -394,9 +392,9 @@ public class DatabaseManager {
             dataLock.lock();
             movie.updateCreationDate();
             MovieComparator comparator = new MovieComparator();
-            for (Integer key : new HashSet<Integer>(data.keySet())) {
+            for (Integer key : new HashSet<>(data.keySet())) {
                 if (comparator.compare(data.get(key), movie) < 0
-                        && owners.get(key).equals(owner)) {
+                        && data.get(key).getMetaOwner().equals(owner)) {
                     removeElement(key);
                 }
             }
@@ -419,8 +417,8 @@ public class DatabaseManager {
         try {
             if (id <= 0)
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
-            for (Integer key : new HashSet<Integer>(data.keySet())) {
-                if (key > id) {
+            for (Integer key : new HashSet<>(data.keySet())) {
+                if (key > id && data.get(key).getMetaOwner().equals(owner)) {
                     removeElement(key);
                 }
             }
@@ -443,8 +441,8 @@ public class DatabaseManager {
         try {
             if (id <= 0)
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
-            for (Integer key : new HashSet<Integer>(data.keySet())) {
-                if (key < id) {
+            for (Integer key : new HashSet<>(data.keySet())) {
+                if (key < id && data.get(key).getMetaOwner().equals(owner)) {
                     removeElement(key);
                 }
             }
@@ -471,9 +469,7 @@ public class DatabaseManager {
             if (data.size() == 0)
                 throw new EmptyDatabaseException();
             return data.values().stream()
-                    .min((Movie a, Movie b) -> {
-                        return a.getMpaaRating().ordinal() - b.getMpaaRating().ordinal();
-                    }).get();
+                    .min(Comparator.comparingInt((Movie a) -> a.getMpaaRating().ordinal())).get();
         } finally {
             dataLock.unlock();
         }
@@ -493,9 +489,7 @@ public class DatabaseManager {
         try {
             dataLock.lock();
             return (int) data.values().stream()
-                    .filter((Movie movie) -> {
-                        return movie.getOscarsCount() > oscarsCount;
-                    })
+                    .filter((Movie movie) -> movie.getOscarsCount() > oscarsCount)
                     .count();
         } finally {
             dataLock.unlock();
@@ -523,20 +517,22 @@ public class DatabaseManager {
 
     // dataLock must be locked
     private void removeElement(Integer id) throws SQLException {
-        Server.universalStatement.executeQuery("delete from movies where id=" + id);
-        Server.universalStatement.executeQuery("delete from owners where id=" + id);
+        Statement moviesDeleteStatement = Server.connection.createStatement();
+        Statement ownersDeleteStatement = Server.connection.createStatement();
+        moviesDeleteStatement.execute("delete from movies where id=" + id);
+        ownersDeleteStatement.execute("delete from owners where movieid=" + id);
         if (data.get(id).hasPassportID()) {
             knownPassportIDs.remove(data.get(id).getDirector().getPassportID());
         }
         data.remove(id);
-        owners.remove(id);
     }
 
     private int generateNewId() throws SQLException {
         try {
+            Statement generatorStatement = Server.connection.createStatement();
             dataLock.lock();
             while (true) {
-                ResultSet nextInt = Server.universalStatement
+                ResultSet nextInt = generatorStatement
                         .executeQuery("select nextval('intid')");
                 if(nextInt.next()) {
                     int id = nextInt.getInt(1);
@@ -550,22 +546,5 @@ public class DatabaseManager {
         } finally {
             dataLock.unlock();
         }
-    }
-
-    /**
-     * Преобразует объект класса в
-     * соответствующий ему объект
-     * класса {@link RawData}
-     *
-     * @return Объект класса {@link RawData}
-     */
-    public RawData toRawData() {
-        RawData rawData = new RawData();
-        rawData.creationDate = this.creationDate;
-        rawData.data = new ArrayList<Movie.RawData>(this.data.size());
-        for (Movie movie : this.data.values()) {
-            rawData.data.add(movie.toRawData());
-        }
-        return rawData;
     }
 }

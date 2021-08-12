@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 import static io.github.caesiumfox.lab07.common.KeyWord.NO_OPERATION;
 
 public class CommandHandler implements Runnable {
-    private DatabaseManager database;
-    private long session;
+    private final DatabaseManager database;
+    private final long session;
 
     public CommandHandler(DatabaseManager database, long session) {
         this.database = database;
@@ -88,7 +88,7 @@ public class CommandHandler implements Runnable {
                             PassportIdAlreadyExistsException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -108,7 +108,7 @@ public class CommandHandler implements Runnable {
                             PassportIdAlreadyExistsException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -128,7 +128,7 @@ public class CommandHandler implements Runnable {
                             PassportIdAlreadyExistsException | NotAnOwnerException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -145,7 +145,7 @@ public class CommandHandler implements Runnable {
                             NotAnOwnerException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -164,7 +164,7 @@ public class CommandHandler implements Runnable {
                             NumberOutOfRangeException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -180,7 +180,7 @@ public class CommandHandler implements Runnable {
                     } catch (NumberOutOfRangeException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -196,7 +196,7 @@ public class CommandHandler implements Runnable {
                     } catch (NumberOutOfRangeException e) {
                         sendError(e.getMessage());
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -209,7 +209,7 @@ public class CommandHandler implements Runnable {
                         database.clear(Server.sessionController.getSessionUsername(session));
                         sendOk();
                     } catch (SQLException e) {
-                        sendError("Database error");
+                        sendError("Database error: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     Server.logger.severe("Failed to send message");
@@ -277,7 +277,6 @@ public class CommandHandler implements Runnable {
     private void sendElements(List<Movie> movies) throws IOException, InterruptedException {
         for (Movie movie : movies) {
             ByteBuffer buffer = prepareBuffer();
-            buffer.clear();
             buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
             movie.toRawData().putInByteBuffer(buffer);
             buffer.flip();
@@ -298,7 +297,6 @@ public class CommandHandler implements Runnable {
         }
 
         ByteBuffer buffer = prepareBuffer();
-        buffer.clear();
         buffer.put(KeyWord.getCode(KeyWord.NOTHING_LEFT));
         buffer.flip();
         Server.logger.info("Written NOTHING_LEFT");
@@ -307,7 +305,6 @@ public class CommandHandler implements Runnable {
 
     private void sendElement(Movie movie) throws IOException {
         ByteBuffer buffer = prepareBuffer();
-        buffer.clear();
         buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
         movie.toRawData().putInByteBuffer(buffer);
         buffer.flip();
@@ -317,7 +314,6 @@ public class CommandHandler implements Runnable {
 
     private void sendInfo(MutableDatabaseInfo info) throws IOException {
         ByteBuffer buffer = prepareBuffer();
-        buffer.clear();
         buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
         info.putInByteBuffer(buffer);
         buffer.flip();
@@ -327,7 +323,6 @@ public class CommandHandler implements Runnable {
 
     private void sendInt(int value) throws IOException {
         ByteBuffer buffer = prepareBuffer();
-        buffer.clear();
         buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
         buffer.putInt(value);
         buffer.flip();
@@ -337,7 +332,6 @@ public class CommandHandler implements Runnable {
 
     private void sendBool(boolean value) throws IOException {
         ByteBuffer buffer = prepareBuffer();
-        buffer.clear();
         buffer.put(KeyWord.getCode(KeyWord.SOME_LEFT));
         buffer.put(value ? (byte)1 : (byte)0);
         buffer.flip();
@@ -351,7 +345,6 @@ public class CommandHandler implements Runnable {
 
     private void sendKeyWord(KeyWord word) throws IOException {
         ByteBuffer buffer = prepareBuffer();
-        buffer.clear();
         buffer.put(KeyWord.getCode(word));
         buffer.flip();
         Server.logger.info("Written OK");
@@ -362,7 +355,6 @@ public class CommandHandler implements Runnable {
         ByteBuffer buffer = prepareBuffer();
         if(message == null)
             message = "";
-        buffer.clear();
         buffer.put(KeyWord.getCode(KeyWord.ERROR));
         Server.writeString(buffer, message);
         buffer.flip();
@@ -370,17 +362,10 @@ public class CommandHandler implements Runnable {
         Server.sessionController.sendResponse(buffer, session);
     }
 
-    private ByteBuffer prepareBuffer(int size) {
-        ByteBuffer buffer = ByteBuffer.allocate(size);
+    private ByteBuffer prepareBuffer() {
+        ByteBuffer buffer = ByteBuffer.allocate(NetworkManager.BUFFER_SIZE);
+        buffer.clear();
         buffer.putLong(session);
         return buffer;
-    }
-
-    private ByteBuffer prepareBuffer() {
-        return prepareBuffer(NetworkManager.BUFFER_SIZE);
-    }
-
-    private void putKeyWord(ByteBuffer buffer, KeyWord kw) {
-        buffer.put(KeyWord.getCode(kw));
     }
 }

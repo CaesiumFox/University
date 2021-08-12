@@ -43,6 +43,7 @@ public class DatabaseManager implements Database {
         NetworkManager.byteBuffer.getLong(); // for session number
         NetworkManager.byteBuffer.get(); // for SOME_LEFT
         databaseInfo = new MutableDatabaseInfo();
+
         databaseInfo.getFromByteBuffer(NetworkManager.byteBuffer);
     }
 
@@ -132,24 +133,10 @@ public class DatabaseManager implements Database {
 
     @Override
     public void info(PrintStream output) throws IOException {
-        NetworkManager.byteBuffer.clear();
-        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
-        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.GET_INFO));
-        NetworkManager.byteBuffer.flip();
-
-        NetworkManager.send();
-        NetworkManager.receive();
-
-        NetworkManager.byteBuffer.get(); // for SOME_LEFT
-        databaseInfo = new MutableDatabaseInfo();
-        databaseInfo.getFromByteBuffer(NetworkManager.byteBuffer);
+        updateDatabaseInfo();
 
         if (Client.formattedTerminal) {
             output.println("    \u001b[1;4mDatabase info\u001b[0m");
-            output.print("  Input File:      ");
-            //output.println(databaseInfo.getInputFile().length() == 0 ?
-            //        "\u001b[1;31m<N/A>\u001b[0m" :
-            //        "\u001b[1;33m" + databaseInfo.getInputFile() + "\u001b[0m");
             output.print("  Creation Date:   ");
             output.println("\u001b[1;33m" + new SimpleDateFormat(Client.dateFormat)
                     .format(databaseInfo.getCreationDate()) + "\u001b[0m");
@@ -239,6 +226,14 @@ public class DatabaseManager implements Database {
                 NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CONTINUE));
                 NetworkManager.byteBuffer.flip();
                 // then go send & receive the next iteration
+            } else if (response == KeyWord.ERROR) {
+                if (Client.formattedTerminal)
+                    System.out.println("\u001b[1;31m");
+                System.out.println("Server returned error:");
+                System.out.println(Client.readString(NetworkManager.byteBuffer));
+                if (Client.formattedTerminal)
+                    System.out.println("\u001b[m");
+                break;
             } else {
                 break;
             }

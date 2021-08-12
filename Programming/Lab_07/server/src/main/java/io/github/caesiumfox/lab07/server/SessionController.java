@@ -2,7 +2,6 @@ package io.github.caesiumfox.lab07.server;
 
 import io.github.caesiumfox.lab07.common.KeyWord;
 
-import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -10,11 +9,17 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
+/**
+ * Класс для организации сессий.
+ * Каждое выполнение команды -- одна сессия.
+ * Разные команды даже от одного клиента --
+ * разные сессии.
+ */
 public class SessionController extends Thread {
     private static class SessionState {
         private SocketAddress address;
@@ -23,19 +28,21 @@ public class SessionController extends Thread {
         private boolean isOld;
     }
 
-    private Map<Long, SessionState> sessions;
+    private final Map<Long, SessionState> sessions;
     private MessageDigest digest;
     private Long sessionIdSequence;
-    private ExecutorService commandCachedThreadPool;
+    private final Object sessionIdSequenceMutex;
+    private final ExecutorService commandCachedThreadPool;
 
     SessionController() {
-        sessions = new HashMap<Long, SessionState>();
+        sessions = new HashMap<>();
         try {
             digest = MessageDigest.getInstance("MD2");
         } catch (NoSuchAlgorithmException e) {
             System.out.println("MD2 is not supported");
         }
         sessionIdSequence = 1L;
+        sessionIdSequenceMutex = new Object();
         commandCachedThreadPool = Executors.newCachedThreadPool();
     }
 
@@ -54,19 +61,21 @@ public class SessionController extends Thread {
                                 "select pwhashstr, salt from users where username=?");
                         getPass.setString(1, username);
                         ResultSet saltResult = getPass.executeQuery();
-                        String correctHash = saltResult.getString(1);
-                        String salt = saltResult.getString(2);
-                        if (correctHash.isEmpty()) {
-                            accepted = password.isEmpty();
-                        } else {
-                            String passPlusSalt = password + salt;
-                            byte[] hash = digest.digest(passPlusSalt.getBytes());
-                            StringBuilder hashBuilder = new StringBuilder();
-                            for (byte b : hash) {
-                                hashBuilder.append(toHex((int) b & 0xf));
-                                hashBuilder.append(toHex(((int) b >> 4) & 0xf));
+                        if(saltResult.next()) {
+                            String correctHash = saltResult.getString(1);
+                            String salt = saltResult.getString(2);
+                            if (correctHash.isEmpty()) {
+                                accepted = password.isEmpty();
+                            } else {
+                                String passPlusSalt = password + salt;
+                                byte[] hash = digest.digest(passPlusSalt.getBytes());
+                                StringBuilder hashBuilder = new StringBuilder();
+                                for (byte b : hash) {
+                                    hashBuilder.append(toHex((int) b & 0xf));
+                                    hashBuilder.append(toHex(((int) b >> 4) & 0xf));
+                                }
+                                accepted = correctHash.equals(hashBuilder.toString());
                             }
-                            accepted = correctHash.equals(hashBuilder.toString());
                         }
                         break;
                     } catch (SQLException e) {
@@ -75,9 +84,12 @@ public class SessionController extends Thread {
                 }
                 if (!accepted) {
                     ByteBuffer response = ByteBuffer.allocate(NetworkManager.BUFFER_SIZE);
+                    response.clear();
                     response.putLong(0L);
                     response.put(KeyWord.getCode(KeyWord.LOGIN_INCORRECT));
+                    response.flip();
                     Server.networkManager.send(response, client);
+                    continue;
                 }
                 long sessionID = currentBuffer.getLong();
                 if (sessionID == 0) {
@@ -94,13 +106,14 @@ public class SessionController extends Thread {
                     state.username = username;
                     state.buffer = currentBuffer;
                     sessions.put(sessionID, state);
+                    commandCachedThreadPool.submit(new CommandHandler(Server.database, sessionID));
                 } else if (!sessions.containsKey(sessionID)) {
                     ByteBuffer response = ByteBuffer.allocate(1);
                     response.put(KeyWord.getCode(KeyWord.INVALID_SESSION));
                     Server.networkManager.send(response, client);
                     continue;
                 } else {
-                    waitForStateUpdate(sessionID);
+                    waitForOldness(sessionID);
                     synchronized (sessions) {
                         sessions.get(sessionID).address = client;
                         sessions.get(sessionID).isOld = false;
@@ -108,7 +121,6 @@ public class SessionController extends Thread {
                         sessions.get(sessionID).buffer = currentBuffer;
                     }
                 }
-                commandCachedThreadPool.submit(new CommandHandler(Server.database, sessionID));
 
             }
         } catch (InterruptedException e) {
@@ -139,10 +151,15 @@ public class SessionController extends Thread {
      * рекомендуется выполнять перед
      * {@link #getSessionBuffer(long)}
      * @param ID идентификатор сессии
-     * @throws InterruptedException
      */
     public void waitForStateUpdate(long ID) throws InterruptedException {
         while (getSessionOldnessState(ID)) {
+            Thread.sleep(10);
+        }
+    }
+
+    public void waitForOldness(long ID) throws InterruptedException {
+        while (!getSessionOldnessState(ID)) {
             Thread.sleep(10);
         }
     }
@@ -153,24 +170,18 @@ public class SessionController extends Thread {
         }
     }
 
-    public SocketAddress getSessionAddress(long ID) {
-        synchronized (sessions) {
-            return sessions.get(ID).address;
-        }
-    }
-
     public void freeSession(long ID) {
         synchronized (sessions) {
             sessions.remove(ID);
         }
     }
 
-    public void sendResponse(ByteBuffer buffer, long sessionId) throws IOException {
+    public void sendResponse(ByteBuffer buffer, long sessionId) {
         Server.networkManager.send(buffer, sessions.get(sessionId).address);
     }
 
     private long nextSessionIdSequence() {
-        synchronized (sessionIdSequence) {
+        synchronized (sessionIdSequenceMutex) {
             long result = sessionIdSequence;
             do {
                 if (sessionIdSequence == Long.MAX_VALUE)
