@@ -63,6 +63,16 @@ public class CommandHandler implements Runnable {
                 }
                 break;
             }
+            case CHECK_OWNER: {
+                try {
+                    int id = buffer.getInt();
+                    String owner = Server.readString(buffer);
+                    sendBool(database.isOwner(id, owner));
+                } catch (IOException e) {
+                    Server.logger.severe("Failed to send message");
+                }
+                break;
+            }
             case GET_ALL: {
                 try {
                     try {

@@ -57,6 +57,18 @@ public enum KeyWord {
      * иное - зарегестрировано.
      */
     CHECK_ID,
+    /**
+     * Посылается серверу клиентом,
+     * после этого байта должно идти
+     * число (4 байта, int) и строка.
+     * Ответ представляет из себя
+     * ключевое слово
+     * {@link #SOME_LEFT},
+     * после которого идёт один байт:
+     * 0 - не зарегестрировано,
+     * иное - зарегестрировано.
+     */
+    CHECK_OWNER,
 
     /**
      * Отправляется клиентом серверу для
@@ -252,6 +264,7 @@ public enum KeyWord {
             case GET_INFO:             return (byte)0x10;
             case CHECK_PASSPORT_ID:    return (byte)0x11;
             case CHECK_ID:             return (byte)0x12;
+            case CHECK_OWNER:          return (byte)0x13;
             case GET_ALL:              return (byte)0x21;
             case INSERT:               return (byte)0x22;
             case INSERT_ID:            return (byte)0x23;
@@ -283,6 +296,7 @@ public enum KeyWord {
             case (byte)0x10: return GET_INFO;
             case (byte)0x11: return CHECK_PASSPORT_ID;
             case (byte)0x12: return CHECK_ID;
+            case (byte)0x13: return CHECK_OWNER;
             case (byte)0x21: return GET_ALL;
             case (byte)0x22: return INSERT;
             case (byte)0x23: return INSERT_ID;

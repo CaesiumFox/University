@@ -15,6 +15,6 @@ public class ElementIdAlreadyExistsException extends Exception {
      */
     public ElementIdAlreadyExistsException(Integer id) {
         super("Movie with ID " + String.valueOf(id) +
-                " already presents in database");
+                " is already present in the database");
     }
 }

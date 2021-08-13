@@ -37,6 +37,9 @@ public class RemoveKey extends Command {
     @Override
     protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         try {
+            if(!database.isOwner(id, Client.getUsername())) {
+                throw new NoKeyInDatabaseException(id);
+            }
             database.removeKey(id);
         } catch (NoKeyInDatabaseException | NumberOutOfRangeException e) {
             throw new CommandExecutionException(e);

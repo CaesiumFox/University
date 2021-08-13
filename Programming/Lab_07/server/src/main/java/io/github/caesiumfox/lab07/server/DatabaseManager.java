@@ -123,6 +123,15 @@ public class DatabaseManager {
         return result;
     }
 
+    public boolean isOwner(Integer id, String owner) {
+        dataLock.lock();
+        boolean result = data.containsKey(id);
+        if (result)
+            result = data.get(id).getMetaOwner().equals(owner);
+        dataLock.unlock();
+        return result;
+    }
+
     public boolean hasRanOutOfIDs() {
         maxIdLock.lock();
         boolean result = (maxID == Integer.MAX_VALUE);
@@ -197,8 +206,6 @@ public class DatabaseManager {
             throws ElementIdAlreadyExistsException, PassportIdAlreadyExistsException,
             NumberOutOfRangeException, SQLException {
         try {
-            System.out.println("A: " + id + " : " + owner);
-            System.out.println(movie);
             dataLock.lock();
             if (id <= 0)
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
@@ -415,6 +422,7 @@ public class DatabaseManager {
     public void removeGreaterKey(Integer id, String owner)
             throws NumberOutOfRangeException, SQLException {
         try {
+            dataLock.lock();
             if (id <= 0)
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
             for (Integer key : new HashSet<>(data.keySet())) {
@@ -439,6 +447,7 @@ public class DatabaseManager {
     public void removeLowerKey(Integer id, String owner)
             throws NumberOutOfRangeException, SQLException {
         try {
+            dataLock.lock();
             if (id <= 0)
                 throw new NumberOutOfRangeException(id, 1, Integer.MAX_VALUE);
             for (Integer key : new HashSet<>(data.keySet())) {

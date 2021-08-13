@@ -13,6 +13,7 @@ public interface Database {
     public boolean hasPassportID(String passportId) throws IOException;
     public Date getCreationDate() throws IOException;
     public boolean hasID(Integer id) throws IOException;
+    public boolean isOwner(Integer id, String owner) throws IOException;
     public boolean hasRanOutOfIDs() throws IOException;
 
 

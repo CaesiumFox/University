@@ -1,13 +1,11 @@
 package io.github.caesiumfox.lab07.client;
 
 import io.github.caesiumfox.lab07.common.KeyWord;
+import io.github.caesiumfox.lab07.common.Tools;
 import io.github.caesiumfox.lab07.common.entry.Movie;
-import sun.nio.ch.Net;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.security.Key;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -75,7 +73,7 @@ public class Client {
                 NetworkManager.byteBuffer.flip();
                 NetworkManager.send();
                 NetworkManager.receive();
-                long newSession = NetworkManager.byteBuffer.getLong();
+                NetworkManager.byteBuffer.getLong(); // ignore session
                 KeyWord response = KeyWord.getKeyWord(NetworkManager.byteBuffer.get());
                 if (response == KeyWord.OK) {
                     break;
@@ -112,16 +110,10 @@ public class Client {
     }
 
     public static String readString(ByteBuffer buffer) {
-        int length = buffer.getInt();
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < length; i++)
-            builder.append(buffer.getChar());
-        return builder.toString();
+        return Tools.readString(buffer);
     }
 
     public static void writeString(ByteBuffer buffer, String str) {
-        buffer.putInt(str.length());
-        for (int i = 0; i < str.length(); i++)
-            buffer.putChar(str.charAt(i));
+        Tools.writeString(buffer, str);
     }
 }

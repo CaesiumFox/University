@@ -56,7 +56,7 @@ public class Update extends Command {
     @Override
     protected void execute() throws ShellSignalException, CommandExecutionException, IOException {
         try {
-            if(!database.hasID(id)) {
+            if(!database.isOwner(id, Client.getUsername())) {
                 throw new NoKeyInDatabaseException(id);
             }
             if(inputEntry == null)

@@ -110,6 +110,27 @@ public class DatabaseManager implements Database {
     }
 
     @Override
+    public boolean isOwner(Integer id, String owner) {
+        NetworkManager.byteBuffer.clear();
+        Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
+        NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.CHECK_OWNER));
+        NetworkManager.byteBuffer.putInt(id);
+        Client.writeString(NetworkManager.byteBuffer, owner);
+        NetworkManager.byteBuffer.flip();
+
+        try {
+            NetworkManager.send();
+            NetworkManager.receive();
+        } catch (IOException e) {
+            return false;
+        }
+
+        NetworkManager.byteBuffer.getLong(); // for session number
+        NetworkManager.byteBuffer.get(); // for SOME_LEFT
+        return NetworkManager.byteBuffer.get() != 0;
+    }
+
+    @Override
     public boolean hasRanOutOfIDs() {
         return databaseInfo.getMaxID() == Integer.MAX_VALUE;
     }

@@ -1,6 +1,7 @@
 package io.github.caesiumfox.lab07.server;
 
 import io.github.caesiumfox.lab07.common.entry.Movie;
+import io.github.caesiumfox.lab07.common.Tools;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -132,17 +133,11 @@ public class Server {
     }
 
     public static String readString(ByteBuffer buffer) {
-        int length = buffer.getInt();
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < length; i++)
-            builder.append(buffer.getChar());
-        return builder.toString();
+        return Tools.readString(buffer);
     }
 
     public static void writeString(ByteBuffer buffer, String str) {
-        buffer.putInt(str.length());
-        for (int i = 0; i < str.length(); i++)
-            buffer.putChar(str.charAt(i));
+        Tools.writeString(buffer, str);
     }
 
     public static synchronized void stop() {
