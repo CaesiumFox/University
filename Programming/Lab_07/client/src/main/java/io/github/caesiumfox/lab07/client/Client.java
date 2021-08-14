@@ -35,6 +35,8 @@ public class Client {
         dateFormat = "dd.MM.yyyy";
         input = new Scanner(System.in);
         Movie.setDateFormat(dateFormat);
+        Movie.shortString = true;
+        Movie.formatted = formattedTerminal;
     }
 
     public static void main(String[] args) {

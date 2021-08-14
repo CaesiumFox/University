@@ -131,6 +131,8 @@ public class Movie {
     }
 
     private static String dateFormat = "dd.MM.yyyy";
+    public static boolean shortString = true;
+    public static boolean formatted = false;
 
     private Integer id;
     private String name;
@@ -188,20 +190,20 @@ public class Movie {
             this.id = 0;
 
         // name
-        output.format("Enter the name (not empty):\n    ");
+        output.format("Enter the name (not empty): ");
         while (true) {
             try {
                 setName(input.nextLine().trim());
                 break;
             } catch (StringLengthLimitationException e) {
                 output.println(e.getMessage());
-                output.format("Enter the name again (not empty):\n    ");
+                output.format("Enter the name again (not empty): ");
             }
         }
 
         // coordinates
         Coordinates coordinates = new Coordinates();
-        output.format("Enter X coordinate (from %.1f to %.1f):\n    ",
+        output.format("Enter X coordinate (from %.1f to %.1f): ",
                 Coordinates.minX, Coordinates.maxX);
         while (true) {
             try {
@@ -210,11 +212,11 @@ public class Movie {
                 break;
             } catch (CoordinatesOutOfRangeException | NumberFormatException e) {
                 output.println(e.getMessage());
-                output.format("Enter X coordinate again (from %f to %f):\n    ",
+                output.format("Enter X coordinate again (from %f to %f): ",
                         Coordinates.minX, Coordinates.maxX);
             }
         }
-        output.format("Enter Y coordinate (from %f to %f):\n    ",
+        output.format("Enter Y coordinate (from %f to %f): ",
                 Coordinates.minY, Coordinates.maxY);
         while (true) {
             try {
@@ -223,7 +225,7 @@ public class Movie {
                 break;
             } catch (CoordinatesOutOfRangeException | NumberFormatException e) {
                 output.println(e.getMessage());
-                output.format("Enter Y coordinate again (from %f to %f):\n    ",
+                output.format("Enter Y coordinate again (from %f to %f): ",
                         Coordinates.minY, Coordinates.maxY);
             }
         }
@@ -233,7 +235,7 @@ public class Movie {
         this.creationDate = new Date();
 
         // oscarsCount
-        output.format("Enter the number of Oscars (positive integer):\n    ");
+        output.format("Enter the number of Oscars (positive integer): ");
         while (true) {
             try {
                 String temp = input.nextLine().trim();
@@ -241,38 +243,38 @@ public class Movie {
                 break;
             } catch (NumberOutOfRangeException | NumberFormatException e) {
                 output.println(e.getMessage());
-                output.format("Enter the number of Oscars again (positive integer):\n    ");
+                output.format("Enter the number of Oscars again (positive integer): ");
             }
         }
 
         // genre
-        output.format("Enter the genre %s:\n    ", MovieGenre.listConstants());
+        output.format("Enter the genre %s: ", MovieGenre.listConstants());
         while (true) {
             try {
                 setGenre(MovieGenre.fromString(input.nextLine().trim()));
                 break;
             } catch (WrongEnumInputException e) {
                 output.println(e.getMessage());
-                output.format("Enter the genre again %s:\n    ", MovieGenre.listConstants());
+                output.format("Enter the genre again %s: ", MovieGenre.listConstants());
             }
         }
 
         // mpaaRating
-        output.format("Enter the MPAA rating %s:\n    ", MpaaRating.listConstants());
+        output.format("Enter the MPAA rating %s: ", MpaaRating.listConstants());
         while (true) {
             try {
                 setMpaaRating(MpaaRating.fromString(input.nextLine().trim()));
                 break;
             } catch (WrongEnumInputException e) {
                 output.println(e.getMessage());
-                output.format("Enter the MPAA rating again %s:\n    ", MpaaRating.listConstants());
+                output.format("Enter the MPAA rating again %s: ", MpaaRating.listConstants());
             }
         }
 
         // director
         boolean noDirector = false;
         Person director = new Person();
-        output.format("Enter the director's name (or empty string if there is no director):\n    ");
+        output.format("Enter the director's name (or empty string if there is no director): ");
         while (true) {
             try {
                 director.setName(input.nextLine().trim());
@@ -285,7 +287,7 @@ public class Movie {
         }
         if (!noDirector) {
             output.format("Enter the director's passport ID (%d to %d symbols, or empty string if " +
-                            "there is no passport ID):\n    ",
+                            "there is no passport ID): ",
                     Person.passportIDMinLen, Person.passportIDMaxLen);
             while (true) {
                 try {
@@ -297,23 +299,25 @@ public class Movie {
                     try {
                         if (database.hasPassportID(passportID))
                             throw new PassportIdAlreadyExistsException(passportID);
-                    } catch (IOException e) { /* TODO */ }
+                    } catch (IOException e) { 
+                        System.out.println("    [Failed to check the database]");
+                    }
                     director.setPassportID(passportID);
                     break;
                 } catch (StringLengthLimitationException | PassportIdAlreadyExistsException e) {
                     output.println(e.getMessage());
-                    output.format("Enter the director's passport ID again (%d to %d symbols):\n    ",
+                    output.format("Enter the director's passport ID again (%d to %d symbols): ",
                             Person.passportIDMinLen, Person.passportIDMaxLen);
                 }
             }
-            output.format("Enter the director's hair color %s:\n    ", Color.listConstants());
+            output.format("Enter the director's hair color %s: ", Color.listConstants());
             while (true) {
                 try {
                     director.setHairColor(Color.fromString(input.nextLine().trim()));
                     break;
                 } catch (WrongEnumInputException e) {
                     output.println(e.getMessage());
-                    output.format("Enter the director's hair color again %s:\n    ", Color.listConstants());
+                    output.format("Enter the director's hair color again %s: ", Color.listConstants());
                 }
             }
         }
@@ -573,23 +577,36 @@ public class Movie {
                 .append(id)
                 .append("\u001b[0m (\u001b[1;33m")
                 .append(metaOwner)
-                .append("\u001b[0m)\n");
-        result.append("  Name: ")
+                .append("\u001b[0m)")
+                .append(shortString ? "; " : "\n  ");
+        result.append("Name: ")
                 .append("\u001b[1;33m")
                 .append(name)
                 .append("\u001b[0m")
                 .append('\n');
-        result.append("  Coordinates:\n");
-        result.append("    X: ")
-                .append("\u001b[1;33m")
-                .append(coordinates.getX())
-                .append("\u001b[0m")
-                .append('\n');
-        result.append("    Y: ")
-                .append("\u001b[1;33m")
-                .append(coordinates.getY())
-                .append("\u001b[0m")
-                .append('\n');
+        if (shortString) {
+            result.append("  Coordinates: (X; Y) = (")
+                    .append("\u001b[1;33m")
+                    .append(coordinates.getX())
+                    .append("\u001b[0m")
+                    .append("; ")
+                    .append("\u001b[1;33m")
+                    .append(coordinates.getY())
+                    .append("\u001b[0m")
+                    .append(")\n");    
+        } else {
+            result.append("  Coordinates:\n");
+            result.append("    X: ")
+                    .append("\u001b[1;33m")
+                    .append(coordinates.getX())
+                    .append("\u001b[0m")
+                    .append('\n');
+            result.append("    Y: ")
+                    .append("\u001b[1;33m")
+                    .append(coordinates.getY())
+                    .append("\u001b[0m")
+                    .append('\n');    
+        }
         result.append("  Creation Date: ")
                 .append("\u001b[1;33m")
                 .append(new SimpleDateFormat(dateFormat)
@@ -605,8 +622,8 @@ public class Movie {
                 .append("\u001b[1;33m")
                 .append(genre)
                 .append("\u001b[0m")
-                .append('\n');
-        result.append("  MPAA Rating: ")
+                .append(shortString ? "; " : "\n  ");
+        result.append("MPAA Rating: ")
                 .append("\u001b[1;33m")
                 .append(mpaaRating)
                 .append("\u001b[0m")
@@ -614,58 +631,129 @@ public class Movie {
         if (director == null) {
             result.append("  Director: \u001b[1;31m<N/A>\u001b[0m\n");
         } else {
-            result.append("  Director:\n");
-            result.append("    Name: ")
-                    .append("\u001b[1;33m")
-                    .append(director.getName())
-                    .append("\u001b[0m")
-                    .append('\n');
-            result.append("    Passport ID: ");
-            if (director.getPassportID() == null) {
-                result.append("\u001b[1;31m<N/A>\u001b[0m");
+            if (shortString) {
+                result.append("  Director: ")
+                        .append("\u001b[1;33m")
+                        .append(director.getName())
+                        .append("\u001b[0m ");
+                if (director.getPassportID() == null) {
+                    result.append("[\u001b[1;31m<N/A>\u001b[0m]; ");
+                } else {
+                    result.append("[\u001b[1;33m")
+                            .append(director.getPassportID())
+                            .append("\u001b[0m]; ");
+                }
+                result.append("(hair color: ")
+                        .append("\u001b[1;33m")
+                        .append(director.getHairColor())
+                        .append("\u001b[0m)\n");
             } else {
-                result.append("\u001b[1;33m")
-                        .append(director.getPassportID())
-                        .append("\u001b[0m");
+                result.append("  Director:\n");
+                result.append("    Name: ")
+                        .append("\u001b[1;33m")
+                        .append(director.getName())
+                        .append("\u001b[0m")
+                        .append('\n');
+                result.append("    Passport ID: ");
+                if (director.getPassportID() == null) {
+                    result.append("\u001b[1;31m<N/A>\u001b[0m");
+                } else {
+                    result.append("\u001b[1;33m")
+                            .append(director.getPassportID())
+                            .append("\u001b[0m");
+                }
+                result.append('\n');
+                result.append("    Hair Color: ")
+                        .append("\u001b[1;33m")
+                        .append(director.getHairColor())
+                        .append("\u001b[0m\n");
             }
-            result.append('\n');
-            result.append("    Hair Color: ")
-                    .append("\u001b[1;33m")
-                    .append(director.getHairColor())
-                    .append("\u001b[0m\n");
+        }
+        return result.toString();
+    }
+
+    public String toSimpleString() {
+        StringBuilder result = new StringBuilder();
+        result.append("ID: ")
+                .append(id)
+                .append(" (")
+                .append(metaOwner)
+                .append(")")
+                .append(shortString ? "; " : "\n  ");
+        result.append("Name: ")
+                .append(name)
+                .append('\n');
+        if (shortString) {
+            result.append("  Coordinates: (X; Y) = (")
+                    .append(coordinates.getX())
+                    .append("; ")
+                    .append(coordinates.getY())
+                    .append(")\n");    
+        } else {
+            result.append("  Coordinates:\n");
+            result.append("    X: ")
+                    .append(coordinates.getX())
+                    .append('\n');
+            result.append("    Y: ")
+                    .append(coordinates.getY())
+                    .append('\n');    
+        }
+        result.append("  Creation Date: ")
+                .append(new SimpleDateFormat(dateFormat)
+                        .format(this.creationDate))
+                .append('\n');
+        result.append("  Oscars Count: ")
+                .append(oscarsCount)
+                .append('\n');
+        result.append("  Genre: ")
+                .append(genre)
+                .append(shortString ? "; " : "\n  ");
+        result.append("MPAA Rating: ")
+                .append(mpaaRating)
+                .append('\n');
+        if (director == null) {
+            result.append("  Director: <N/A>\n");
+        } else {
+            if (shortString) {
+                result.append("  Director: ")
+                        .append(director.getName())
+                        .append(" ");
+                if (director.getPassportID() == null) {
+                    result.append("[<N/A>]; ");
+                } else {
+                    result.append("[")
+                            .append(director.getPassportID())
+                            .append("] ");
+                }
+                result.append("(hair color: ")
+                        .append(director.getHairColor())
+                        .append(")\n");
+            } else {
+                result.append("  Director:\n");
+                result.append("    Name: ")
+                        .append(director.getName())
+                        .append('\n');
+                result.append("    Passport ID: ");
+                if (director.getPassportID() == null) {
+                    result.append("<N/A>");
+                } else {
+                    result.append(director.getPassportID());
+                }
+                result.append('\n');
+                result.append("    Hair Color: ")
+                        .append(director.getHairColor())
+                        .append("\n");
+            }
         }
         return result.toString();
     }
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("ID: ").append(id);
-        result.append(" (").append(metaOwner).append(")\n");
-        result.append("  Name: ").append(name).append('\n');
-        result.append("  Coordinates:\n");
-        result.append("    X: ").append(coordinates.getX()).append('\n');
-        result.append("    Y: ").append(coordinates.getY()).append('\n');
-        result.append("  Creation Date: ").append(
-                new SimpleDateFormat(dateFormat).format(this.creationDate)).append('\n');
-        result.append("  Oscars Count: ").append(oscarsCount).append('\n');
-        result.append("  Genre: ").append(genre).append('\n');
-        result.append("  MPAA Rating: ").append(mpaaRating).append('\n');
-        if (director == null) {
-            result.append("  Director: <N/A>\n");
-        } else {
-            result.append("  Director:\n");
-            result.append("    Name: ").append(director.getName()).append('\n');
-            result.append("    Passport ID: ");
-            if (director.getPassportID() == null) {
-                result.append("<N/A>");
-            } else {
-                result.append(director.getPassportID());
-            }
-            result.append('\n');
-            result.append("    Hair Color: ").append(director.getHairColor()).append('\n');
-        }
-        return result.toString();
+        if (formatted)
+            return toColoredString();
+        else
+            return toSimpleString();
     }
 
     /**

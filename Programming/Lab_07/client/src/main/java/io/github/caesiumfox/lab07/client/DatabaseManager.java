@@ -411,6 +411,7 @@ public class DatabaseManager implements Database {
         NetworkManager.byteBuffer.clear();
         Client.initiateBuffer(NetworkManager.byteBuffer, 0L);
         NetworkManager.byteBuffer.put(KeyWord.getCode(KeyWord.COUNT_GREATER_OSCARS));
+        NetworkManager.byteBuffer.putLong(oscarsCount);
         NetworkManager.byteBuffer.flip();
 
         NetworkManager.send();

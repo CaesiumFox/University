@@ -48,6 +48,8 @@ public class Server {
             System.out.println("Logger output is now stdout.");
         }
         Movie.setDateFormat("dd.MM.yyyy");
+        Movie.shortString = true;
+        Movie.formatted = false;
     }
 
     public static void main(String[] args) {

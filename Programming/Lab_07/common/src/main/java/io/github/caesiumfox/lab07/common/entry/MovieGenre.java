@@ -46,12 +46,16 @@ public enum MovieGenre {
     public static MovieGenre fromString(String str) throws WrongEnumInputException {
         String loweredStr = str.toLowerCase().trim();
         switch(loweredStr) {
+            case "a":
             case "action":
                 return ACTION;
+            case "t":
             case "tragedy":
                 return TRAGEDY;
+            case "h":
             case "horror":
                 return HORROR;
+            case "f":
             case "fantasy":
                 return FANTASY;
         }
