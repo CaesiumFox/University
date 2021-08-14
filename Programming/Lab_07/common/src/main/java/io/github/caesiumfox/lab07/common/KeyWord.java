@@ -236,6 +236,31 @@ public enum KeyWord {
      * номера сессии.
      */
     INVALID_SESSION,
+    /**
+     * Отправляется клиентом серверу
+     * для удаления аккаунта и
+     * его элементов в БД.
+     */
+    DELETE_USER,
+
+    /**
+     * Отправляется клиентом серверу
+     * особым запросом. Производит
+     * регистрацию пользователя.
+     */
+    REGISTER_USER,
+
+    /**
+     * Отправляется клиентом серверу,
+     * если используется обычный протокол:
+     * имя пользователя, пароль, команда
+     */
+    REGULAR_QUERY,
+    /**
+     * Отправляется клиентом серверу
+     * при отстутствии авторизации
+     */
+    SPECIAL_QUERY,
 
     /**
      * Если команда от клиента серверу
@@ -284,6 +309,10 @@ public enum KeyWord {
             case LOGIN_INCORRECT:      return (byte)0x41;
             case SERVER_OVERLOADED:    return (byte)0x42;
             case INVALID_SESSION:      return (byte)0x43;
+            case DELETE_USER:          return (byte)0x44;
+            case REGISTER_USER:        return (byte)0x50;
+            case REGULAR_QUERY:        return (byte)0xE0;
+            case SPECIAL_QUERY:        return (byte)0xE1;
             case OK:                   return (byte)0xFE;
             case ERROR:                return (byte)0xFF;
         }
@@ -316,6 +345,10 @@ public enum KeyWord {
             case (byte)0x41: return LOGIN_INCORRECT;
             case (byte)0x42: return SERVER_OVERLOADED;
             case (byte)0x43: return INVALID_SESSION;
+            case (byte)0x44: return DELETE_USER;
+            case (byte)0x50: return REGISTER_USER;
+            case (byte)0xE0: return REGULAR_QUERY;
+            case (byte)0xE1: return SPECIAL_QUERY;
             case (byte)0xFE: return OK;
             case (byte)0xFF: return ERROR;
         }
