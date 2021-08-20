@@ -6,11 +6,12 @@ import io.github.caesiumfox.lab07.common.entry.Movie;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Client {
-    public static final boolean formattedTerminal;
+    public static boolean formattedTerminal;
     public static String dateFormat;
     private static Scanner input;
     private static DatabaseManager databaseManager;
@@ -41,6 +42,9 @@ public class Client {
 
     public static void main(String[] args) {
         System.out.println("Starting Client");
+        System.out.print("Use SGR? [Y/n]");
+        String answer = input.nextLine().trim().toLowerCase();
+        formattedTerminal = (answer.isEmpty() || answer.equals("y") || answer.equals("yes"));
 
         try {
             NetworkManager.init(input);
@@ -63,12 +67,12 @@ public class Client {
 
     private static void login() {
         if (formattedTerminal)
-            System.out.println("Enter \u001b[1;33m[R]\u001b[0m " +
+            System.out.print("Enter \u001b[1;33m[R]\u001b[0m " +
                     "to \u001b[1msign up\u001b[0m, or " +
                     "anything else" +
                     " to \u001b[1msign in\u001b[0m: ");
         else
-            System.out.println("Enter [R] to sign up, or anything else to sign up: ");
+            System.out.print("Enter [R] to sign up, or anything else to sign up: ");
         boolean register = input.nextLine().trim().toLowerCase().equals("r");
         if (register) {
             while (true) {

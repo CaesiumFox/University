@@ -1,0 +1,8 @@
+*
+*/
+
+!client/
+!common/
+!server/
+!pom.xml
+!.gitignore
