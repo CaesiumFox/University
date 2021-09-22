@@ -374,6 +374,8 @@
                 background-color: var(--graph-bg-color);
                 border: 2px solid var(--graph-border-color);
                 border-radius: 4px;
+                display: flex;
+                align-items: center;
             }
 
             .table_panel {
@@ -532,7 +534,7 @@
                     </div>
                 </form>
                 <div id="graph">
-                    <svg height="100%" viewbox="0 0 100 100">
+                    <svg width="100%" viewbox="0 0 100 100">
                         <defs>
                             <style>
                                 #axes path {
