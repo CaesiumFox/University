@@ -2,7 +2,7 @@
 
 <?php
 
-    $prevhrtime = hrtime(true);
+    $prevhrtime = intval(microtime(true) * 1e9);
     $empty = true;
     $error = false;
     $errmsg = '';
@@ -45,8 +45,8 @@
                 elseif ($y == 0) {
                     $hit = (($x <= $r) && (2 * $x >= -$r));
                 }
-                $proctime = hrtime(true) - $prevhrtime;
-                $timestr = date('Y-m-d H:i:s', time());
+                $proctime = intval(microtime(true) * 1e9) - $prevhrtime;
+                $timestr = date('Y-m-d\TH:i:s', time());
 
                 $table .= '<tr>';
                 $table .= '<td>';
@@ -97,18 +97,6 @@
                 --accent-light-hover: 63%;
                 --accent-light-active: 68%;
                 --accent-light-border: 73%;
-                /*--accent-hue: 128;
-                --accent-saturation: 80%;
-                --accent-light-base: 33%;
-                --accent-light-hover: 38%;
-                --accent-light-active: 43%;
-                --accent-light-border: 48%;*/
-                /*--accent-hue: 352;
-                --accent-saturation: 76%;
-                --accent-light-base: 43%;
-                --accent-light-hover: 48%;
-                --accent-light-active: 53%;
-                --accent-light-border: 58%;*/
 
                 --accent-color:                    hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
                 --bg-color:                        hsl(0, 0%, 15%);
@@ -419,85 +407,7 @@
             }
         </style>
 
-        <script>
-            function validateFinal() {
-                var x_str  = document.getElementById("x_textbox").value.trim();
-                var y_str  = document.getElementById("y_textbox").value.trim();
-                var r1 = document.getElementById("r1_checkbox").checked;
-                var r2 = document.getElementById("r2_checkbox").checked;
-                var r3 = document.getElementById("r3_checkbox").checked;
-                var r4 = document.getElementById("r4_checkbox").checked;
-                var r5 = document.getElementById("r5_checkbox").checked;
-
-                var acceptable = true;
-
-                if (isNaN(x_str) || x_str === "") {
-                    acceptable = false;
-                } else {
-                    acceptable = acceptable && (x_str >= -3) && (x_str <= 5);
-                }
-                if (isNaN(y_str) || y_str === "") {
-                    acceptable = false;
-                } else {
-                    acceptable = acceptable && (y_str >= -5) && (y_str <= 3);
-                }
-                if (!(r1 || r2 || r3 || r4 || r5)) {
-                    acceptable = false;
-                }
-
-                console.log(acceptable);
-
-                return acceptable;
-            }
-
-            function validateLiveX() {
-                var x_str  = document.getElementById("x_textbox").value.trim();
-                if (isNaN(x_str) || x_str < -3 || x_str > 5) {
-                    document.getElementById("x_textbox").style.color = "var(--text-wrong-color)";
-                    document.getElementById("text_field_x").style.setProperty("--show-x-error", "visible");
-                } else {
-                    document.getElementById("x_textbox").style.color = "var(--text-color)";
-                    document.getElementById("text_field_x").style.setProperty("--show-x-error", "hidden");
-                }
-            }
-            function correctX() {
-                var x_str  = document.getElementById("x_textbox").value.trim();
-                if (x_str == "") {
-                    document.getElementById("x_textbox").value = "0";
-                }
-            }
-
-            function validateLiveY() {
-                var y_str  = document.getElementById("y_textbox").value.trim();
-                if (isNaN(y_str) || y_str < -5 || y_str > 3) {
-                    document.getElementById("y_textbox").style.color = "var(--text-wrong-color)";
-                    document.getElementById("text_field_y").style.setProperty("--show-y-error", "visible");
-                } else {
-                    document.getElementById("y_textbox").style.color = "var(--text-color)";
-                    document.getElementById("text_field_y").style.setProperty("--show-y-error", "hidden");
-                }
-            }
-            function correctY() {
-                var y_str  = document.getElementById("y_textbox").value.trim();
-                if (y_str == "") {
-                    document.getElementById("y_textbox").value = "0";
-                }
-            }
-
-            function validateLiveR() {
-                var r1 = document.getElementById("r1_checkbox").checked;
-                var r2 = document.getElementById("r2_checkbox").checked;
-                var r3 = document.getElementById("r3_checkbox").checked;
-                var r4 = document.getElementById("r4_checkbox").checked;
-                var r5 = document.getElementById("r5_checkbox").checked;
-                if (!(r1 || r2 || r3 || r4 || r5)) {
-                    document.getElementById("r_checkbox_panel").style.setProperty("--show-r-error", "visible");
-                } else {
-                    document.getElementById("r_checkbox_panel").style.setProperty("--show-r-error", "hidden");
-                }
-            }
-           
-        </script>
+        <script type="text/javascript" src="/validation.js"></script>
     </head>
     <body onload="validateLiveX(); validateLiveY(); validateLiveR(); <?php if ($error && !$empty) echo 'alert(\'Wrong data received! : ' . $errmsg . '\');'?>">
         <header>
