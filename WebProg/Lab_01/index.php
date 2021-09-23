@@ -87,7 +87,7 @@
 <html>
     <head>
         <title>Авдеев Степан P3214</title>
-        <link rel="icon" href="/favicon.png">
+        <link rel="icon" href="./favicon.png">
         <style>
             :root {
 
@@ -407,7 +407,7 @@
             }
         </style>
 
-        <script type="text/javascript" src="/validation.js"></script>
+        <script type="text/javascript" src="./validation.js"></script>
     </head>
     <body onload="validateLiveX(); validateLiveY(); validateLiveR(); <?php if ($error && !$empty) echo 'alert(\'Wrong data received! : ' . $errmsg . '\');'?>">
         <header>
@@ -420,7 +420,7 @@
         </header>
         <div class="main">
             <div class="top_panel">
-                <form method="POST" onsubmit="return validateFinal()" name="numbers" action="/">
+                <form method="POST" onsubmit="return validateFinal()" name="numbers" action="./">
                     <div class="form_panel">
                         <div class="form_label with_tool_tip"><span>X</span></div>
                         <div class="text_field" id="text_field_x">
