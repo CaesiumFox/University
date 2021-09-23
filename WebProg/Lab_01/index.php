@@ -7,6 +7,15 @@
     $error = false;
     $errmsg = '';
     $table = '';
+    $last_cookie = 0;
+    if (isset($_COOKIE['prev_table'])) {
+        foreach ($_COOKIE['prev_table'] as $key => $row) {
+            $table = $row . $table;
+            if ($key > $last_cookie) {
+                $last_cookie = $key;
+            }
+        }
+    }
     $r1 = isset($_POST['r1']);
     $r2 = isset($_POST['r2']);
     $r3 = isset($_POST['r3']);
@@ -23,6 +32,7 @@
         } elseif ($x < -3 || $x > 5 || $y < -5 || $y > 3) {
             $error = true;
         } else {
+            $table_part = '';
             for ($r = 1; $r <= 5; $r++) {
                 $ptr = 'r' . $r;
                 $rbool = $$ptr;
@@ -48,38 +58,36 @@
                 $proctime = intval(microtime(true) * 1e9) - $prevhrtime;
                 $timestr = date('Y-m-d\TH:i:s', time());
 
-                $table .= '<tr>';
-                $table .= '<td>';
-                $table .= $x;
-                $table .= '</td>';
-                $table .= '<td>';
-                $table .= $y;
-                $table .= '</td>';
-                $table .= '<td>';
-                $table .= $r;
-                $table .= '</td>';
-                $table .= '<td>';
-                $table .= ($hit ? 'Y' : 'N');
-                $table .= '</td>';
-                $table .= '<td>';
-                $table .= $timestr;
-                $table .= '</td>';
-                $table .= '<td>';
-                $table .= $proctime;
-                $table .= '</td>';
-                $table .= '</tr>';
 
+                $table_part .= '<tr>';
+                $table_part .= '<td>';
+                $table_part .= $x;
+                $table_part .= '</td>';
+                $table_part .= '<td>';
+                $table_part .= $y;
+                $table_part .= '</td>';
+                $table_part .= '<td>';
+                $table_part .= $r;
+                $table_part .= '</td>';
+                $table_part .= '<td>';
+                $table_part .= ($hit ? 'Да' : 'Нет');
+                $table_part .= '</td>';
+                $table_part .= '<td>';
+                $table_part .= $timestr;
+                $table_part .= '</td>';
+                $table_part .= '<td>';
+                $table_part .= $proctime;
+                $table_part .= '</td>';
+                $table_part .= '</tr>';
             }
+            $last_cookie++;
+            setcookie('prev_table[' . $last_cookie . ']', $table_part, time() + 3600 * 24);
+            $table = $table_part . $table;
         }
     } else {
         $error = true;
     }
-    if (isset($_COOKIE['prev_table'])) {
-        $table .= $_COOKIE['prev_table'];
-    }
-    if (trim($table) !== '') {
-        setcookie('prev_table', $table, time() + 3600 * 24);
-    } else {
+    if (trim($table) === '') {
         $table='<tr><td class="no_queries" colspan="6">Ещё никаких запросов не было</td></tr>';
     }
 ?>
