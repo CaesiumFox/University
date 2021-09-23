@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 
 <?php
-
+    $cookie_name = 's311728_prev_table';
     $prevhrtime = intval(microtime(true) * 1e9);
     $empty = true;
     $error = false;
     $errmsg = '';
     $table = '';
     $last_cookie = 0;
-    if (isset($_COOKIE['prev_table'])) {
-        foreach ($_COOKIE['prev_table'] as $key => $row) {
+    if (isset($_COOKIE[$cookie_name])) {
+        foreach ($_COOKIE[$cookie_name] as $key => $row) {
             $table = $row . $table;
             if ($key > $last_cookie) {
                 $last_cookie = $key;
@@ -81,7 +81,7 @@
                 $table_part .= '</tr>';
             }
             $last_cookie++;
-            setcookie('prev_table[' . $last_cookie . ']', $table_part, time() + 3600 * 24);
+            setcookie($cookie_name . '[' . $last_cookie . ']', $table_part, time() + 3600 * 24);
             $table = $table_part . $table;
         }
     } else {
@@ -113,7 +113,6 @@
                 --text-wrong-color:                hsl(5, 100%, 60%);
                 --text-minor-color:                hsl(0, 0%, 80%);
                 --panel-color:                     hsl(0, 0%, 21%);
-                --r-panel-color:                   hsl(0, 0%, 17%);
                 --textfield-color:                 hsl(0, 0%, 15%);
                 --textfield-input-color:           hsl(0, 0%, 5%);
                 --btn-color:                       hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
@@ -303,8 +302,7 @@
             }
 
             .r_panel {
-                background-color: var(--r-panel-color);
-                border-radius: 4px;
+                background-color: transparent;
                 flex-direction: column;
                 --show-r-error: hidden;
             }
