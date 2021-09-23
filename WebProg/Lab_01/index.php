@@ -347,7 +347,7 @@
             input[type="checkbox"]:checked {
                 background-color: var(--checkbox-checked-color);
                 border-color: var(--checkbox-checked-border-color);
-                background-image: url(/tick.svg);
+                background-image: url(./tick.svg);
                 background-repeat: no-repeat;
                 background-position: center;
             }
