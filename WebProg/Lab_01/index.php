@@ -113,6 +113,7 @@
                 --text-wrong-color:                hsl(5, 100%, 60%);
                 --text-minor-color:                hsl(0, 0%, 80%);
                 --panel-color:                     hsl(0, 0%, 21%);
+                --r-panel-color:                     hsl(0, 0%, 17%);
                 --textfield-color:                 hsl(0, 0%, 15%);
                 --textfield-input-color:           hsl(0, 0%, 5%);
                 --btn-color:                       hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
@@ -302,7 +303,8 @@
             }
 
             .r_panel {
-                background-color: transparent;
+                background-color: var(--r-panel-color);
+                border-radius: 4px;
                 flex-direction: column;
                 --show-r-error: hidden;
             }
