@@ -28,9 +28,11 @@
         $y = htmlspecialchars(trim($_POST['y']));
 
         if (!is_numeric($x) || !is_numeric($y)) {
+            $error = true;
             $errmsg .= 'x is nan | y is nan | r is empty';
         } elseif ($x < -3 || $x > 5 || $y < -5 || $y > 3) {
             $error = true;
+            $errmsg .= 'x or y is out of range';
         } else {
             $table_part = '';
             for ($r = 1; $r <= 5; $r++) {
@@ -86,6 +88,7 @@
         }
     } else {
         $error = true;
+        $errmsg = 'Wrong data!';
     }
     if (trim($table) === '') {
         $table='<tr><td class="no_queries" colspan="6">Ещё никаких запросов не было</td></tr>';
