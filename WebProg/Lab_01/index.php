@@ -3,7 +3,6 @@
 <?php
     $cookie_name = 's311728_prev_table';
     $prevhrtime = intval(microtime(true) * 1e9);
-    $empty = true;
     $error = false;
     $errmsg = '';
     $table = '';
@@ -23,7 +22,6 @@
     $r5 = isset($_POST['r5']);
 
     if (isset($_POST['x']) && isset($_POST['y']) && ($r1 || $r2 || $r3 || $r4 || $r5)) {
-        $empty = false;
         $x = htmlspecialchars(trim($_POST['x']));
         $y = htmlspecialchars(trim($_POST['y']));
 
@@ -420,7 +418,7 @@
 
         <script type="text/javascript" src="./validation.js"></script>
     </head>
-    <body onload="validateLiveX(); validateLiveY(); validateLiveR(); <?php if ($error && !$empty) echo 'alert(\'Wrong data received! : ' . $errmsg . '\');'?>">
+    <body onload="validateLiveX(); validateLiveY(); validateLiveR(); <?php if ($error) echo 'alert(\'Wrong data received! : ' . $errmsg . '\');'?>">
         <header>
             <p>
             Авдеев Степан Сергеевич <span id="group_label">(P3214)</span>
