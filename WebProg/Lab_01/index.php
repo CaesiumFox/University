@@ -420,7 +420,7 @@
         </header>
         <div class="main">
             <div class="top_panel">
-                <form method="POST" onsubmit="return validateFinal()" name="numbers" action="./">
+                <form method="POST" onsubmit="return validateFinal()" name="numbers" action="./index.php">
                     <div class="form_panel">
                         <div class="form_label with_tool_tip"><span>X</span></div>
                         <div class="text_field" id="text_field_x">
