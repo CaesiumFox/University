@@ -522,7 +522,7 @@
                         <th class="inverse_selected">R</th>
                         <th class="inverse_selected">A</th>
                         <th class="inverse_selected">T</th>
-                        <th class="inverse_selected">&Delta;T, ns</th>
+                        <th class="inverse_selected">&Delta;T, &micro;s</th>
                     </thead>
                     <?php
                         echo $table;
