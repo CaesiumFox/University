@@ -2,7 +2,7 @@
 
 <?php
     $cookie_name = 's311728_prev_table';
-    $prevhrtime = intval(microtime(true) * 1e9);
+    $prevhrtime = intval(microtime(true) * 1e6);
     $error = false;
     $errmsg = '';
     $table = '';
@@ -55,7 +55,7 @@
                 elseif ($y == 0) {
                     $hit = (($x <= $r) && (2 * $x >= -$r));
                 }
-                $proctime = intval(microtime(true) * 1e9) - $prevhrtime;
+                $proctime = intval(microtime(true) * 1e6) - $prevhrtime;
                 $timestr = date('Y-m-d\TH:i:s', time());
 
 
@@ -85,8 +85,8 @@
             $table = $table_part . $table;
         }
     } else {
-        $error = true;
-        $errmsg = 'Wrong data!';
+        $empty = true;
+        $errmsg = 'Empty data!';
     }
     if (trim($table) === '') {
         $table='<tr><td class="no_queries" colspan="6">Ещё никаких запросов не было</td></tr>';
