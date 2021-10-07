@@ -23,7 +23,7 @@
 
     if (isset($_POST['x']) && isset($_POST['y']) && ($r1 || $r2 || $r3 || $r4 || $r5)) {
         if (strlen($_POST['x']) > 100 || strlen($_POST['y']) > 100) {
-            $error = true
+            $error = true;
             $errmsg = 'Too long parameters!';
         }
         else {
@@ -61,7 +61,7 @@
                         $hit = (($x <= $r) && (2 * $x >= -$r));
                     }
                     $proctime = intval(microtime(true) * 1e6) - $prevhrtime;
-                    $timestr = date('Y-m-d\TH:i:s', time());
+                    $timestr = date('H:i:s d.m.Y', time());
 
 
                     $table_part .= '<tr>';
@@ -439,11 +439,11 @@
                     <div class="form_panel">
                         <div class="form_label with_tool_tip"><span>X</span></div>
                         <div class="text_field" id="text_field_x">
-                            <input id="x_textbox" type="text" maxlength="100" name="x" value="<?php echo ($empty ? '0' : $x); ?>" oninput="validateLiveX();" onfocus="validateLiveX();" onchange="correctX();">
+                            <input id="x_textbox" type="text" maxlength="20" name="x" value="<?php echo ($empty ? '0' : $x); ?>" oninput="validateLiveX();" onfocus="validateLiveX();" onchange="correctX();">
                         </div>
                         <div class="form_label"><span>Y</span></div>
                         <div class="text_field" id="text_field_y">
-                            <input id="y_textbox" type="text" maxlength="100" name="y" value="<?php echo ($empty ? '0' : $y); ?>" oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
+                            <input id="y_textbox" type="text" maxlength="20" name="y" value="<?php echo ($empty ? '0' : $y); ?>" oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
                         </div>
                         <div class="form_label"><span>R</span></div>
                         <div class="r_panel" id="r_checkbox_panel">
