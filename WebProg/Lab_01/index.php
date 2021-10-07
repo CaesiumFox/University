@@ -22,67 +22,73 @@
     $r5 = isset($_POST['r5']);
 
     if (isset($_POST['x']) && isset($_POST['y']) && ($r1 || $r2 || $r3 || $r4 || $r5)) {
-        $x = htmlspecialchars(trim($_POST['x']));
-        $y = htmlspecialchars(trim($_POST['y']));
+        if (strlen($_POST['x']) > 100 || strlen($_POST['y']) > 100) {
+            $error = true
+            $errmsg = 'Too long parameters!';
+        }
+        else {
+            $x = htmlspecialchars(trim($_POST['x']));
+            $y = htmlspecialchars(trim($_POST['y']));
 
-        if (!is_numeric($x) || !is_numeric($y)) {
-            $error = true;
-            $errmsg .= 'x is nan | y is nan | r is empty';
-        } elseif ($x < -3 || $x > 5 || $y < -5 || $y > 3) {
-            $error = true;
-            $errmsg .= 'x or y is out of range';
-        } else {
-            $table_part = '';
-            for ($r = 1; $r <= 5; $r++) {
-                $ptr = 'r' . $r;
-                $rbool = $$ptr;
-                if(!$rbool) {
-                    continue;
-                }
-                $hit = false;
-                if ($x > 0 && $y > 0) {
-                    $hit = ((2 * $y <= $r) && ($x <= $r));
-                }
-                elseif ($x > 0 && $y < 0) {
-                    $hit = (2 * $y >= $x - $r);
-                }
-                elseif ($x < 0 && $y < 0) {
-                    $hit = (4 * ($x * $x + $y * $y) <= $r * $r);
-                }
-                elseif ($x == 0) {
-                    $hit = ((2 * $y <= $r) && (-2 * $y <= $r));
-                }
-                elseif ($y == 0) {
-                    $hit = (($x <= $r) && (2 * $x >= -$r));
-                }
-                $proctime = intval(microtime(true) * 1e6) - $prevhrtime;
-                $timestr = date('Y-m-d\TH:i:s', time());
+            if (!is_numeric($x) || !is_numeric($y)) {
+                $error = true;
+                $errmsg .= 'x is nan | y is nan | r is empty';
+            } elseif ($x < -3 || $x > 5 || $y < -5 || $y > 3) {
+                $error = true;
+                $errmsg .= 'x or y is out of range';
+            } else {
+                $table_part = '';
+                for ($r = 1; $r <= 5; $r++) {
+                    $ptr = 'r' . $r;
+                    $rbool = $$ptr;
+                    if(!$rbool) {
+                        continue;
+                    }
+                    $hit = false;
+                    if ($x > 0 && $y > 0) {
+                        $hit = ((2 * $y <= $r) && ($x <= $r));
+                    }
+                    elseif ($x > 0 && $y < 0) {
+                        $hit = (2 * $y >= $x - $r);
+                    }
+                    elseif ($x < 0 && $y < 0) {
+                        $hit = (4 * ($x * $x + $y * $y) <= $r * $r);
+                    }
+                    elseif ($x == 0) {
+                        $hit = ((2 * $y <= $r) && (-2 * $y <= $r));
+                    }
+                    elseif ($y == 0) {
+                        $hit = (($x <= $r) && (2 * $x >= -$r));
+                    }
+                    $proctime = intval(microtime(true) * 1e6) - $prevhrtime;
+                    $timestr = date('Y-m-d\TH:i:s', time());
 
 
-                $table_part .= '<tr>';
-                $table_part .= '<td>';
-                $table_part .= $x;
-                $table_part .= '</td>';
-                $table_part .= '<td>';
-                $table_part .= $y;
-                $table_part .= '</td>';
-                $table_part .= '<td>';
-                $table_part .= $r;
-                $table_part .= '</td>';
-                $table_part .= '<td>';
-                $table_part .= ($hit ? 'Да' : 'Нет');
-                $table_part .= '</td>';
-                $table_part .= '<td>';
-                $table_part .= $timestr;
-                $table_part .= '</td>';
-                $table_part .= '<td>';
-                $table_part .= $proctime;
-                $table_part .= '</td>';
-                $table_part .= '</tr>';
+                    $table_part .= '<tr>';
+                    $table_part .= '<td>';
+                    $table_part .= $x;
+                    $table_part .= '</td>';
+                    $table_part .= '<td>';
+                    $table_part .= $y;
+                    $table_part .= '</td>';
+                    $table_part .= '<td>';
+                    $table_part .= $r;
+                    $table_part .= '</td>';
+                    $table_part .= '<td>';
+                    $table_part .= ($hit ? 'Да' : 'Нет');
+                    $table_part .= '</td>';
+                    $table_part .= '<td>';
+                    $table_part .= $timestr;
+                    $table_part .= '</td>';
+                    $table_part .= '<td>';
+                    $table_part .= $proctime;
+                    $table_part .= '</td>';
+                    $table_part .= '</tr>';
+                }
+                $last_cookie++;
+                setcookie($cookie_name . '[' . $last_cookie . ']', $table_part, time() + 3600 * 24);
+                $table = $table_part . $table;
             }
-            $last_cookie++;
-            setcookie($cookie_name . '[' . $last_cookie . ']', $table_part, time() + 3600 * 24);
-            $table = $table_part . $table;
         }
     } else {
         $empty = true;
@@ -433,11 +439,11 @@
                     <div class="form_panel">
                         <div class="form_label with_tool_tip"><span>X</span></div>
                         <div class="text_field" id="text_field_x">
-                            <input id="x_textbox" type="text" name="x" value="<?php echo ($empty ? '0' : $x); ?>" oninput="validateLiveX();" onfocus="validateLiveX();" onchange="correctX();">
+                            <input id="x_textbox" type="text" maxlength="100" name="x" value="<?php echo ($empty ? '0' : $x); ?>" oninput="validateLiveX();" onfocus="validateLiveX();" onchange="correctX();">
                         </div>
                         <div class="form_label"><span>Y</span></div>
                         <div class="text_field" id="text_field_y">
-                            <input id="y_textbox" type="text" name="y" value="<?php echo ($empty ? '0' : $y); ?>" oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
+                            <input id="y_textbox" type="text" maxlength="100" name="y" value="<?php echo ($empty ? '0' : $y); ?>" oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
                         </div>
                         <div class="form_label"><span>R</span></div>
                         <div class="r_panel" id="r_checkbox_panel">
