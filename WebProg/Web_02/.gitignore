@@ -1,2 +1,4 @@
 .idea/
+texts/
+target/
 *.iml
