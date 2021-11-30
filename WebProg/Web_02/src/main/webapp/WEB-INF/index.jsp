@@ -1,3 +1,4 @@
+<%@ page import="io.github.caesiumfox.web2.History" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%! boolean error = false; %>
@@ -7,11 +8,11 @@
 <html>
     <head>
         <title>Авдеев Степан P3214</title>
-        <link rel="icon" href="/favicon.png">
-        <link rel="stylesheet" href="/allstyles.css">
-        <script type="text/javascript" src="/validation.js"></script>
+        <link rel="icon" href="./favicon.png">
+        <link rel="stylesheet" href="./allstyles.css">
+        <script type="text/javascript" src="./validation.js"></script>
     </head>
-    <body onload="validateLiveX(); validateLiveY(); <%= error ? ("alert('Wrong data received! : " + errs + "');") : "" %>">
+    <body onload="validateLiveX(); validateLiveY(); <%= error ? "alert('Server received wrong data: " + errs + "')" : "" %>">
         <header>
             <p>
             Авдеев Степан Сергеевич <span id="group_label">(P3214)</span>
@@ -84,7 +85,7 @@
                             </style>
                         </defs>
 
-                        <path id="the_area" d="M 50 30 h 40 v 20 l -40 20 a 20 20 0 0 1 -20 -20 h 20 z"></path>
+                        <path id="the_area" d="M 50 10 l 40 40 h -20 a 20 20 0 0 1 -20 20 v -20 h -40 v -40 z"></path>
 
                         <g id="axes">
                             <path class="axis" d="M 50 95 V 5 m -1 2 l 1 -2 l 1 2"></path>
@@ -126,14 +127,23 @@
                         <th class="inverse_selected">R</th>
                         <th class="inverse_selected">A</th>
                         <th class="inverse_selected">T</th>
-                        <th class="inverse_selected">&Delta;T, &micro;s</th>
+                        <th class="inverse_selected">&Delta;T, ns</th>
                     </thead>
+                    <%
+                        History history = (History) session.getAttribute("history");
+                        if (history != null) {
+                            for (History.Entry entry : history) {
+                                if (entry != null)
+                                    out.println(entry.toHtml());
+                            }
+                        }
+                    %>
                 </table>
                 <p>
                     X, Y, R&nbsp;&mdash; выбранные числа;<br>
                     A&nbsp;&mdash; попадание;<br>
                     T&nbsp;&mdash; текущее время;<br>
-                    &Delta;T&nbsp;&mdash; время работы скрипта от начала работы до получения этого результата.
+                    &Delta;T&nbsp;&mdash; время работы сервера от начала работы до получения этого результата.
                 </p>
             </div>
         </div>
