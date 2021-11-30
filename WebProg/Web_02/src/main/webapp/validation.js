@@ -62,7 +62,7 @@ function correctY() {
 
 function pressR(arg) {
     if (arg >= 1 && arg <= 5) {
-        document.getElementById("r_text").innerHTML = "R = 1" + arg;
+        document.getElementById("r_text").innerHTML = "R = " + arg;
         document.getElementById("r_field").setAttribute("value", arg);
     }
 }
