@@ -1,5 +1,5 @@
 :root {
-    --accent-hue: 1433;
+    --accent-hue: 143;
     --accent-saturation: 100%;
     --accent-light-base: 34%;
     --accent-light-hover: 40%;
@@ -16,8 +16,11 @@
     --rx-panel-color:                  hsl(0, 0%, 17%);
     --textfield-color:                 hsl(0, 0%, 15%);
     --textfield-input-color:           hsl(0, 0%, 5%);
-    --btn-color:                       hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
-    --btn-hover-color:                 hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-hover));
+    --submit-btn-color:                hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
+    --submit-btn-hover-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-hover));
+    --submit-btn-click-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
+    --btn-color:                       var(--rx-panel-color);
+    --btn-hover-color:                 var(--accent-color);
     --btn-click-color:                 hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
     --checkbox-unchecked-color:        hsl(0, 0%, 10%);
     --checkbox-unchecked-hover-color:  hsl(0, 0%, 15%);
@@ -84,10 +87,10 @@ header p {
 }
 div.main {
     margin: 0;
-    padding: 16px 10%;
+    padding: 16px 5%;
 }
 div.top_panel {
-    padding: 0 10%;
+    padding: 0 5%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 32px;
@@ -148,10 +151,10 @@ div.top_panel {
     transition: .2s;
 }
 .submit_button:hover {
-    background-color: var(--btn-hover-color);
+    background-color: var(--submit-btn-hover-color);
 }
 .submit_button:active {
-    background-color: var(--btn-click-color);
+    background-color: var(--submit-btn-click-color);
 }
 
 .submit_button input {
@@ -167,7 +170,7 @@ div.top_panel {
 
 .text_field input {
     height: 3em;
-    width: auto;
+    width: 100%;
     color: var(--text-color);
     background-color: var(--textfield-color);
     border-radius: 4px;
@@ -182,8 +185,9 @@ div.top_panel {
     background-color: var(--textfield-input-color);
     outline-style: none;
 }
-.text_field {
+.form_panel .text_field {
     flex-direction: column;
+    padding: 0 18px;
     --show-y-error: hidden;
 }
 .text_field::after {
@@ -209,7 +213,7 @@ div.top_panel {
     font-size: 10px;
     color: var(--text-wrong-color);
     visibility: var(--show-x-error);
-    content: "Нужно выбрать хотя бы одно значение";
+    content: "Нужно выбрать хотя бы одно значение для X";
 }
 
 .form_panel > .x_panel > div {
@@ -225,17 +229,18 @@ div.top_panel {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
 }
-.x_panel > div > div {
+.x_panel > div > div, .r_panel > div > div {
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 .x_panel > div > div > label {
     padding-left: 6px;
     font-weight: bold;
 }
 
-input[type="checkbox"] {
+.x_panel input[type="checkbox"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     font-size: inherit;
@@ -268,16 +273,32 @@ input[type="checkbox"]:checked:active {
     background-color: var(--checkbox-checked-active-color);
 }
 
-input[type="button"] {
+.r_panel > div > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.r_panel input[type="button"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     font-size: inherit;
-    width: 2em;
+    width: 100%;
     height: 2em;
+    margin: 0 0.5em;
     color: var(--text-color);
-    background-color: var(--checkbox-unchecked-color);
-    border-radius: 2px;
+    background-color: var(--btn-color);
+    border-radius: 4px;
+    border-width: 0;
     transition: .2s;
+}
+
+.r_panel input[type="button"]:hover {
+    background-color: var(--btn-hover-color);
+}
+
+.r_panel input[type="button"]:active {
+    background-color: var(--btn-click-color);
 }
 
 #graph {
@@ -297,7 +318,7 @@ input[type="button"] {
 }
 
 #result_table {
-    width: 80%;
+    width: 90%;
     border-collapse: collapse;
     border: 2px solid var(--table-border-color);
 }
@@ -319,7 +340,7 @@ input[type="button"] {
     text-align: center;
 }
 #result_table + p {
-    width: 80%;
+    width: 90%;
     font-size: 80%;
     color: var(--text-minor-color);
 }
