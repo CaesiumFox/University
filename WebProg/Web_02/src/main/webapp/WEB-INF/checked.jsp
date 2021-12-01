@@ -6,7 +6,7 @@
 
 <%
     History history = (History) session.getAttribute("history");
-    int recent_count = (Integer) session.getAttribute("recent_count");
+    int recent_count = Optional.ofNullable((Integer) session.getAttribute("recent_count")).orElse(0);
     errs = (String)session.getAttribute("error");
     error = errs != null;
 %>
