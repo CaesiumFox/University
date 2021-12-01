@@ -1,3 +1,5 @@
+let r = 1;
+
 function validateFinal() {
     let xm3 = document.getElementById("xm3_checkbox").checked;
     let xm2 = document.getElementById("xm2_checkbox").checked;
@@ -64,5 +66,29 @@ function pressR(arg) {
     if (arg >= 1 && arg <= 5) {
         document.getElementById("r_text").innerHTML = "R = " + arg;
         document.getElementById("r_field").setAttribute("value", arg);
+        r = arg;
     }
+}
+
+function onbodyload() {
+    document.getElementById("the_image").addEventListener('click', function (event) {
+        let rect = document.getElementById("the_image").getBoundingClientRect();
+        let mx = event.offsetX;
+        let my = event.offsetY;
+        let iw = rect.width;
+        let ih = rect.height;
+
+        let x = (10 * mx / iw - 5) * r / 4; // (mx / iw - 0.5) * 2 * 5 * r / 4
+        let y = (5 - 10 * my / ih) * r / 4; // (0.5 - mx / iw) * 2 * 5 * r / 4
+
+        let postForm = document.createElement('form');
+        postForm.action = '.';
+        postForm.method = 'post';
+        postForm.innerHTML += '<input type="hidden" name="x" value="' + x + '">';
+        postForm.innerHTML += '<input type="hidden" name="y" value="' + y + '">';
+        postForm.innerHTML += '<input type="hidden" name="r" value="' + r + '">';
+        let bodyTag = document.getElementsByTagName('body')[0];
+        bodyTag.appendChild(postForm);
+        postForm.submit();
+    });
 }

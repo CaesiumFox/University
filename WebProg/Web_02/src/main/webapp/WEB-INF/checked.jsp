@@ -6,6 +6,7 @@
 
 <%
     History history = (History) session.getAttribute("history");
+    int recent_count = (Integer) session.getAttribute("recent_count");
     errs = (String)session.getAttribute("error");
     error = errs != null;
 %>
@@ -29,7 +30,8 @@
         <div class="main">
 
             <div class="link_panel">
-                Ниже представлена таблица результатов. Последние запросы находятся ниже.
+                Ниже представлена таблица результатов для
+                <%= recent_count == 1 ? "последнего запроса." : "последних запросов." %>
                 Для отправки нового запроса нажмите <a href="${pageContext.request.contextPath}">сюда</a>.
             </div>
 
@@ -49,7 +51,8 @@
                     </thead>
                     <%
                         if (history != null) {
-                            for (History.Entry entry : history) {
+                            for (int i = history.size() - recent_count; i < history.size(); i++) {
+                                History.Entry entry = history.get(i);
                                 if (entry != null)
                                     out.println(entry.toHtml());
                             }

@@ -1,14 +1,7 @@
 <%@ page import="io.github.caesiumfox.web2.History" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%! boolean error = false; %>
-<%! String errs = ""; %>
-
-<%
-    History history = (History) session.getAttribute("history");
-    errs = (String)session.getAttribute("error");
-    error = errs != null;
-%>
+<% History history = (History) session.getAttribute("history"); %>
 
 <!DOCTYPE html>
 <html>
@@ -18,7 +11,7 @@
         <link rel="stylesheet" href="./allstyles.css">
         <script type="text/javascript" src="./validation.js"></script>
     </head>
-    <body onload="validateLiveX(); validateLiveY(); <%= error ? "alert('Server received wrong data: " + errs + "')" : "" %>">
+    <body onload="onbodyload(); validateLiveX(); validateLiveY();">
         <header>
             <p>
             Авдеев Степан Сергеевич <span id="group_label">(P3214)</span>
@@ -64,7 +57,7 @@
                     </div>
                 </form>
                 <div id="graph">
-                    <svg width="100%" viewbox="0 0 100 100">
+                    <svg id="the_image" width="100%" viewbox="0 0 100 100">
                         <defs>
                             <style>
                                 #axes path {
@@ -110,14 +103,31 @@
                             <text class="x_axis" x="90" y="50" dy="4">R</text>
                             <text class="x_axis" x="70" y="50" dy="4">R/2</text>
                             <text class="x_axis" x="30" y="50" dy="4">&minus;R/2</text>
-                            <text class="x_axis" x="10" y="50" dy="4">&minus;R/2</text>
+                            <text class="x_axis" x="10" y="50" dy="4">&minus;R</text>
 
                             <text class="y_axis" x="50" y="10" dx="-2" dy="1">R</text>
                             <text class="y_axis" x="50" y="30" dx="-2" dy="1">R/2</text>
                             <text class="y_axis" x="50" y="70" dx="-2" dy="1">&minus;R/2</text>
-                            <text class="y_axis" x="50" y="90" dx="-2" dy="1">&minus;R/2</text>
+                            <text class="y_axis" x="50" y="90" dx="-2" dy="1">&minus;R</text>
 
                             <text class="y_axis" x="50" y="50" dx="-2" dy="4">O</text>
+                        </g>
+                        <g id="points">
+                            <%
+                                if (history != null) {
+                                    for (History.Entry entry : history) {
+                                        if (entry != null) {
+                                            out.print("<circle cx=\"");
+                                            out.print(entry.x * 40 / entry.r + 50);
+                                            out.print("\" cy=\"");
+                                            out.print(50 - entry.y * 40 / entry.r);
+                                            out.print("\" r=\"0.5\" style=\"fill: var(");
+                                            out.print(entry.hit ? "--graph-hit" : "--graph-no-hit");
+                                            out.println(");\" />");
+                                        }
+                                    }
+                                }
+                            %>
                         </g>
                     </svg>
                 </div>

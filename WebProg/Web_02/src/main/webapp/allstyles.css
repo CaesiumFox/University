@@ -39,6 +39,8 @@
     --graph-area-color:                hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
     --graph-area-border-color:         hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-border));
     --graph-area-border-width:         0.2;
+    --graph-hit:                       white;
+    --graph-no-hit:                    red;
 
     --table-head-bg-color:             var(--accent-color);
     --table-head-color:                var(--text-color);
