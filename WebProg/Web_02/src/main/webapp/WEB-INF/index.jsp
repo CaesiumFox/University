@@ -4,6 +4,12 @@
 <%! boolean error = false; %>
 <%! String errs = ""; %>
 
+<%
+    History history = (History) session.getAttribute("history");
+    errs = (String)session.getAttribute("error");
+    error = errs != null;
+%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -23,7 +29,7 @@
         </header>
         <div class="main">
             <div class="top_panel">
-                <form method="POST" onsubmit="return validateFinal()" name="numbers" action="/">
+                <form method="POST" onsubmit="return validateFinal()" name="numbers" action="${pageContext.request.contextPath}">
                     <div class="form_panel">
                         <div class="form_label with_tool_tip"><span>X</span></div>
                         <div class="x_panel" id="x_checkbox_panel">
@@ -122,15 +128,16 @@
                     <col width="10%" span="4">
                     <col width="30%" span="2">
                     <thead>
-                        <th class="inverse_selected">X</th>
-                        <th class="inverse_selected">Y</th>
-                        <th class="inverse_selected">R</th>
-                        <th class="inverse_selected">A</th>
-                        <th class="inverse_selected">T</th>
-                        <th class="inverse_selected">&Delta;T, ns</th>
+                        <tr>
+                            <th class="inverse_selected">X</th>
+                            <th class="inverse_selected">Y</th>
+                            <th class="inverse_selected">R</th>
+                            <th class="inverse_selected">A</th>
+                            <th class="inverse_selected">T</th>
+                            <th class="inverse_selected">&Delta;T, ns</th>
+                        </tr>
                     </thead>
                     <%
-                        History history = (History) session.getAttribute("history");
                         if (history != null) {
                             for (History.Entry entry : history) {
                                 if (entry != null)

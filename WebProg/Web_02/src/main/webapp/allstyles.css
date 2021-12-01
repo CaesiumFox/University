@@ -348,3 +348,21 @@ input[type="checkbox"]:checked:active {
     font-style: italic;
     color: var(--text-minor-color);
 }
+
+.link_panel {
+    margin: 2em 10%;
+    border-radius: 4px;
+    background-color: var(--panel-color);
+    font: inherit;
+    padding: 1em 2em;
+}
+
+.link_panel > a {
+    font-weight: bold;
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.link_panel > a:hover {
+    text-decoration: var(--accent-color) underline;
+}

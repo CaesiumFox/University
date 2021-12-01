@@ -15,7 +15,7 @@
 
     <servlet-mapping>
         <servlet-name>area-check-servlet</servlet-name>
-        <url-pattern>/area</url-pattern>
+        <url-pattern>/area.html</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

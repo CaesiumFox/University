@@ -16,6 +16,6 @@ public class ControllerServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/area").forward(request, response);
+        request.getRequestDispatcher("/area.html").forward(request, response);
     }
 }
