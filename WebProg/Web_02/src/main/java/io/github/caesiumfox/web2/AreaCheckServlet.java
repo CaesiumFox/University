@@ -39,21 +39,21 @@ public class AreaCheckServlet extends HttpServlet {
                     LocalDateTime.now(), ZoneId.of("Europe/Moscow"));
 
             double x, y, r;
-            int recent_count = 0;
+            int recentCount = 0;
 
             try {
                 y = Double.parseDouble(request.getParameter("y"));
             } catch (NullPointerException | NumberFormatException ignore) {
-                throw new IOException("No Y value, or it has wrong format");
+                throw new Exception("No Y value, or it has wrong format");
             }
             try {
                 r = Double.parseDouble(request.getParameter("r"));
             } catch (NullPointerException | NumberFormatException ignore) {
-                throw new IOException("No R value, or it has wrong format");
+                throw new Exception("No R value, or it has wrong format");
             }
 
             if (!(r == 1 || r == 2 || r == 3 || r == 4 || r == 5))
-                throw new IOException("R value is not an integer between 1 and 5");
+                throw new Exception("R value is not an integer between 1 and 5");
 
             History history = (History) session.getAttribute("history");
             if (history == null) {
@@ -80,15 +80,15 @@ public class AreaCheckServlet extends HttpServlet {
                     nextEntry.servletDuration = Duration.of(
                             System.nanoTime() - servletStart, ChronoUnit.NANOS);
                     history.add(nextEntry);
-                    recent_count++;
+                    recentCount++;
                 }
             }
 
             if (!hasXValue)
-                throw new IOException("No X value");
+                throw new Exception("No X value");
 
             session.setAttribute("history", history);
-            session.setAttribute("recent_count", Integer.valueOf(recent_count));
+            session.setAttribute("recent_count", Integer.valueOf(recentCount));
             session.removeAttribute("error");
         }
         catch (Exception e) {
