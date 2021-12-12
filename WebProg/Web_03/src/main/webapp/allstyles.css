@@ -1,0 +1,370 @@
+:root {
+    --accent-hue: 203;
+    --accent-saturation: 100%;
+    --accent-light-base: 34%;
+    --accent-light-hover: 40%;
+    --accent-light-active: 46%;
+    --accent-light-border: 52%;
+
+    --accent-color:                    hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
+    --bg-color:                        hsl(0, 0%, 15%);
+    --header-color:                    hsl(0, 0%, 21%);
+    --text-color:                      hsl(0, 0%, 90%);
+    --text-wrong-color:                hsl(5, 100%, 60%);
+    --text-minor-color:                hsl(0, 0%, 80%);
+    --panel-color:                     hsl(0, 0%, 21%);
+    --rx-panel-color:                  hsl(0, 0%, 17%);
+    --textfield-color:                 hsl(0, 0%, 15%);
+    --textfield-input-color:           hsl(0, 0%, 5%);
+    --submit-btn-color:                hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
+    --submit-btn-hover-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-hover));
+    --submit-btn-click-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
+    --btn-color:                       var(--rx-panel-color);
+    --btn-hover-color:                 var(--accent-color);
+    --btn-click-color:                 hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
+    --checkbox-unchecked-color:        hsl(0, 0%, 10%);
+    --checkbox-unchecked-hover-color:  hsl(0, 0%, 15%);
+    --checkbox-unchecked-active-color: hsl(0, 0%, 20%);
+    --checkbox-unchecked-border-color: hsl(0, 0%, 30%);
+    --checkbox-checked-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
+    --checkbox-checked-hover-color:    hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-hover));
+    --checkbox-checked-active-color:   hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
+    --checkbox-checked-border-color:   hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-border));
+
+    --graph-bg-color:                  hsl(0, 0%, 5%);
+    --graph-border-color:              hsl(0, 0%, 20%);
+    --graph-axes-color:                hsl(0, 0%, 90%);
+    --graph-axes-width:                0.2;
+    --graph-text-color:                var(--text-color);
+    --graph-area-color:                hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
+    --graph-area-border-color:         hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-border));
+    --graph-area-border-width:         0.2;
+    --graph-hit:                       white;
+    --graph-no-hit:                    red;
+
+    --table-head-bg-color:             var(--accent-color);
+    --table-head-color:                var(--text-color);
+    --table-border-color:              hsl(0, 0%, 90%);
+    --table-border-second-color:       hsla(0, 0%, 90%, 20%);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    font-size: 16px;
+    color: var(--text-color);
+    font-family: sans-serif;
+}
+
+::selection {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.inverse_selected::selection {
+    background-color: var(--text-color);
+    color: var(--accent-color);
+}
+
+header {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: sans-serif;
+    background-color: var(--header-color);
+    margin: 0;
+    padding: 1em 2em;
+    border-bottom: 2px solid var(--accent-color);
+}
+header p {
+    margin: 0;
+}
+#group_label, #variant_label {
+    font-weight: normal;
+    color: var(--text-minor-color);
+}
+#variant_label {
+    font-size: .6em;
+    font-style: italic;
+}
+div.main {
+    margin: 0;
+    padding: 16px 5%;
+}
+div.top_panel {
+    padding: 0 5%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 32px;
+}
+
+/*-------------------------------------*/
+
+.form_panel {
+    margin: 32px;
+    padding: 24px;
+    background-color: var(--panel-color);
+    border-radius: 4px;
+    width: max-content;
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    grid-template-rows: repeat(4, 3em);
+    gap: 16px;
+}
+
+.form_panel > div {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form_label {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.form_label > span {
+    font-weight: bolder;
+    padding: 0;
+    margin: 0;
+    align-content: center;
+}
+
+.submit_button {
+    height: 3em;
+    color: var(--text-color);
+    background-color: var(--accent-color);
+    border-width: 0;
+    border-radius: 4px;
+    font-weight: bolder;
+    padding: 0;
+    font-size: inherit;
+
+    grid-column-start: 1;
+    grid-column-end: 3;
+
+    align-items: stretch;
+    justify-content: stretch;
+
+    transition: .2s;
+}
+.submit_button:hover {
+    background-color: var(--submit-btn-hover-color);
+}
+.submit_button:active {
+    background-color: var(--submit-btn-click-color);
+}
+
+.submit_button input {
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.text_field input {
+    height: 3em;
+    width: 100%;
+    color: var(--text-color);
+    background-color: var(--textfield-color);
+    border-radius: 4px;
+    border: 2px solid var(--textfield-color);
+    box-shadow: none;
+    padding: 0 16px;
+
+    transition: .2s;
+}
+.text_field input:focus {
+    border-color: var(--accent-color);
+    background-color: var(--textfield-input-color);
+    outline-style: none;
+}
+.form_panel .text_field {
+    flex-direction: column;
+    padding: 0 18px;
+    --show-y-error: hidden;
+}
+.text_field::after {
+    height: 0;
+    width: 100%;
+    font-size: 10px;
+    color: var(--text-wrong-color);
+}
+.text_field#text_field_y::after {
+    visibility: var(--show-y-error);
+    content: "Значение должно быть числом от −3 до 5";
+}
+
+.r_panel, .x_panel {
+    background-color: var(--rx-panel-color);
+    border-radius: 4px;
+    flex-direction: column;
+    --show-x-error: hidden;
+}
+.x_panel::after {
+    height: 0;
+    width: 100%;
+    font-size: 10px;
+    color: var(--text-wrong-color);
+    visibility: var(--show-x-error);
+    content: "Нужно выбрать хотя бы одно значение для X";
+}
+
+.form_panel > .x_panel > div {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+}
+
+.form_panel > .r_panel > div {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+.x_panel > div > div, .r_panel > div > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.x_panel > div > div > label {
+    padding-left: 6px;
+    font-weight: bold;
+}
+
+.x_panel input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: inherit;
+    width: 1em;
+    height: 1em;
+    color: var(--text-color);
+    background-color: var(--checkbox-unchecked-color);
+    border: 2px solid var(--checkbox-unchecked-border-color);
+    border-radius: 2px;
+    background-size: 80%;
+    transition: .2s;
+}
+input[type="checkbox"]:hover {
+    background-color: var(--checkbox-unchecked-hover-color);
+}
+input[type="checkbox"]:active {
+    background-color: var(--checkbox-unchecked-active-color);
+}
+input[type="checkbox"]:checked {
+    background-color: var(--checkbox-checked-color);
+    border-color: var(--checkbox-checked-border-color);
+    background-image: url(./tick.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+input[type="checkbox"]:checked:hover {
+    background-color: var(--checkbox-checked-hover-color);
+}
+input[type="checkbox"]:checked:active {
+    background-color: var(--checkbox-checked-active-color);
+}
+
+.r_panel > div > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.r_panel input[type="button"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: inherit;
+    width: 100%;
+    height: 2em;
+    margin: 0 0.5em;
+    color: var(--text-color);
+    background-color: var(--btn-color);
+    border-radius: 4px;
+    border-width: 0;
+    transition: .2s;
+}
+
+.r_panel input[type="button"]:hover {
+    background-color: var(--btn-hover-color);
+}
+
+.r_panel input[type="button"]:active {
+    background-color: var(--btn-click-color);
+}
+
+#graph {
+    background-color: var(--graph-bg-color);
+    border: 2px solid var(--graph-border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.table_panel {
+    margin: 32px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+#result_table {
+    width: 90%;
+    border-collapse: collapse;
+    border: 2px solid var(--table-border-color);
+}
+#result_table th {
+    text-align: center;
+    background-color: var(--table-head-bg-color);
+    border: 1px solid var(--table-border-color);
+    color: var(--table-head-color);
+    font-weight: bold;
+    margin: 0;
+    padding: 0.5em 1em;
+}
+#result_table td {
+    border-top: 1px solid var(--table-border-color);
+    border-bottom: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-second-color);
+    border-left: 1px solid var(--table-border-second-color);
+    padding: 0.5em 1em;
+    text-align: center;
+}
+#result_table + p {
+    width: 90%;
+    font-size: 80%;
+    color: var(--text-minor-color);
+}
+#result_table .no_queries {
+    font-style: italic;
+    color: var(--text-minor-color);
+}
+
+.link_panel {
+    margin: 2em 10%;
+    border-radius: 4px;
+    background-color: var(--panel-color);
+    font: inherit;
+    padding: 1em 2em;
+}
+
+.link_panel > a {
+    font-weight: bold;
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.link_panel > a:hover {
+    text-decoration: var(--accent-color) underline;
+}

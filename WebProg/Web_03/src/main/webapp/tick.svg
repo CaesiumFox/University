@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+    <defs>
+        <style>
+            .white_line {
+                fill: none;
+                stroke: #ffffff;
+                stroke-width: 4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-opacity: 1;
+            }
+        </style>
+    </defs>
+    <path class="white_line" d="M 2,8 6,12 14,4"/>
+</svg>
