@@ -13,13 +13,13 @@
     --text-wrong-color:                hsl(5, 100%, 60%);
     --text-minor-color:                hsl(0, 0%, 80%);
     --panel-color:                     hsl(0, 0%, 21%);
-    --rx-panel-color:                  hsl(0, 0%, 17%);
+    --x-panel-color:                   hsl(0, 0%, 17%);
     --textfield-color:                 hsl(0, 0%, 15%);
     --textfield-input-color:           hsl(0, 0%, 5%);
     --submit-btn-color:                hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
     --submit-btn-hover-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-hover));
     --submit-btn-click-color:          hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
-    --btn-color:                       var(--rx-panel-color);
+    --btn-color:                       var(--x-panel-color);
     --btn-hover-color:                 var(--accent-color);
     --btn-click-color:                 hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-active));
     --checkbox-unchecked-color:        hsl(0, 0%, 10%);
@@ -191,6 +191,7 @@ div.top_panel {
     flex-direction: column;
     padding: 0 18px;
     --show-y-error: hidden;
+    --show-r-error: hidden;
 }
 .text_field::after {
     height: 0;
@@ -200,11 +201,16 @@ div.top_panel {
 }
 .text_field#text_field_y::after {
     visibility: var(--show-y-error);
-    content: "Значение должно быть числом от −3 до 5";
+    content: "Значение должно быть числом от −5 до 3";
 }
 
-.r_panel, .x_panel {
-    background-color: var(--rx-panel-color);
+.text_field#text_field_r::after {
+    visibility: var(--show-r-error);
+    content: "Значение должно быть числом от 2 до 5";
+}
+
+.x_panel {
+    background-color: var(--x-panel-color);
     border-radius: 4px;
     flex-direction: column;
     --show-x-error: hidden;
@@ -242,7 +248,7 @@ div.top_panel {
     font-weight: bold;
 }
 
-.x_panel input[type="checkbox"] {
+input[type="radio"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     font-size: inherit;
@@ -251,27 +257,28 @@ div.top_panel {
     color: var(--text-color);
     background-color: var(--checkbox-unchecked-color);
     border: 2px solid var(--checkbox-unchecked-border-color);
-    border-radius: 2px;
+    border-radius: 0.5em;
     background-size: 80%;
     transition: .2s;
+    margin: 3px 3px 3px 5px;
 }
-input[type="checkbox"]:hover {
+input[type="radio"]:hover {
     background-color: var(--checkbox-unchecked-hover-color);
 }
-input[type="checkbox"]:active {
+input[type="radio"]:active {
     background-color: var(--checkbox-unchecked-active-color);
 }
-input[type="checkbox"]:checked {
+input[type="radio"]:checked {
     background-color: var(--checkbox-checked-color);
     border-color: var(--checkbox-checked-border-color);
     background-image: url(./tick.svg);
     background-repeat: no-repeat;
     background-position: center;
 }
-input[type="checkbox"]:checked:hover {
+input[type="radio"]:checked:hover {
     background-color: var(--checkbox-checked-hover-color);
 }
-input[type="checkbox"]:checked:active {
+input[type="radio"]:checked:active {
     background-color: var(--checkbox-checked-active-color);
 }
 

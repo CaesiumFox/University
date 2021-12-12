@@ -11,13 +11,13 @@
         <link rel="stylesheet" href="./allstyles.css">
         <script type="text/javascript" src="./validation.js"></script>
     </head>
-    <body onload="onbodyload(); validateLiveX(); validateLiveY();">
+    <body onload="onbodyload();">
         <header>
             <p>
             Авдеев Степан Сергеевич <span id="group_label">(P3214)</span>
             </p>
             <p>
-            <span id="variant_label">Вариант: 3662</span>
+            <span id="variant_label">Вариант: 7446</span>
             </p>
         </header>
         <div class="main">
@@ -27,32 +27,25 @@
                         <div class="form_label with_tool_tip"><span>X</span></div>
                         <div class="x_panel" id="x_checkbox_panel">
                             <div>
-                                <div><input type="checkbox" id="xm3_checkbox" name="xm3" value="xm3" onclick="validateLiveX();"><label for="xm3_checkbox">&minus;3</label></div>
-                                <div><input type="checkbox" id="xm2_checkbox" name="xm2" value="xm2" onclick="validateLiveX();"><label for="xm2_checkbox">&minus;2</label></div>
-                                <div><input type="checkbox" id="xm1_checkbox" name="xm1" value="xm1" onclick="validateLiveX();"><label for="xm1_checkbox">&minus;1</label></div>
-                                <div><input type="checkbox" id="x0_checkbox" name="x0" value="x0" onclick="validateLiveX();"><label for="x0_checkbox">0</label></div>
-                                <div><input type="checkbox" id="x1_checkbox" name="x1" value="x1" onclick="validateLiveX();"><label for="x1_checkbox">1</label></div>
-                                <div><input type="checkbox" id="x2_checkbox" name="x2" value="x2" onclick="validateLiveX();"><label for="x2_checkbox">2</label></div>
-                                <div><input type="checkbox" id="x3_checkbox" name="x3" value="x3" onclick="validateLiveX();"><label for="x3_checkbox">3</label></div>
-                                <div><input type="checkbox" id="x4_checkbox" name="x4" value="x4" onclick="validateLiveX();"><label for="x4_checkbox">4</label></div>
-                                <div><input type="checkbox" id="x5_checkbox" name="x5" value="x5" onclick="validateLiveX();"><label for="x5_checkbox">5</label></div>
+                                <div><input type="radio" id="xm4_radio" name="x" value="-4"       ><label for="xm4_radio">&minus;4</label></div>
+                                <div><input type="radio" id="xm3_radio" name="x" value="-3"       ><label for="xm3_radio">&minus;3</label></div>
+                                <div><input type="radio" id="xm2_radio" name="x" value="-2"       ><label for="xm2_radio">&minus;2</label></div>
+                                <div><input type="radio" id="xm1_radio" name="x" value="-1"       ><label for="xm1_radio">&minus;1</label></div>
+                                <div><input type="radio" id="x0_radio"  name="x" value="0" checked><label for="x0_radio">0</label></div>
+                                <div><input type="radio" id="x1_radio"  name="x" value="1"        ><label for="x1_radio">1</label></div>
+                                <div><input type="radio" id="x2_radio"  name="x" value="2"        ><label for="x2_radio">2</label></div>
+                                <div><input type="radio" id="x3_radio"  name="x" value="3"        ><label for="x3_radio">3</label></div>
+                                <div><input type="radio" id="x4_radio"  name="x" value="4"        ><label for="x4_radio">4</label></div>
                             </div>
                         </div>
                         <div class="form_label"><span>Y</span></div>
                         <div class="text_field" id="text_field_y">
-                            <input id="y_text" type="text" maxlength="20" name="y" value="0" oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
+                            <input id="y_text" type="text" maxlength="16" name="y" value="0" oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
                         </div>
-                        <div class="form_label"><span id="r_text">R = 1</span></div>
-                        <div class="r_panel" id="r_button_panel">
-                            <div>
-                                <div><input type="button" id="r1_button" name="r1" value="1" onclick="pressR(1);"></div>
-                                <div><input type="button" id="r2_button" name="r2" value="2" onclick="pressR(2);"></div>
-                                <div><input type="button" id="r3_button" name="r3" value="3" onclick="pressR(3);"></div>
-                                <div><input type="button" id="r4_button" name="r4" value="4" onclick="pressR(4);"></div>
-                                <div><input type="button" id="r5_button" name="r5" value="5" onclick="pressR(5);"></div>
-                            </div>
+                        <div class="form_label"><span>R</span></div>
+                        <div class="text_field" id="text_field_r">
+                            <input id="r_text" type="text" maxlength="16" name="r" value="2" oninput="validateLiveR();" onfocus="validateLiveR();" onchange="correctR();">
                         </div>
-                        <input type="hidden" id="r_field" name="r" value="1" />
                         <div class="submit_button"><input type="submit" value="Отправить"></div>
                     </div>
                 </form>
