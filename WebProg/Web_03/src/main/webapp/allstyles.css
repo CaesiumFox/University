@@ -67,7 +67,7 @@ body {
     color: var(--accent-color);
 }
 
-header {
+.header {
     font-size: 24px;
     font-weight: bold;
     font-family: sans-serif;
@@ -76,7 +76,7 @@ header {
     padding: 1em 2em;
     border-bottom: 2px solid var(--accent-color);
 }
-header p {
+.header p {
     margin: 0;
 }
 #group_label, #variant_label {
@@ -224,28 +224,32 @@ div.top_panel {
     content: "Нужно выбрать хотя бы одно значение для X";
 }
 
-.form_panel > .x_panel > div {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
+.x_panel > table {
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px;
 }
 
-.form_panel > .r_panel > div {
+.x_panel > table > tr {
     width: 100%;
     height: 100%;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-}
-.x_panel > div > div, .r_panel > div > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
+    margin: 0;
 }
 
-.x_panel > div > div > label {
+.x_panel > table > tr > td {
+    padding: 0;
+    margin: 0;
+}
+
+.x_panel label {
+    vertical-align: middle;
     padding-left: 6px;
     font-weight: bold;
+}
+
+.x_panel input {
+    vertical-align: middle;
 }
 
 input[type="radio"] {
@@ -282,34 +286,6 @@ input[type="radio"]:checked:active {
     background-color: var(--checkbox-checked-active-color);
 }
 
-.r_panel > div > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.r_panel input[type="button"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    font-size: inherit;
-    width: 100%;
-    height: 2em;
-    margin: 0 0.5em;
-    color: var(--text-color);
-    background-color: var(--btn-color);
-    border-radius: 4px;
-    border-width: 0;
-    transition: .2s;
-}
-
-.r_panel input[type="button"]:hover {
-    background-color: var(--btn-hover-color);
-}
-
-.r_panel input[type="button"]:active {
-    background-color: var(--btn-click-color);
-}
-
 #graph {
     background-color: var(--graph-bg-color);
     border: 2px solid var(--graph-border-color);
@@ -331,7 +307,7 @@ input[type="radio"]:checked:active {
     border-collapse: collapse;
     border: 2px solid var(--table-border-color);
 }
-#result_table th {
+#result_table thead td {
     text-align: center;
     background-color: var(--table-head-bg-color);
     border: 1px solid var(--table-border-color);
@@ -340,7 +316,7 @@ input[type="radio"]:checked:active {
     margin: 0;
     padding: 0.5em 1em;
 }
-#result_table td {
+#result_table tbody td {
     border-top: 1px solid var(--table-border-color);
     border-bottom: 1px solid var(--table-border-color);
     border-right: 1px solid var(--table-border-second-color);

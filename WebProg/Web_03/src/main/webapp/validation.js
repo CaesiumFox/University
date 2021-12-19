@@ -54,6 +54,8 @@ function correctR() {
     let r_str  = document.getElementById("r_text").value.trim();
     if (r_str === "") {
         document.getElementById("r_text").value = "2";
+        document.getElementById("r_text").style.color = "var(--text-color)";
+        document.getElementById("text_field_r").style.setProperty("--show-r-error", "hidden");
     }
     if (!isNaN(r_str) && r_str >= 2 && r_str <= 5) {
         r = parseInt(r_str);
@@ -61,7 +63,7 @@ function correctR() {
 }
 
 function onbodyload() {
-    document.getElementById("the_image").addEventListener('click', function (event) {
+    /*document.getElementById("the_image").addEventListener('click', function (event) {
         let rect = document.getElementById("the_image").getBoundingClientRect();
         let mx = event.offsetX;
         let my = event.offsetY;
@@ -80,7 +82,7 @@ function onbodyload() {
         let bodyTag = document.getElementsByTagName('body')[0];
         bodyTag.appendChild(postForm);
         postForm.submit();
-    });
+    });*/
     validateLiveY();
     validateLiveR();
 }
