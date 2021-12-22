@@ -1,20 +1,43 @@
 package io.github.caesiumfox.web3;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Named("areaCheck")
-@RequestScoped
+@ApplicationScoped
 public class AreaCheckBean implements Serializable {
     private double x;
     private double y;
     private double r;
-    private String hitMessage;
-    private String timeMessage;
-    private String durationMessage;
+    private List<HistoryEntry> history = new ArrayList<>();
+
+    public double getX() {
+        return x;
+    }
+    public void setX(double x) {
+        this.x = x;
+    }
+    public double getY() {
+        return y;
+    }
+    public void setY(double y) {
+        this.y = y;
+    }
+    public double getR() {
+        return r;
+    }
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    public List<HistoryEntry> getHistory() {
+        return history;
+    }
 
     @PostConstruct
     public void init() {
@@ -23,42 +46,6 @@ public class AreaCheckBean implements Serializable {
         r = 2;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        if (x == Math.round(x))
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getR() {
-        return r;
-    }
-
-    public void setR(double r) {
-        this.r = r;
-    }
-
-    public String getHitMessage() {
-        return hitMessage;
-    }
-
-    public String getTimeMessage() {
-        return timeMessage;
-    }
-
-    public String getDurationMessage() {
-        return durationMessage;
-    }
 
     public String checkHit() {
         long start = System.nanoTime();
@@ -73,12 +60,18 @@ public class AreaCheckBean implements Serializable {
             hit = x + y >= -r;
         else if (x > 0 && y < 0)
             hit = 4 * (x * x + y * y) <= r * r;
-        hitMessage = hit ? "Да" : "Нет";
-        durationMessage = String.valueOf(System.nanoTime() - start);
-        timeMessage = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Europe/Moscow"))
-                .format(new java.time.format.DateTimeFormatterBuilder()
-                        .appendPattern("dd.MM.yyyy HH:mm:ss (O)")
-                        .toFormatter());
+
+        HistoryEntry entry = new HistoryEntry();
+
+        entry.setX(x);
+        entry.setY(y);
+        entry.setR(r);
+        entry.setHit(hit);
+        entry.setDuration(System.nanoTime() - start);
+        entry.setTime(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Europe/Moscow")));
+
+        history.add(entry);
+
         return "success";
     }
 }

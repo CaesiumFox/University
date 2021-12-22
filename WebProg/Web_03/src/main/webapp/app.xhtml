@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:pass="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <head>
         <title>Авдеев Степан P3214</title>
         <link rel="icon" href="./favicon.png" />
@@ -118,37 +119,39 @@
                     </svg>
                 </div>
             </div>
+        </div>
 
-            <div class="table_panel">
-                <table id="result_table">
-                    <thead>
-                        <tr>
-                            <td class="inverse_selected">X</td>
-                            <td class="inverse_selected">Y</td>
-                            <td class="inverse_selected">R</td>
-                            <td class="inverse_selected">A</td>
-                            <td class="inverse_selected">T</td>
-                            <td class="inverse_selected">&Delta;T, ns</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${areaCheck.x}</td>
-                            <td>${areaCheck.y}</td>
-                            <td>${areaCheck.r}</td>
-                            <td>${areaCheck.hitMessage}</td>
-                            <td>${areaCheck.timeMessage}</td>
-                            <td>${areaCheck.durationMessage}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p>
-                    X, Y, R&nbsp;&mdash; выбранные числа;<br/>
-                    A&nbsp;&mdash; попадание;<br/>
-                    T&nbsp;&mdash; текущее время;<br/>
-                    &Delta;T&nbsp;&mdash; время работы сервера от начала работы до получения этого результата.
-                </p>
-            </div>
+        <div class="table_panel">
+            <table id="result_table">
+                <thead>
+                <tr>
+                    <td class="inverse_selected">X</td>
+                    <td class="inverse_selected">Y</td>
+                    <td class="inverse_selected">R</td>
+                    <td class="inverse_selected">A</td>
+                    <td class="inverse_selected">T</td>
+                    <td class="inverse_selected">&Delta;T, ns</td>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="entry" items="${areaCheck.history}">
+                    <tr>
+                        <td>${entry.x}</td>
+                        <td>${entry.y}</td>
+                        <td>${entry.r}</td>
+                        <td>${entry.hitMessage}</td>
+                        <td>${entry.timeMessage}</td>
+                        <td>${entry.durationMessage}</td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+            <p>
+                X, Y, R&nbsp;&mdash; выбранные числа;<br/>
+                A&nbsp;&mdash; попадание;<br/>
+                T&nbsp;&mdash; текущее время;<br/>
+                &Delta;T&nbsp;&mdash; время работы сервера от начала работы до получения этого результата.
+            </p>
         </div>
     </body>
 </html>
