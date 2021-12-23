@@ -1,6 +1,7 @@
 package io.github.caesiumfox.web3;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -14,6 +15,8 @@ public class AreaCheckBean implements Serializable {
     private double x;
     private double y;
     private double r;
+    @EJB
+    private HistoryEntryEJB historyEntryEJB;
     private List<HistoryEntry> history = new ArrayList<>();
 
     public double getX() {
@@ -36,6 +39,7 @@ public class AreaCheckBean implements Serializable {
     }
 
     public List<HistoryEntry> getHistory() {
+        history = historyEntryEJB.findHistoryEntries();
         return history;
     }
 
@@ -70,7 +74,7 @@ public class AreaCheckBean implements Serializable {
         entry.setDuration(System.nanoTime() - start);
         entry.setTime(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Europe/Moscow")));
 
-        history.add(entry);
+        historyEntryEJB.addNew(entry);
 
         return "success";
     }
