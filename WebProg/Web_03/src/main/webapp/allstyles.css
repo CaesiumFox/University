@@ -59,7 +59,7 @@ body {
 
 ::selection {
     background-color: var(--accent-color);
-    color: white;
+    color: var(--text-color);
 }
 
 .inverse_selected::selection {
@@ -91,6 +91,37 @@ div.main {
     margin: 0;
     padding: 16px 5%;
 }
+
+#timer {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 16px;
+    align-self: center;
+    color: white;
+}
+
+.link_to_main {
+    font-size: 32px;
+    font-weight: bolder;
+    margin: 16px;
+    align-self: center;
+    height: 3em;
+    color: var(--text-color);
+    background-color: var(--btn-color);
+    border-width: 0;
+    border-radius: 4px;
+    padding: 0;
+    transition: .2s;
+}
+
+.link_to_main:hover {
+    background-color: var(--btn-hover-color);
+}
+
+.link_to_main:active {
+    background-color: var(--btn-click-color);
+}
+
 div.top_panel {
     padding: 0 5%;
     display: grid;

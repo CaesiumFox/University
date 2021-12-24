@@ -119,39 +119,39 @@
                     </svg>
                 </div>
             </div>
-        </div>
 
-        <div class="table_panel">
-            <table id="result_table">
-                <thead>
-                <tr>
-                    <td class="inverse_selected">X</td>
-                    <td class="inverse_selected">Y</td>
-                    <td class="inverse_selected">R</td>
-                    <td class="inverse_selected">A</td>
-                    <td class="inverse_selected">T</td>
-                    <td class="inverse_selected">&Delta;T, ns</td>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="entry" items="${areaCheck.history}">
+            <div class="table_panel">
+                <table id="result_table">
+                    <thead>
                     <tr>
-                        <td>${entry.x}</td>
-                        <td>${entry.y}</td>
-                        <td>${entry.r}</td>
-                        <td>${entry.hitMessage}</td>
-                        <td>${entry.timeMessage}</td>
-                        <td>${entry.durationMessage}</td>
+                        <td class="inverse_selected">X</td>
+                        <td class="inverse_selected">Y</td>
+                        <td class="inverse_selected">R</td>
+                        <td class="inverse_selected">A</td>
+                        <td class="inverse_selected">T</td>
+                        <td class="inverse_selected">&Delta;T, ns</td>
                     </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-            <p>
-                X, Y, R&nbsp;&mdash; выбранные числа;<br/>
-                A&nbsp;&mdash; попадание;<br/>
-                T&nbsp;&mdash; текущее время;<br/>
-                &Delta;T&nbsp;&mdash; время работы сервера от начала работы до получения этого результата.
-            </p>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="entry" items="${areaCheck.history}">
+                        <tr>
+                            <td>${entry.x}</td>
+                            <td>${entry.y}</td>
+                            <td>${entry.r}</td>
+                            <td>${entry.hitMessage}</td>
+                            <td>${entry.timeMessage}</td>
+                            <td>${entry.durationMessage}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+                <p>
+                    X, Y, R&nbsp;&mdash; выбранные числа;<br/>
+                    A&nbsp;&mdash; попадание;<br/>
+                    T&nbsp;&mdash; текущее время;<br/>
+                    &Delta;T&nbsp;&mdash; время работы сервера от начала работы до получения этого результата.
+                </p>
+            </div>
         </div>
     </body>
 </html>
