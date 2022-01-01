@@ -50,6 +50,7 @@
                             <h:inputText id="r_text" value="#{areaCheck.r}" maxlength="16"
                                          pass:oninput="validateLiveR();" onfocus="validateLiveR();" onchange="correctR();">
                                 <f:validateDoubleRange minimum="2" maximum="5" />
+                                <f:ajax execute="@this" event="change" render="the_image" />
                             </h:inputText>
                         </div>
                         <div class="submit_button">
@@ -57,67 +58,82 @@
                         </div>
                     </div>
                 </h:form>
-                <div id="graph">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="the_image" width="100%" height="100%" viewBox="0 0 100 100">
-                        <defs>
-                            <style>
-                                #axes path {
-                                    stroke: var(--graph-axes-color);
-                                    stroke-width: var(--graph-axes-width);
-                                    fill:none;
-                                }
-                                #axes text {
-                                    font-family: sans-serif;
-                                    font-size: 3px;
-                                    fill: var(--text-color);
-                                }
-                                #axes text.x_axis {
-                                    text-anchor: middle;
-                                }
-                                #axes text.y_axis {
-                                    text-anchor: end;
-                                }
-                                #the_area {
-                                    fill: var(--graph-area-color);
-                                    stroke: var(--graph-area-border-color);
-                                    stroke-width: var(--graph-area-border-width);
-                                }
-                            </style>
-                        </defs>
+                <h:form id="graph" prependId="false">
+                    <h:inputHidden id="img_x" value="#{areaCheck.imgX}"/>
+                    <h:inputHidden id="img_y" value="#{areaCheck.imgY}"/>
+                    <h:inputHidden id="img_r" value="#{areaCheck.r}" />
+                    <h:commandLink id="the_image_button" action="#{areaCheck.checkImgHit()}" >
+                        <svg xmlns="http://www.w3.org/2000/svg" id="the_image"
+                             xmlns:f="http://java.sun.com/jsf/core"
+                             xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                             width="100%" height="100%" viewBox="0 0 100 100">
+                            <defs>
+                                <style>
+                                    #axes path {
+                                        stroke: var(--graph-axes-color);
+                                        stroke-width: var(--graph-axes-width);
+                                        fill:none;
+                                    }
+                                    #axes text {
+                                        font-family: sans-serif;
+                                        font-size: 3px;
+                                        fill: var(--text-color);
+                                    }
+                                    #axes text.x_axis {
+                                        text-anchor: middle;
+                                    }
+                                    #axes text.y_axis {
+                                        text-anchor: end;
+                                    }
+                                    #the_area {
+                                        fill: var(--graph-area-color);
+                                        stroke: var(--graph-area-border-color);
+                                        stroke-width: var(--graph-area-border-width);
+                                    }
+                                </style>
+                            </defs>
 
-                        <path id="the_area" d="M 50 10 h 20 v 40 a 20 20 0 0 1 -20 20 v 20 l -40 -40 h 40 z" />
+                            <path id="the_area" d="M 50 10 h 20 v 40 a 20 20 0 0 1 -20 20 v 20 l -40 -40 h 40 z" />
 
-                        <g id="axes">
-                            <path class="axis" d="M 50 95 V 5 m -1 2 l 1 -2 l 1 2" />
-                            <path class="axis" d="M 5 50 H 95 m -2 -1 l 2 1 l -2 1" />
+                            <g id="axes">
+                                <path class="axis" d="M 50 95 V 5 m -1 2 l 1 -2 l 1 2" />
+                                <path class="axis" d="M 5 50 H 95 m -2 -1 l 2 1 l -2 1" />
 
-                            <path class="axis" d="M 50 10 m -1 0 l 2 0" />
-                            <path class="axis" d="M 50 30 m -1 0 l 2 0" />
-                            <path class="axis" d="M 50 70 m -1 0 l 2 0" />
-                            <path class="axis" d="M 50 90 m -1 0 l 2 0" />
+                                <path class="axis" d="M 50 10 m -1 0 l 2 0" />
+                                <path class="axis" d="M 50 30 m -1 0 l 2 0" />
+                                <path class="axis" d="M 50 70 m -1 0 l 2 0" />
+                                <path class="axis" d="M 50 90 m -1 0 l 2 0" />
 
-                            <path class="axis" d="M 10 50 m 0 -1 l 0 2" />
-                            <path class="axis" d="M 30 50 m 0 -1 l 0 2" />
-                            <path class="axis" d="M 70 50 m 0 -1 l 0 2" />
-                            <path class="axis" d="M 90 50 m 0 -1 l 0 2" />
+                                <path class="axis" d="M 10 50 m 0 -1 l 0 2" />
+                                <path class="axis" d="M 30 50 m 0 -1 l 0 2" />
+                                <path class="axis" d="M 70 50 m 0 -1 l 0 2" />
+                                <path class="axis" d="M 90 50 m 0 -1 l 0 2" />
 
-                            <text class="x_axis" x="90" y="50" dy="4">R</text>
-                            <text class="x_axis" x="70" y="50" dy="4">R/2</text>
-                            <text class="x_axis" x="30" y="50" dy="4">&minus;R/2</text>
-                            <text class="x_axis" x="10" y="50" dy="4">&minus;R</text>
+                                <text class="x_axis" x="90" y="50" dy="4">R</text>
+                                <text class="x_axis" x="70" y="50" dy="4">R/2</text>
+                                <text class="x_axis" x="30" y="50" dy="4">&minus;R/2</text>
+                                <text class="x_axis" x="10" y="50" dy="4">&minus;R</text>
 
-                            <text class="y_axis" x="50" y="10" dx="-2" dy="1">R</text>
-                            <text class="y_axis" x="50" y="30" dx="-2" dy="1">R/2</text>
-                            <text class="y_axis" x="50" y="70" dx="-2" dy="1">&minus;R/2</text>
-                            <text class="y_axis" x="50" y="90" dx="-2" dy="1">&minus;R</text>
+                                <text class="y_axis" x="50" y="10" dx="-2" dy="1">R</text>
+                                <text class="y_axis" x="50" y="30" dx="-2" dy="1">R/2</text>
+                                <text class="y_axis" x="50" y="70" dx="-2" dy="1">&minus;R/2</text>
+                                <text class="y_axis" x="50" y="90" dx="-2" dy="1">&minus;R</text>
 
-                            <text class="y_axis" x="50" y="50" dx="-2" dy="4">O</text>
-                        </g>
-                        <g id="points">
-                            <!-- -->
-                        </g>
-                    </svg>
-                </div>
+                                <text class="y_axis" x="50" y="50" dx="-2" dy="4">O</text>
+                            </g>
+                            <g id="points">
+                                <f:view>
+                                    <c:forEach var="entry" items="${areaCheck.history}">
+                                        <circle cx="${entry.x * 40 / areaCheck.r + 50}"
+                                                cy="${50 - entry.y * 40 / areaCheck.r}"
+                                                r="0.5"
+                                                style="${entry.hit ? 'fill: var(--graph-hit);' : 'fill: var(--graph-hit);'}"/>
+                                    </c:forEach>
+                                </f:view>
+                            </g>
+                        </svg>
+                    </h:commandLink>
+                </h:form>
             </div>
 
             <div class="table_panel">

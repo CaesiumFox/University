@@ -14,6 +14,8 @@ import java.util.List;
 public class AreaCheckBean implements Serializable {
     private double x;
     private double y;
+    private double imgX;
+    private double imgY;
     private double r;
     @EJB
     private HistoryEntryEJB historyEntryEJB;
@@ -31,6 +33,18 @@ public class AreaCheckBean implements Serializable {
     public void setY(double y) {
         this.y = y;
     }
+    public double getImgX() {
+        return imgX;
+    }
+    public void setImgX(double imgX) {
+        this.imgX = imgX;
+    }
+    public double getImgY() {
+        return imgY;
+    }
+    public void setImgY(double imgY) {
+        this.imgY = imgY;
+    }
     public double getR() {
         return r;
     }
@@ -47,11 +61,21 @@ public class AreaCheckBean implements Serializable {
     public void init() {
         x = 0;
         y = 0;
+        imgX = 0;
+        imgY = 0;
         r = 2;
     }
 
 
     public String checkHit() {
+        return checkArgumentHit(x, y);
+    }
+
+    public String checkImgHit() {
+        return checkArgumentHit(imgX, imgY);
+    }
+
+    private String checkArgumentHit(double x, double y) {
         long start = System.nanoTime();
         boolean hit = false;
         if (x == 0)

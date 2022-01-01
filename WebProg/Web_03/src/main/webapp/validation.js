@@ -63,7 +63,7 @@ function correctR() {
 }
 
 function onbodyload() {
-    /*document.getElementById("the_image").addEventListener('click', function (event) {
+    document.getElementById("the_image_button").addEventListener('click', function (event) {
         let rect = document.getElementById("the_image").getBoundingClientRect();
         let mx = event.offsetX;
         let my = event.offsetY;
@@ -73,16 +73,16 @@ function onbodyload() {
         let x = (10 * mx / iw - 5) * r / 4; // (mx / iw - 0.5) * 2 * 5 * r / 4
         let y = (5 - 10 * my / ih) * r / 4; // (0.5 - mx / iw) * 2 * 5 * r / 4
 
-        let postForm = document.createElement('form');
-        postForm.action = '.';
-        postForm.method = 'post';
-        postForm.innerHTML += '<input type="hidden" name="x" value="' + x + '">';
-        postForm.innerHTML += '<input type="hidden" name="y" value="' + y + '">';
-        postForm.innerHTML += '<input type="hidden" name="r" value="' + r + '">';
-        let bodyTag = document.getElementsByTagName('body')[0];
-        bodyTag.appendChild(postForm);
-        postForm.submit();
-    });*/
+        let form = document.getElementById("graph");
+        let imgX = document.getElementById("img_x");
+        let imgY = document.getElementById("img_y");
+        let imgR = document.getElementById("img_r");
+        imgR.setAttribute("value", r.toString());
+        imgX.setAttribute("value", x.toString());
+        imgY.setAttribute("value", y.toString());
+
+        form.submit();
+    });
     validateLiveY();
     validateLiveR();
 }
