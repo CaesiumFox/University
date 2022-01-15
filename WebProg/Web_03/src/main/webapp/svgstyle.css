@@ -1,0 +1,21 @@
+#axes path {
+    stroke: var(--graph-axes-color);
+    stroke-width: var(--graph-axes-width);
+    fill:none;
+}
+#axes text {
+    font-family: sans-serif;
+    font-size: 3px;
+    fill: var(--text-color);
+}
+#axes text.x_axis {
+    text-anchor: middle;
+}
+#axes text.y_axis {
+    text-anchor: end;
+}
+#the_area {
+    fill: var(--graph-area-color);
+    stroke: var(--graph-area-border-color);
+    stroke-width: var(--graph-area-border-width);
+}

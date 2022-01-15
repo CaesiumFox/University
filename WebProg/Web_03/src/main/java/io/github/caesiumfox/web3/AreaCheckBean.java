@@ -1,12 +1,10 @@
 package io.github.caesiumfox.web3;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.time.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named("areaCheck")
@@ -14,12 +12,11 @@ import java.util.List;
 public class AreaCheckBean implements Serializable {
     private double x;
     private double y;
+    private double r;
     private double imgX;
     private double imgY;
-    private double r;
-    @EJB
-    private HistoryEntryEJB historyEntryEJB;
-    private List<HistoryEntry> history = new ArrayList<>();
+    private final HistoryEntryManager historyEntryManager = new HistoryEntryManager();
+    private List<HistoryEntry> history;
 
     public double getX() {
         return x;
@@ -33,6 +30,13 @@ public class AreaCheckBean implements Serializable {
     public void setY(double y) {
         this.y = y;
     }
+    public double getR() {
+        return r;
+    }
+    public void setR(double r) {
+        this.r = r;
+    }
+
     public double getImgX() {
         return imgX;
     }
@@ -45,16 +49,14 @@ public class AreaCheckBean implements Serializable {
     public void setImgY(double imgY) {
         this.imgY = imgY;
     }
-    public double getR() {
-        return r;
-    }
-    public void setR(double r) {
-        this.r = r;
-    }
 
     public List<HistoryEntry> getHistory() {
-        history = historyEntryEJB.findHistoryEntries();
+        history = historyEntryManager.findHistoryEntries();
         return history;
+    }
+
+    public boolean isHistoryEmptyAfterFetch() {
+        return history.isEmpty();
     }
 
     @PostConstruct
@@ -68,14 +70,14 @@ public class AreaCheckBean implements Serializable {
 
 
     public String checkHit() {
-        return checkArgumentHit(x, y);
+        return checkArgumentHit(x, y, r);
     }
 
     public String checkImgHit() {
-        return checkArgumentHit(imgX, imgY);
+        return checkArgumentHit(imgX, imgY, r);
     }
 
-    private String checkArgumentHit(double x, double y) {
+    private String checkArgumentHit(double x, double y, double r) {
         long start = System.nanoTime();
         boolean hit = false;
         if (x == 0)
@@ -98,7 +100,7 @@ public class AreaCheckBean implements Serializable {
         entry.setDuration(System.nanoTime() - start);
         entry.setTime(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Europe/Moscow")));
 
-        historyEntryEJB.addNew(entry);
+        historyEntryManager.addNew(entry);
 
         return "success";
     }

@@ -6,25 +6,32 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
-@NamedQuery(name = HistoryEntry.namedQueryName, query = "select e from HistoryEntry e")
+@Table(name="HistoryEntry", schema = "public")
 public class HistoryEntry implements Serializable {
     public final static String namedQueryName = "findHistoryEntries";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @NotNull
+    @Column(name="id", unique = true)
     private long id;
     @NotNull
+    @Column(name="x")
     private double x;
     @NotNull
+    @Column(name="y")
     private double y;
     @NotNull
+    @Column(name="r")
     private double r;
     @NotNull
+    @Column(name="hit")
     private boolean hit;
     @NotNull
-    @Temporal(TemporalType.TIME)
+    @Column(name="server_time")
     private ZonedDateTime time;
     @NotNull
+    @Column(name="server_duration")
     private long duration;
 
     public long getId() {
@@ -80,6 +87,9 @@ public class HistoryEntry implements Serializable {
     }
     public String getDurationMessage() {
         return String.valueOf(duration);
+    }
+    public String getHitStyle() {
+        return "fill: var(--graph-" + (hit ? "hit" : "no-hit") + ");";
     }
 
 }

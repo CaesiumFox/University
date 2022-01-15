@@ -63,26 +63,25 @@ function correctR() {
 }
 
 function onbodyload() {
-    document.getElementById("the_image_button").addEventListener('click', function (event) {
-        let rect = document.getElementById("the_image").getBoundingClientRect();
-        let mx = event.offsetX;
-        let my = event.offsetY;
-        let iw = rect.width;
-        let ih = rect.height;
-
-        let x = (10 * mx / iw - 5) * r / 4; // (mx / iw - 0.5) * 2 * 5 * r / 4
-        let y = (5 - 10 * my / ih) * r / 4; // (0.5 - mx / iw) * 2 * 5 * r / 4
-
-        let form = document.getElementById("graph");
-        let imgX = document.getElementById("img_x");
-        let imgY = document.getElementById("img_y");
-        let imgR = document.getElementById("img_r");
-        imgR.setAttribute("value", r.toString());
-        imgX.setAttribute("value", x.toString());
-        imgY.setAttribute("value", y.toString());
-
-        form.submit();
-    });
     validateLiveY();
     validateLiveR();
+    correctY();
+    correctR();
+}
+
+function setImageCoordinates(event) {
+    correctR();
+    let rect = document.getElementById("the_image").getBoundingClientRect();
+    let mx = event.offsetX;
+    let my = event.offsetY;
+    let iw = rect.width;
+    let ih = rect.height;
+
+    let x = (10 * mx / iw - 5) * r / 4; // (mx / iw - 0.5) * 2 * 5 * r / 4
+    let y = (5 - 10 * my / ih) * r / 4; // (0.5 - mx / iw) * 2 * 5 * r / 4
+
+    let imgX = document.getElementById("img_x");
+    let imgY = document.getElementById("img_y");
+    imgX.setAttribute("value", x.toString());
+    imgY.setAttribute("value", y.toString());
 }
