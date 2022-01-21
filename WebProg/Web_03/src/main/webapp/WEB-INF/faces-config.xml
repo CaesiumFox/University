@@ -8,6 +8,10 @@
             <from-outcome>success</from-outcome>
             <to-view-id>/app.xhtml</to-view-id>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>welcomepage</from-outcome>
+            <to-view-id>/</to-view-id>
+        </navigation-case>
     </navigation-rule>
 
     <navigation-rule>

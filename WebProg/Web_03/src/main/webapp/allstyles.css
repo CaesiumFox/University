@@ -112,6 +112,7 @@ div.main {
     border-radius: 4px;
     padding: 8px;
     transition: .2s;
+    text-decoration: none;
 }
 
 .link_to_main:hover {
@@ -120,6 +121,22 @@ div.main {
 
 .link_to_main:active {
     background-color: var(--btn-click-color);
+}
+
+.link_to_welcome {
+    font-size: 12px;
+    font-weight: normal;
+    color: var(--text-color);
+    transition: .2s;
+    text-decoration: none;
+}
+
+.link_to_welcome:hover {
+    text-decoration: underline;
+}
+
+.link_to_welcome:hover {
+    color: var(--accent-color);
 }
 
 div.top_panel {
