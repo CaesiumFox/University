@@ -20,17 +20,16 @@ public class HistoryEntryManager {
     }
 
     public List<HistoryEntry> findHistoryEntries() {
-        Session session = sessionFactory.openSession();
-        List<HistoryEntry> result = session.createQuery("from HistoryEntry").list();
-        session.close();
-        return result;
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("from HistoryEntry").list();
+        }
     }
 
     public void addNew(HistoryEntry entry) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        session.save(entry);
-        transaction.commit();
-        session.close();
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.save(entry);
+            transaction.commit();
+        }
     }
 }
