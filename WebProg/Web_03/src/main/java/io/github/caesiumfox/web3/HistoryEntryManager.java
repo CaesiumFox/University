@@ -20,8 +20,10 @@ public class HistoryEntryManager {
     }
 
     public List<HistoryEntry> findHistoryEntries() {
-        return sessionFactory.openSession()
-                .createQuery("from HistoryEntry").list();
+        Session session = sessionFactory.openSession();
+        List<HistoryEntry> result = session.createQuery("from HistoryEntry").list();
+        session.close();
+        return result;
     }
 
     public void addNew(HistoryEntry entry) {
