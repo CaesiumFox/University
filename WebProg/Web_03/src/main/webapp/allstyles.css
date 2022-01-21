@@ -135,7 +135,7 @@ div.main {
     text-decoration: underline;
 }
 
-.link_to_welcome:hover {
+.link_to_welcome:active {
     color: var(--accent-color);
 }
 
