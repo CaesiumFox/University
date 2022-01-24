@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:pass="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Авдеев Степан P3214</title>
+        <link rel="icon" href="./favicon.png" />
+        <link rel="stylesheet" href="./allstyles.css" />
+        <script type="text/javascript" src="./validation.js"></script>
+    </h:head>
+    <h:body onload="onbodyload();">
+        <div class="header">
+            <p>
+            Авдеев Степан Сергеевич <span id="group_label">(P3214)</span>
+            </p>
+            <p>
+            <span id="variant_label">Вариант: 7446</span>
+            </p>
+            <p>
+            <h:link value="Вернуться на стартовую страницу" outcome="welcomepage" styleClass="link_to_welcome"/>
+            </p>
+        </div>
+        <h:panelGroup layout="block" styleClass="main">
+            <h:form onsubmit="return validateFinal()" id="the_form" prependId="false">
+                <h:panelGroup layout="block" styleClass="top_panel">
+                    <h:panelGroup layout="block" styleClass="form_panel">
+                        <h:panelGroup layout="block" styleClass="form_label with_tool_tip">
+                            <h:panelGroup>X</h:panelGroup>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="x_panel" id="x_checkbox_panel">
+                            <h:selectOneRadio value="#{areaCheck.x}" id="x_select">
+                                <f:selectItem itemValue="-4" itemLabel="&minus;4"/>
+                                <f:selectItem itemValue="-3" itemLabel="&minus;3"/>
+                                <f:selectItem itemValue="-2" itemLabel="&minus;2"/>
+                                <f:selectItem itemValue="-1" itemLabel="&minus;1"/>
+                                <f:selectItem itemValue="0" itemLabel="0"/>
+                                <f:selectItem itemValue="1" itemLabel="1"/>
+                                <f:selectItem itemValue="2" itemLabel="2"/>
+                                <f:selectItem itemValue="3" itemLabel="3"/>
+                                <f:selectItem itemValue="4" itemLabel="4"/>
+                            </h:selectOneRadio>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="form_label">
+                            <h:panelGroup>Y</h:panelGroup>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="text_field" id="text_field_y">
+                            <h:inputText id="y_text" value="#{areaCheck.y}" maxlength="16"
+                                         pass:oninput="validateLiveY();" onfocus="validateLiveY();" onchange="correctY();">
+                                <f:validateDoubleRange minimum="-5" maximim="3"/>
+                            </h:inputText>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="form_label">
+                            <h:panelGroup>R</h:panelGroup>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="text_field" id="text_field_r">
+                            <h:inputText id="r_text" value="#{areaCheck.r}" maxlength="16"
+                                         pass:oninput="validateLiveR();" onfocus="validateLiveR();" onchange="correctR();">
+                                <f:validateDoubleRange minimum="2" maximum="5" />
+                                <f:ajax event="change" render="plot_button"/>
+                            </h:inputText>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="submit_button">
+                            <h:commandButton value="Отправить" type="submit" action="#{areaCheck.checkHit()}" />
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" id="graph">
+                        <h:commandLink action="#{areaCheck.checkImgHit()}"
+                                       onclick="setImageCoordinates(event);"
+                                       id="plot_button">
+                            <ui:include src="plot.xhtml"/>
+                        </h:commandLink>
+                        <h:inputHidden id="img_x" value="#{areaCheck.imgX}" />
+                        <h:inputHidden id="img_y" value="#{areaCheck.imgY}" />
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+
+            <h:panelGroup layout="block" styleClass="table_panel">
+                <table id="result_table">
+                    <thead>
+                    <tr>
+                        <td class="inverse_selected">X</td>
+                        <td class="inverse_selected">Y</td>
+                        <td class="inverse_selected">R</td>
+                        <td class="inverse_selected">A</td>
+                        <td class="inverse_selected">T</td>
+                        <td class="inverse_selected">&Delta;T, ns</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="entry" items="${areaCheck.history}">
+                        <tr>
+                            <td>${entry.x}</td>
+                            <td>${entry.y}</td>
+                            <td>${entry.r}</td>
+                            <td>${entry.hitMessage}</td>
+                            <td>${entry.timeMessage}</td>
+                            <td>${entry.durationMessage}</td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="#{areaCheck.historyEmptyAfterFetch}">
+                        <tr>
+                            <td class="no_queries" colspan="6">
+                                Ещё никаких запросов не было
+                            </td>
+                        </tr>
+                    </c:if>
+                    </tbody>
+                </table>
+                <p>
+                    X, Y, R&nbsp;&mdash; выбранные числа;<br/>
+                    A&nbsp;&mdash; попадание;<br/>
+                    T&nbsp;&mdash; текущее время;<br/>
+                    &Delta;T&nbsp;&mdash; время работы сервера от начала работы до получения этого результата.
+                </p>
+            </h:panelGroup>
+        </h:panelGroup>
+    </h:body>
+</html>
