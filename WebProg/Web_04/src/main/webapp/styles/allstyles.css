@@ -239,6 +239,7 @@ div.top_panel {
     flex-direction: column;
     padding: 0 18px;
     --show-y-error: hidden;
+    --show-x-error: hidden;
     --show-r-error: hidden;
 }
 .text_field::after {
@@ -249,12 +250,7 @@ div.top_panel {
 }
 .text_field#text_field_y::after {
     visibility: var(--show-y-error);
-    content: "Значение должно быть числом от −5 до 3";
-}
-
-.text_field#text_field_r::after {
-    visibility: var(--show-r-error);
-    content: "Значение должно быть числом от 2 до 5";
+    content: "Значение должно быть числом от −3 до 5";
 }
 
 .x_panel {

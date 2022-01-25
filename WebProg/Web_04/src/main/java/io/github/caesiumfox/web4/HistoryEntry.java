@@ -86,8 +86,4 @@ public class HistoryEntry implements Serializable {
     public String getDurationMessage() {
         return String.valueOf(duration);
     }
-    public String getHitStyle() {
-        return "fill: var(--graph-" + (hit ? "hit" : "no-hit") + ");";
-    }
-
 }
