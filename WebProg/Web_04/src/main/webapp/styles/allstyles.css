@@ -1,10 +1,10 @@
 :root {
-    --accent-hue: 203;
+    --accent-hue: 34;
     --accent-saturation: 100%;
-    --accent-light-base: 34%;
-    --accent-light-hover: 40%;
-    --accent-light-active: 46%;
-    --accent-light-border: 52%;
+    --accent-light-base: 50%;
+    --accent-light-hover: 56%;
+    --accent-light-active: 62%;
+    --accent-light-border: 68%;
 
     --accent-color:                    hsl(var(--accent-hue), var(--accent-saturation), var(--accent-light-base));
     --bg-color:                        hsl(0, 0%, 15%);
