@@ -44,9 +44,35 @@ class NoTableEntries extends React.Component {
 }
 
 class TableBody extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            entries: []
+        };
+
+        store.subscribe(() => {
+            this.setState({
+                entries: store.getState().entries
+            });
+        });
+    }
     render () {
-        // TODO
-        return <tbody></tbody>;
+        if (this.state.entries.length == 0) {
+            return <tbody><NoTableEntries/></tbody>
+        }
+
+        let list = [];
+        this.state.entries.forEach((e) => {
+            list.push((
+                <TableEntry x={e.x}
+                            y={e.y}
+                            r={e.r}
+                            hit={e.hit}
+                            time={e.timeMsg}
+                            duration={e.durationMsg}/>
+            ));
+        });
+        return <tbody>{list}</tbody>;
     }
 }
 

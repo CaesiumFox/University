@@ -82,9 +82,31 @@ class Point extends React.Component {
 }
 
 class Points extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            imgR: 1,
+            entries: []
+        };
+
+        store.subscribe(() => {
+            this.setState({
+                imgR: store.getState().imgR,
+                entries: store.getState().entries
+            });
+        });
+    }
     render () {
-        // TODO
-        return <g id="points"></g>;
+        let list = [];
+        this.state.entries.forEach((e) => {
+            list.push((
+                <Point x={e.x}
+                       y={e.y}
+                       r={this.state.imgR}
+                       h={e.hit}/>
+            ));
+        });
+        return <g id="points">{list}</g>;
     }
 }
 
