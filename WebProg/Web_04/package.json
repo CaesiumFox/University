@@ -1,0 +1,29 @@
+{
+  "name": "web4",
+  "version": "1.0.0",
+  "description": "Web 04",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "CaesiumFox",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.6.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "requirejs": "^2.3.6",
+    "rest": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-transform-regenerator": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "webpack": "^5.67.0",
+    "webpack-dev-server": "^4.7.3"
+  }
+}

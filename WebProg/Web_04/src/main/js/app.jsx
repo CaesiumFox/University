@@ -1,6 +1,6 @@
-ReactDOM.render (
-    (
-        <Provider store={store}>
+export class App extends React.Component {
+    render () {
+        return (<>
             <Header name="Авдеев Степан Сергеевич"
                 group="P3214"
                 variant="81863"
@@ -12,7 +12,6 @@ ReactDOM.render (
                 </div>
                 <Table/>
             </div>
-        </Provider>
-    ),
-    jQuery("#react_app").get()
-);
+        </>);
+    }
+}
