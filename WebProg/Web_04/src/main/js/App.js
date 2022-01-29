@@ -1,7 +1,7 @@
-import Header from './Header.js';
-import Form from './Form.js';
-import PlotPanel from './PlotPanel';
-import Table from './Table.js';
+import Header from './common/Header.js';
+import Form from './form/Form.js';
+import PlotPanel from './plot/PlotPanel';
+import Table from './table/Table.js';
 
 export default function App(props) {
     return (<>

@@ -1,31 +1,4 @@
-function Curve(props) {
-    if (props.r > 0) {
-        return (
-            <path id="the_area"
-                d={"M 50 10 " +
-                    "a 40 40 0 0 1 40 40 " +
-                    "v 40 " +
-                    "h -40 " +
-                    "v -40 " +
-                    "h -20 " +
-                    "l 20 -20 " +
-                    "z"}/>
-        );
-    }
-    return (
-        <path id="the_area"
-            d={"M 50 90 " +
-            "a 40 40 0 0 1 -40 -40 " +
-            "v -40 " +
-            "h 40 " +
-            "v 40 " +
-            "h 20 " +
-            "l -20 20 " +
-            "z"}/>
-    );
-}
-
-function Axes(props) {
+export default function Axes(props) {
     let r = props.r;
     let labels = '';
     if (r != 0) {
@@ -60,46 +33,4 @@ function Axes(props) {
             <text className="y_axis" x="50" y="50" dx="-2" dy="4">O</text>
         </g>
     );
-}
-
-function Point(props) {
-    let x = props.x;
-    let y = props.y;
-    let r = props.r;
-    let h = props.h;
-    return (
-        <circle cx={x * 40 / r + 50}
-                cy={50 - y * 40 / r}
-                r="0.5"
-                style={'fill: var(--graph-' + (h ? "hit" : 'no-hit') + ')'}/>
-    );
-}
-
-function Points(props) {
-    // TODO
-    let list = [];
-    this.state.entries.forEach((e) => {
-        list.push((
-            <Point x={e.x}
-                    y={e.y}
-                    r={state.imgR}
-                    h={e.hit}/>
-        ));
-    });
-    return <g id="points">{list}</g>;
-}
-
-export default function PlotPanel(props) {
-    <svg id="the_image"
-            width="100%"
-            height="100%"
-            viewBox="0 0 100 100">
-        <style>
-            @import url("/svgstyle.css");
-        </style>
-
-        <Curve r={this.props.r}/>
-        <Axes r={this.props.r}/>
-        <Points/>
-    </svg>
 }
