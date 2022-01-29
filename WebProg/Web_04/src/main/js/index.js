@@ -1,6 +1,8 @@
-import App from './app/app.jsx';
+import App from './App.js';
 import ReactDOM from 'react-dom';
-import Provider from 'react-redux';
+import { Provider } from 'react-redux';
+import $ from 'jquery';
+import { store } from './store.js';
 
 ReactDOM.render (
     (
@@ -8,5 +10,5 @@ ReactDOM.render (
             <App/>
         </Provider>
     ),
-    jQuery("#react_app").get()
+    $("#react_app")[0]
 );

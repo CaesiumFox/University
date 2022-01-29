@@ -48,4 +48,4 @@ function reducer(state, action) {
     }
 }
 
-const store = createStore(reducer, initialState);
+export let store = createStore(reducer, initialState);
