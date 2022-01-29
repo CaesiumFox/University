@@ -1,13 +1,15 @@
 import Point from './Point.js';
 
 export default function Points(props) {
-    // TODO
+    let imgR = useSelector(state => state.imgR);
+    let entries = useSelector(state => state.entries);
+
     let list = [];
-    this.state.entries.forEach((e) => {
+    entries.forEach((e) => {
         list.push((
             <Point x={e.x}
                     y={e.y}
-                    r={state.imgR}
+                    r={imgR}
                     h={e.hit}/>
         ));
     });

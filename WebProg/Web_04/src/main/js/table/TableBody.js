@@ -1,14 +1,16 @@
 import TableEntry from './TableEntry.js';
 import NoTableEntries from './NoTableEntries.js';
+import { useSelector } from 'react-redux';
 
 export default function TableBody(props) {
-    // TODO
-    if (state.entries.length == 0) {
+    let entries = useSelector(state => state.entries);
+
+    if (entries.length == 0) {
         return <tbody><NoTableEntries/></tbody>
     }
 
     let list = [];
-    state.entries.forEach((e) => {
+    entries.forEach((e) => {
         list.push((
             <TableEntry x={e.x}
                         y={e.y}
