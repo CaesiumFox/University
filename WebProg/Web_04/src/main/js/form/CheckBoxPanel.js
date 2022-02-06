@@ -8,7 +8,7 @@ export default function CheckBoxPanel(props) {
                         id={str + '_checkbox'}
                         name={str}
                         value={str}/>
-                <label for={str + '_checkbox'}>
+                <label htmlFor={str + '_checkbox'}>
                     {val.toString().replace('-','\u2212')}
                 </label>
             </div>
