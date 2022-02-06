@@ -6,13 +6,31 @@ import SubmitButton from './SubmitButton.js';
 import $ from 'jquery';
 
 export default function Form(props) {
-    function sendRequest(e, x, y, r) {
-        e.preventDefault();
+    let dispatch = useDispatch();
+    let x = useSelector(state => state.x);
+    let y = useSelector(state => state.y);
+    let r = useSelector(state => state.r);
 
+    function sendRequest(e) {
+        e.preventDefault();
+        $.post({
+            url: "/post-data",
+            dataType: "json",
+            data: {
+                type: "form",
+                x: x,
+                y: y,
+                r: r
+            }
+        }).done(function(data) {
+            dispatch({type: "PUSH_ENTRIES", payload: data.entries});
+        }).fail(function(jqXHR, textStatus) {
+            alert('Sending ajax failed: ' + textStatus);
+        });
     }
 
     return (
-        <form method="post" name="numbers" >
+        <form method="post" name="numbers" onsubmit={sendRequest}>
             <div className="form+panel">
                 <FormLabel variable="X"></FormLabel>
                 <XCheckBoxPanel/>
