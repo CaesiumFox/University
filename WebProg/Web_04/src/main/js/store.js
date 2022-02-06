@@ -22,6 +22,17 @@ function reducer(state, action) {
             return {...state, x: state.x.filter((val) => {
                 return val != action.payload;
             })};
+        case "SWITCH_X":
+            if (state.x.indexOf(action.payload) === -1) {
+                return {...state, x: state.x.filter((val) => {
+                    return val != action.payload;
+                })};
+            }
+            else {
+                let newX = state.x.concat([action.payload]);
+                newX.sort();
+                return {...state, x: newX};
+            }
         case "SET_Y":
             return {...state, y: action.payload};
         case "ADD_R":
@@ -35,6 +46,17 @@ function reducer(state, action) {
             return {...state, r: state.r.filter((val) => {
                 return val != action.payload;
             })};
+        case "SWITCH_R":
+            if (state.r.indexOf(action.payload) === -1) {
+                return {...state, r: state.r.filter((val) => {
+                    return val != action.payload;
+                })};
+            }
+            else {
+                let newR = state.r.concat([action.payload]);
+                newR.sort();
+                return {...state, x: newR};
+            }
         case "SET_IMG_R":
             return {...state, imgR: parseInt(action.payload)};
         case "SET_ENTRIES":

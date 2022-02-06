@@ -1,18 +1,25 @@
 import FormLabel from './FormLabel.js';
-import CheckBoxPanel from './CheckBoxPanel.js';
-import TextBoxPanel from './TextBoxPanel.js';
+import XCheckBoxPanel from './XCheckBoxPanel.js';
+import RCheckBoxPanel from './RCheckBoxPanel.js';
+import YTextBoxPanel from './YTextBoxPanel.js';
 import SubmitButton from './SubmitButton.js';
+import $ from 'jquery';
 
 export default function Form(props) {
+    function sendRequest(e, x, y, r) {
+        e.preventDefault();
+
+    }
+
     return (
-        <form method="post" name="numbers">
+        <form method="post" name="numbers" >
             <div className="form+panel">
                 <FormLabel variable="X"></FormLabel>
-                <CheckBoxPanel variable="x" min="-4" max="4"/>
+                <XCheckBoxPanel/>
                 <FormLabel variable="Y"></FormLabel>
-                <TextBoxPanel variable="y" value="0"/>
+                <YTextBoxPanel/>
                 <FormLabel variable="R"></FormLabel>
-                <CheckBoxPanel variable="r" min="-4" max="4"/>
+                <RCheckBoxPanel/>
                 <SubmitButton text="Отправить"/>
             </div>
         </form>
