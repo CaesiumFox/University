@@ -1,5 +1,6 @@
 const initialState = {
     user: "",
+    password: "",
     x: [0],
     y: "0",
     r: [1],

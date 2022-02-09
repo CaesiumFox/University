@@ -6,6 +6,8 @@ import $ from 'jquery';
 export default function PlotPanel(props) {
     let dispatch = useDispatch();
     let r = useSelector(state => state.imgR);
+    let user = useSelector(state => state.user);
+    let password = useSelector(state => state.password);
 
     function sendImgRequest(e) {
         e.preventDefault();
@@ -18,6 +20,8 @@ export default function PlotPanel(props) {
             url: "/post-data",
             dataType: "json",
             data: {
+                user: user,
+                password: password,
                 type: "plot",
                 x: ((10 * mx / iw - 5) * r / 4),
                 y: ((5 - 10 * my / ih) * r / 4),

@@ -10,6 +10,8 @@ export default function Form(props) {
     let x = useSelector(state => state.x);
     let y = useSelector(state => state.y);
     let r = useSelector(state => state.r);
+    let user = useSelector(state => state.user);
+    let password = useSelector(state => state.password);
 
     function sendRequest(e) {
         e.preventDefault();
@@ -17,6 +19,8 @@ export default function Form(props) {
             url: "/post-data",
             dataType: "json",
             data: {
+                user: user,
+                password: password,
                 type: "form",
                 x: x,
                 y: y,
