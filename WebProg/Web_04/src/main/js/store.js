@@ -1,3 +1,5 @@
+import { createStore } from 'redux';
+
 const initialState = {
     user: "",
     password: "",
@@ -21,12 +23,12 @@ function reducer(state, action) {
             return state;
         case "REMOVE_X":
             return {...state, x: state.x.filter((val) => {
-                return val != action.payload;
+                return val !== action.payload;
             })};
         case "SWITCH_X":
             if (state.x.indexOf(action.payload) === -1) {
                 return {...state, x: state.x.filter((val) => {
-                    return val != action.payload;
+                    return val !== action.payload;
                 })};
             }
             else {
@@ -45,12 +47,12 @@ function reducer(state, action) {
             return state;
         case "REMOVE_R":
             return {...state, r: state.r.filter((val) => {
-                return val != action.payload;
+                return val !== action.payload;
             })};
         case "SWITCH_R":
             if (state.r.indexOf(action.payload) === -1) {
                 return {...state, r: state.r.filter((val) => {
-                    return val != action.payload;
+                    return val !== action.payload;
                 })};
             }
             else {

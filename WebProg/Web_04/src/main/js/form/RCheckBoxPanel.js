@@ -14,7 +14,7 @@ export default function RCheckBoxPanel(props) {
                         name={str}
                         value={str}
                         checked={rState.indexOf(val) !== -1}
-                        onclick={()=>{
+                        onClick={()=>{
                             dispatch({type: "SWITCH_R", payload: val});
                         }}/>
                 <label htmlFor={str + '_checkbox'}>

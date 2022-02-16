@@ -2,6 +2,7 @@ import Curve from './Curve.js';
 import Axes from './Axes.js';
 import Points from './Points.js';
 import $ from 'jquery';
+import {useDispatch, useSelector} from "react-redux";
 
 export default function PlotPanel(props) {
     let dispatch = useDispatch();
@@ -23,9 +24,9 @@ export default function PlotPanel(props) {
                 user: user,
                 password: password,
                 type: "plot",
-                x: ((10 * mx / iw - 5) * r / 4),
+                x: [((10 * mx / iw - 5) * r / 4)],
                 y: ((5 - 10 * my / ih) * r / 4),
-                r: r
+                r: [r]
             }
         }).done(function(data) {
             dispatch({type: "PUSH_ENTRIES", payload: data.entries});
@@ -39,7 +40,7 @@ export default function PlotPanel(props) {
                 width="100%"
                 height="100%"
                 viewBox="0 0 100 100"
-                onclick={sendImgRequest}>
+                onClick={sendImgRequest}>
             <style>
                 @import url("/svgstyle.css");
             </style>

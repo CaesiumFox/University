@@ -5,7 +5,7 @@ export default function Header(props) {
                 <span id="group_label">({this.props.group})</span></p>
             <p><span id="variant_label">
                 Вариант: {this.props.variant}</span></p>
-            {this.props.link && <p><a href="welcome.jsp" className="link_to_welcome">
+            {this.props.link && <p><a href="/" className="link_to_welcome">
                 Вернуться на стартовую страницу</a></p>}
         </div>
     );

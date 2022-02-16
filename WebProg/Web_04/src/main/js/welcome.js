@@ -1,7 +1,8 @@
-class Timer extends React.Component {
-    render () {
-        <p><span id="timer">01.01.1970 00:00:00</span></p>
-    }
+import Header from "./common/Header";
+import ReactDOM from "react-dom";
+
+function Timer() {
+    return <p><span id="timer">01.01.1970 00:00:00</span></p>
 }
 
 ReactDOM.render (
@@ -11,7 +12,7 @@ ReactDOM.render (
             variant="81863"/>
         <div className="main">
             <Timer/>
-            <p><a href="app.html" class="link_to_main">Главная страница</a></p>
+            <p><a href="/app" className="link_to_main">Главная страница</a></p>
         </div>
     </>),
     jQuery("#react_app").get()

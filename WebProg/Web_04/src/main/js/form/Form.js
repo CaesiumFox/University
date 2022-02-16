@@ -4,6 +4,7 @@ import RCheckBoxPanel from './RCheckBoxPanel.js';
 import YTextBoxPanel from './YTextBoxPanel.js';
 import SubmitButton from './SubmitButton.js';
 import $ from 'jquery';
+import {useDispatch, useSelector} from "react-redux";
 
 export default function Form(props) {
     let dispatch = useDispatch();
@@ -34,13 +35,13 @@ export default function Form(props) {
     }
 
     return (
-        <form method="post" name="numbers" onsubmit={sendRequest}>
+        <form method="post" name="numbers" onSubmit={sendRequest}>
             <div className="form+panel">
-                <FormLabel variable="X"></FormLabel>
+                <FormLabel variable="X"/>
                 <XCheckBoxPanel/>
-                <FormLabel variable="Y"></FormLabel>
+                <FormLabel variable="Y"/>
                 <YTextBoxPanel/>
-                <FormLabel variable="R"></FormLabel>
+                <FormLabel variable="R"/>
                 <RCheckBoxPanel/>
                 <SubmitButton text="Отправить"/>
             </div>

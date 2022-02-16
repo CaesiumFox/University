@@ -1,4 +1,5 @@
 import Point from './Point.js';
+import {useSelector} from "react-redux";
 
 export default function Points(props) {
     let imgR = useSelector(state => state.imgR);

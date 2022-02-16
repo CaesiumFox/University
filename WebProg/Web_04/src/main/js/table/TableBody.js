@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 export default function TableBody(props) {
     let entries = useSelector(state => state.entries);
 
-    if (entries.length == 0) {
+    if (entries.length === 0) {
         return <tbody><NoTableEntries/></tbody>
     }
 

@@ -14,7 +14,7 @@ export default function XCheckBoxPanel(props) {
                         name={str}
                         value={str}
                         checked={xState.indexOf(val) !== -1}
-                        onclick={()=>{
+                        onClick={()=>{
                             dispatch({type: "SWITCH_X", payload: val});
                         }}/>
                 <label htmlFor={str + '_checkbox'}>

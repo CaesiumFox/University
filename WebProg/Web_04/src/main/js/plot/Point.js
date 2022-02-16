@@ -7,6 +7,6 @@ export default function Point(props) {
         <circle cx={x * 40 / r + 50}
                 cy={50 - y * 40 / r}
                 r="0.5"
-                style={'fill: var(--graph-' + (h ? "hit" : 'no-hit') + ')'}/>
+                style={{fill: 'var(--graph-' + (h ? "hit" : 'no-hit') + ')'}}/>
     );
 }
