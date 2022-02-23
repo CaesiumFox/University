@@ -7,23 +7,16 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name="HistoryEntry", schema = "public")
 public class HistoryEntry implements Serializable {
-    public final static String namedQueryName = "findHistoryEntries";
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id", unique = true)
     private long id;
 
-    @Column(name="x")
     private double x;
 
-    @Column(name="y")
     private double y;
 
-    @Column(name="r")
     private double r;
 
-    @Column(name="hit")
     private boolean hit;
 
     @Column(name="server_time")
@@ -75,9 +68,6 @@ public class HistoryEntry implements Serializable {
         this.duration = duration;
     }
 
-    public String getHitMessage() {
-        return hit ? "Да" : "Нет";
-    }
     public String getTimeMessage() {
         return time.format(new java.time.format.DateTimeFormatterBuilder()
                 .appendPattern("dd.MM.yyyy HH:mm:ss (O)")
