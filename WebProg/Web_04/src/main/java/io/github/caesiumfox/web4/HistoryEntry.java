@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name="HistoryEntry", schema = "public")
+@Table(name = "HistoryEntry", schema = "public")
 public class HistoryEntry implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
