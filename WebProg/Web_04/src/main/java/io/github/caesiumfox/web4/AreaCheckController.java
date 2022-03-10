@@ -3,20 +3,15 @@ package io.github.caesiumfox.web4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.ApplicationScope;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Controller
 @ApplicationScope
@@ -31,17 +26,10 @@ public class AreaCheckController {
             this.entries = entries;
         }
     }
-    static class RegisterResponse {
-        private boolean success;
-        private String message;
-        public RegisterResponse(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-    }
 
     private HistoryEntryRepository historyEntryRepository;
     private UserRepository userRepository;
+    private AuthTokenRepository authTokenRepository;
 
     @Autowired
     public AreaCheckController(HistoryEntryRepository historyEntryRepository, UserRepository userRepository) {
@@ -50,79 +38,49 @@ public class AreaCheckController {
     }
 
     @GetMapping(value="/")
-    public String welcome() {
+    public String welcome(@CookieValue String authToken, HttpServletRequest request) {
+        if (authTokenRepository.existsById(authToken)) {
+            return "redirect:" +
+                    request.getScheme() +
+                    "://" +
+                    request.getServerName() +
+                    ":" +
+                    request.getServerPort() +
+                    "/app";
+        }
         return "welcome";
     }
 
     @GetMapping(value="/app")
-    public String app(
-            @RequestParam String username,
-            @RequestParam String password) {
-        Optional<User> userGot = userRepository.findById(username);
-        if (!userGot.isPresent())
-            return "no-app";
-        if (userGot.get().getPassHashStr()
-                .equals(PasswordManager
-                        .hashPassword(password, userGot.get().getPassSaltStr())))
+    public String app(@CookieValue String authToken) {
+        if (authTokenRepository.existsById(authToken))
             return "app";
-        return "no-app";
+        return "welcome";
     }
 
     @PostMapping(value="/post-data", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseData postData(
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam String type,
+            @CookieValue String authToken,
             @RequestParam List<Double> x,
             @RequestParam Double y,
             @RequestParam List<Double> r) {
-        Optional<User> userGot = userRepository.findById(username);
-        if (!userGot.isPresent())
-            return new ResponseData(false, "No user with name '" + username + "'", null);
-        if (userGot.get().getPassHashStr()
-                .equals(PasswordManager
-                        .hashPassword(password, userGot.get().getPassSaltStr()))) {
+        if (authTokenRepository.existsById(authToken)) {
             calculateAndSave(x, y, r);
             return new ResponseData(true, "Success", historyEntryRepository.findAll());
         }
-        return new ResponseData(false, "Wrong password", null);
+        return new ResponseData(false, "Wrong authToken", null);
     }
 
     @GetMapping(value="/current-data", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseData currentData(
-            @RequestParam String username,
-            @RequestParam String password) {
-        Optional<User> userGot = userRepository.findById(username);
-        if (!userGot.isPresent())
-            return new ResponseData(false, "No user with name '" + username + "'", null);
-        if (userGot.get().getPassHashStr()
-                .equals(PasswordManager
-                        .hashPassword(password, userGot.get().getPassSaltStr())))
+    public ResponseData currentData(@CookieValue String authToken) {
+        if (authTokenRepository.existsById(authToken))
             return new ResponseData(true, "Success", historyEntryRepository.findAll());
-        return new ResponseData(false, "Wrong password", null);
+        return new ResponseData(false, "Wrong authToken", null);
     }
 
-    @PostMapping(value="/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public RegisterResponse register(
-            @RequestParam String username,
-            @RequestParam String password) {
-        if (userRepository.existsById(username)) {
-            return new RegisterResponse(false, "User named '" + username + "' already exists");
-        }
-        if (password.length() < 4) {
-            return new RegisterResponse(false, "The password must have at least 4 characters");
-        }
-        String salt = PasswordManager.generateSalt();
-        User user = new User();
-        user.setUsername(username);
-        user.setPassHashStr(PasswordManager.hashPassword(password, salt));
-        user.setPassSaltStr(salt);
-        userRepository.save(user);
-        return new RegisterResponse(true, "Success");
-    }
+
 
     private void calculateAndSave(
             List<Double> x,

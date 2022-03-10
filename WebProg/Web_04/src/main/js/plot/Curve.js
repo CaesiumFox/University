@@ -1,5 +1,8 @@
-export default function Curve(props) {
-    if (props.r > 0) {
+import {useSelector} from "react-redux";
+
+export default function Curve() {
+    let r = useSelector(state => state.imgR);
+    if (r > 0) {
         return (
             <path id="the_area"
                 d={"M 50 10 " +

@@ -5,14 +5,15 @@ import YTextBoxPanel from './YTextBoxPanel.js';
 import SubmitButton from './SubmitButton.js';
 import $ from 'jquery';
 import {useDispatch, useSelector} from "react-redux";
+import ImgRButtonPanel from "./ImgRButtonPanel";
 
 export default function Form(props) {
     let dispatch = useDispatch();
     let x = useSelector(state => state.x);
     let y = useSelector(state => state.y);
     let r = useSelector(state => state.r);
-    let user = useSelector(state => state.user);
-    let password = useSelector(state => state.password);
+    let imgR = useSelector(state => state.imgR);
+    let token = useSelector(state => state.token);
 
     function sendRequest(e) {
         e.preventDefault();
@@ -20,8 +21,7 @@ export default function Form(props) {
             url: "/post-data",
             dataType: "json",
             data: {
-                user: user,
-                password: password,
+                token: token,
                 type: "form",
                 x: x,
                 y: y,
@@ -43,6 +43,8 @@ export default function Form(props) {
                 <YTextBoxPanel/>
                 <FormLabel variable="R"/>
                 <RCheckBoxPanel/>
+                <FormLabel variable={'R<sub>(img)</sub> = ' + imgR.toString()}/>
+                <ImgRButtonPanel/>
                 <SubmitButton text="Отправить"/>
             </div>
         </form>

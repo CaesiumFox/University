@@ -1,5 +1,7 @@
-export default function Axes(props) {
-    let r = props.r;
+import {useSelector} from "react-redux";
+
+export default function Axes() {
+    let r = useSelector(state => state.imgR);
     let labels = '';
     if (r !== 0) {
         labels = (<>

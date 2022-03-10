@@ -52,7 +52,6 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
-    font-size: 16px;
     color: var(--text-color);
     font-family: sans-serif;
 }
@@ -68,12 +67,11 @@ body {
 }
 
 .header {
-    font-size: 24px;
+    font-size: 1.5em;
     font-weight: bold;
     font-family: sans-serif;
     background-color: var(--header-color);
     margin: 0;
-    padding: 1em 2em;
     border-bottom: 2px solid var(--accent-color);
 }
 .header p {
@@ -93,24 +91,19 @@ div.main {
 }
 
 #timer {
-    font-size: 32px;
     font-weight: bold;
-    margin: 16px;
     align-self: center;
     color: white;
 }
 
 .link_to_main {
-    font-size: 32px;
     font-weight: bolder;
-    margin: 16px;
     align-self: center;
     height: 3em;
     color: var(--text-color);
     background-color: var(--btn-color);
     border-width: 0;
     border-radius: 4px;
-    padding: 8px;
     transition: .2s;
     text-decoration: none;
 }
@@ -124,7 +117,7 @@ div.main {
 }
 
 .link_to_welcome {
-    font-size: 12px;
+    font-size: 0.75em;
     font-weight: normal;
     color: var(--text-color);
     transition: .2s;
@@ -140,24 +133,16 @@ div.main {
 }
 
 div.top_panel {
-    padding: 0 5%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 32px;
 }
 
 /*-------------------------------------*/
 
 .form_panel {
-    margin: 32px;
-    padding: 24px;
     background-color: var(--panel-color);
     border-radius: 4px;
     width: max-content;
     display: grid;
-    grid-template-columns: 1fr 5fr;
-    grid-template-rows: repeat(4, 3em);
-    gap: 16px;
 }
 
 .form_panel > div {
@@ -192,9 +177,6 @@ div.top_panel {
     padding: 0;
     font-size: inherit;
 
-    grid-column-start: 1;
-    grid-column-end: 3;
-
     align-items: stretch;
     justify-content: stretch;
 
@@ -226,7 +208,7 @@ div.top_panel {
     border-radius: 4px;
     border: 2px solid var(--textfield-color);
     box-shadow: none;
-    padding: 0 16px;
+    padding: 0 1em;
 
     transition: .2s;
 }
@@ -245,7 +227,7 @@ div.top_panel {
 .text_field::after {
     height: 0;
     width: 100%;
-    font-size: 10px;
+    font-size: 0.6em;
     color: var(--text-wrong-color);
 }
 .text_field#text_field_y::after {
@@ -253,46 +235,39 @@ div.top_panel {
     content: "Значение должно быть числом от −3 до 5";
 }
 
-.x_panel {
+.x_checkbox_panel {
     background-color: var(--x-panel-color);
     border-radius: 4px;
     flex-direction: column;
     --show-x-error: hidden;
 }
-.x_panel::after {
+.x_checkbox_panel::after {
     height: 0;
     width: 100%;
-    font-size: 10px;
+    font-size: 0.6em;
     color: var(--text-wrong-color);
     visibility: var(--show-x-error);
     content: "Нужно выбрать хотя бы одно значение для X";
 }
 
-.x_panel > table {
+.x_checkbox_panel > div {
     margin: 0px;
     padding: 0px;
     border-width: 0px;
 }
 
-.x_panel > table > tr {
-    width: 100%;
-    height: 100%;
+.x_checkbox_panel > div > div {
     padding: 0;
     margin: 0;
 }
 
-.x_panel > table > tr > td {
-    padding: 0;
-    margin: 0;
-}
-
-.x_panel label {
+.x_checkbox_panel label {
     vertical-align: middle;
     padding-left: 6px;
     font-weight: bold;
 }
 
-.x_panel input {
+.x_checkbox_panel input {
     vertical-align: middle;
 }
 
@@ -344,7 +319,6 @@ input[type="radio"]:checked:active {
 }
 
 .table_panel {
-    margin: 32px;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -352,7 +326,6 @@ input[type="radio"]:checked:active {
 }
 
 #result_table {
-    width: 90%;
     border-collapse: collapse;
     border: 2px solid var(--table-border-color);
 }
@@ -399,4 +372,124 @@ input[type="radio"]:checked:active {
 
 .link_panel > a:hover {
     text-decoration: var(--accent-color) underline;
+}
+
+@media screen and (min-width: 1103px) {
+    body {
+        font-size: 16px;
+    }
+    .header {
+        padding: 1em 2em;
+    }
+    #timer {
+        font-size: 32px;
+        margin: 16px;
+    }
+    .link_to_main {
+        font-size: 32px;
+        margin: 16px;
+        padding: 8px;
+    }
+    div.top_panel {
+        padding: 0 5%;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 32px;
+    }
+    .form_panel {
+        margin: 32px;
+        padding: 24px;
+        grid-template-columns: 1fr 5fr;
+        grid-template-rows: repeat(4, 3em);
+        gap: 16px;
+    }
+    .submit_button {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+    .table_panel {
+        margin: 32px;
+    }
+    #result_table {
+        width: 90%;
+    }
+}
+
+@media screen and (min-width: 758px) and (max-width: 1102px) {
+    body {
+        font-size: 16px;
+    }
+    .header {
+        padding: 1em 2em;
+    }
+    #timer {
+        font-size: 32px;
+        margin: 16px;
+    }
+    .link_to_main {
+        font-size: 32px;
+        margin: 16px;
+        padding: 8px;
+    }
+    div.top_panel {
+        padding: 0 5%;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 32px;
+    }
+    .form_panel {
+        margin: 32px;
+        padding: 24px;
+        grid-template-columns: 1fr 5fr;
+        grid-template-rows: repeat(4, 3em);
+        gap: 16px;
+    }
+    .submit_button {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+    .table_panel {
+        margin: 32px;
+    }
+    #result_table {
+        width: 90%;
+    }
+}
+
+@media screen and (max-width: 757px) {
+    body {
+        font-size: 16px;
+    }
+    .header {
+        padding: 1em 2em;
+    }
+    #timer {
+        font-size: 32px;
+        margin: 16px;
+    }
+    .link_to_main {
+        font-size: 32px;
+        margin: 16px;
+        padding: 8px;
+    }
+    div.top_panel {
+        padding: 0 5%;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 32px;
+    }
+    .form_panel {
+        margin: 32px;
+        padding: 24px;
+        grid-template-columns: 1fr 5fr;
+        grid-template-rows: repeat(4, 3em);
+        gap: 16px;
+    }
+    .submit_button {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+    .table_panel {
+        margin: 32px;
+    }
+    #result_table {
+        width: 90%;
+    }
 }

@@ -2,9 +2,6 @@ package io.github.caesiumfox.web4;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @Entity
 @Table(name = "User", schema = "public")

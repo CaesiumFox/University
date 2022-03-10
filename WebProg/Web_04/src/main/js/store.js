@@ -1,8 +1,7 @@
 import { createStore } from 'redux';
 
 const initialState = {
-    user: "",
-    password: "",
+    token: "",
     x: [0],
     y: "0",
     r: [1],
@@ -12,8 +11,8 @@ const initialState = {
 
 function reducer(state, action) {
     switch (action.type) {
-        case "SET_USER":
-            return {...state, user: action.payload};
+        case "SET_TOKEN":
+            return {...state, token: action.payload};
         case "ADD_X":
             if (state.x.indexOf(action.payload) === -1) {
                 let newX = state.x.concat([action.payload]);

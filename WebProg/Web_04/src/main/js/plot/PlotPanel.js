@@ -4,11 +4,10 @@ import Points from './Points.js';
 import $ from 'jquery';
 import {useDispatch, useSelector} from "react-redux";
 
-export default function PlotPanel(props) {
+export default function PlotPanel() {
     let dispatch = useDispatch();
     let r = useSelector(state => state.imgR);
-    let user = useSelector(state => state.user);
-    let password = useSelector(state => state.password);
+    let token = useSelector(state => state.token);
 
     function sendImgRequest(e) {
         e.preventDefault();
@@ -21,8 +20,7 @@ export default function PlotPanel(props) {
             url: "/post-data",
             dataType: "json",
             data: {
-                user: user,
-                password: password,
+                token: token,
                 type: "plot",
                 x: [((10 * mx / iw - 5) * r / 4)],
                 y: ((5 - 10 * my / ih) * r / 4),
@@ -45,8 +43,8 @@ export default function PlotPanel(props) {
                 @import url("/svgstyle.css");
             </style>
 
-            <Curve r={this.props.r}/>
-            <Axes r={this.props.r}/>
+            <Curve/>
+            <Axes/>
             <Points/>
         </svg>
     );
