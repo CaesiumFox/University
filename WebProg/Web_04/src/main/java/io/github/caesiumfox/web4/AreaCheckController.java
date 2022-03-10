@@ -40,13 +40,7 @@ public class AreaCheckController {
     @GetMapping(value="/")
     public String welcome(@CookieValue String authToken, HttpServletRequest request) {
         if (authTokenRepository.existsById(authToken)) {
-            return "redirect:" +
-                    request.getScheme() +
-                    "://" +
-                    request.getServerName() +
-                    ":" +
-                    request.getServerPort() +
-                    "/app";
+            return "redirect:/app";
         }
         return "welcome";
     }
