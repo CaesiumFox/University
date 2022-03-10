@@ -398,7 +398,7 @@ input[type="radio"]:checked:active {
     .form_panel {
         margin: 32px;
         padding: 24px;
-        grid-template-columns: 1fr 5fr;
+        grid-template-columns: 1fr 9fr;
         grid-template-rows: repeat(4, 3em);
         gap: 16px;
     }
@@ -416,38 +416,38 @@ input[type="radio"]:checked:active {
 
 @media screen and (min-width: 758px) and (max-width: 1102px) {
     body {
-        font-size: 16px;
+        font-size: 12px;
     }
     .header {
-        padding: 1em 2em;
+        padding: 1em 1em;
     }
     #timer {
-        font-size: 32px;
-        margin: 16px;
+        font-size: 24px;
+        margin: 12px;
     }
     .link_to_main {
-        font-size: 32px;
-        margin: 16px;
-        padding: 8px;
+        font-size: 24px;
+        margin: 12px;
+        padding: 6px;
     }
     div.top_panel {
         padding: 0 5%;
-        grid-template-columns: 1fr 1fr;
-        column-gap: 32px;
+        grid-template-columns: 1fr;
+        column-gap: 16px;
     }
     .form_panel {
-        margin: 32px;
-        padding: 24px;
-        grid-template-columns: 1fr 5fr;
+        margin: 24px;
+        padding: 18px;
+        grid-template-columns: 1fr 9fr;
         grid-template-rows: repeat(4, 3em);
-        gap: 16px;
+        gap: 12px;
     }
     .submit_button {
         grid-column-start: 1;
         grid-column-end: 3;
     }
     .table_panel {
-        margin: 32px;
+        margin: 20px;
     }
     #result_table {
         width: 90%;
@@ -456,28 +456,28 @@ input[type="radio"]:checked:active {
 
 @media screen and (max-width: 757px) {
     body {
-        font-size: 16px;
+        font-size: 12px;
     }
     .header {
-        padding: 1em 2em;
+        padding: 0.5em 0.5em;
     }
     #timer {
-        font-size: 32px;
-        margin: 16px;
+        font-size: 20px;
+        margin: 12px;
     }
     .link_to_main {
-        font-size: 32px;
-        margin: 16px;
-        padding: 8px;
+        font-size: 20px;
+        margin: 12px;
+        padding: 4px;
     }
     div.top_panel {
         padding: 0 5%;
-        grid-template-columns: 1fr 1fr;
-        column-gap: 32px;
+        grid-template-columns: 1fr;
+        column-gap: 20px;
     }
     .form_panel {
-        margin: 32px;
-        padding: 24px;
+        margin: 20px;
+        padding: 16px;
         grid-template-columns: 1fr 5fr;
         grid-template-rows: repeat(4, 3em);
         gap: 16px;
@@ -487,9 +487,9 @@ input[type="radio"]:checked:active {
         grid-column-end: 3;
     }
     .table_panel {
-        margin: 32px;
+        margin: 8px;
     }
     #result_table {
-        width: 90%;
+        width: 94%;
     }
 }

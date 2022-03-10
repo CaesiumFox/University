@@ -53,7 +53,7 @@ function LoginForm() {
         }
     }
 
-    return (<form onSubmit={submit}>
+    return (<form onSubmit={submit} id="login_form">
         <p>Имя пользователя:</p>
         <input type="text" id="username_input" maxLength="64" name="username" value=""
                onChange={(event)=>{
