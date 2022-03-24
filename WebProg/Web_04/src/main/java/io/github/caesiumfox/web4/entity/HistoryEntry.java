@@ -2,6 +2,7 @@ package io.github.caesiumfox.web4.entity;
 
 import java.time.ZonedDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,9 +18,9 @@ public class HistoryEntry {
     private double y;
     private double r;
     private boolean hit;
-    private ZonedDateTime time;
+    private @Column(name = "server_time") ZonedDateTime time;
     private long duration;
-    private String user;
+    private @Column(name = "username") String user;
 
     public HistoryEntry() {}
 

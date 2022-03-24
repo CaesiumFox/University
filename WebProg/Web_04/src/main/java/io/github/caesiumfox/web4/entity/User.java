@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name = "user_table")
 @lombok.Setter
 @lombok.EqualsAndHashCode
 @lombok.ToString
