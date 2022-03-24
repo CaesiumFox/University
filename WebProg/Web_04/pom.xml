@@ -61,7 +61,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.13.2</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
