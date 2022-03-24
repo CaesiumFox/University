@@ -1231,8 +1231,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
+
+function zeros(x) {
+  if (x < 10) return '0' + x.toString();
+  return x.toString();
+}
+
 function TableEntry(props) {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.x), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.y), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.r), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.hit ? "Да" : "Нет"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.time), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.duration), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.user));
+  var date = new Date(props.time);
+  var fmtTime = zeros(date.getDate()) + '.' + zeros(date.getMonth() + 1) + '.' + date.getFullYear() + ', ' + zeros(date.getHours()) + ':' + zeros(date.getMinutes()) + ':' + zeros(date.getSeconds());
+  console.log(fmtTime);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.x), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.y), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.r), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.hit ? "Да" : "Нет"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, fmtTime), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.duration), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, props.user));
 }
 
 /***/ }),
