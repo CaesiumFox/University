@@ -1,33 +1,36 @@
-package io.github.caesiumfox.web4;
+package io.github.caesiumfox.web4.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "User", schema = "public")
+@lombok.Setter
+@lombok.EqualsAndHashCode
+@lombok.ToString
 public class User implements Serializable {
     @Id
     private String username;
     private String passHashStr;
     private String passSaltStr;
 
+    public User() {}
+    public User(String username,
+                String passHashStr,
+                String passSaltStr) {
+        this.username = username;
+        this.passHashStr = passHashStr;
+        this.passSaltStr = passSaltStr;
+    }
+
     public String getUsername() {
         return username;
     }
+
     public String getPassHashStr() {
         return passHashStr;
     }
+
     public String getPassSaltStr() {
         return passSaltStr;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public void setPassHashStr(String passHash) {
-        this.passHashStr = passHash;
-    }
-    public void setPassSaltStr(String passSaltStr) {
-        this.passSaltStr = passSaltStr;
     }
 }

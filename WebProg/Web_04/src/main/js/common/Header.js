@@ -1,3 +1,6 @@
+import React from 'react';
+import LogoutButton from './LogoutButton';
+
 export default function Header(props) {
     return (
         <div className="header">
@@ -5,8 +8,7 @@ export default function Header(props) {
                 <span id="group_label">({props.group})</span></p>
             <p><span id="variant_label">
                 Вариант: {props.variant}</span></p>
-            {props.link && <p><a href="/" className="link_to_welcome">
-                Выйти из аккаунта</a></p>}
+            {props.link && <LogoutButton/>}
         </div>
     );
 }

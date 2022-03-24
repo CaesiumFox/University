@@ -1,3 +1,4 @@
+import React from 'react';
 import TableHead from './TableHead.js';
 import TableBody from './TableBody.js';
 import TableTip from './TableTip.js';

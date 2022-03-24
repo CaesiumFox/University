@@ -1,3 +1,4 @@
+import React from 'react';
 import Header from './common/Header.js';
 import Form from './form/Form.js';
 import PlotPanel from './plot/PlotPanel';

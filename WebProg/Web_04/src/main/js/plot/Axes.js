@@ -1,19 +1,20 @@
-import {useSelector} from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 
 export default function Axes() {
     let r = useSelector(state => state.imgR);
     let labels = '';
     if (r !== 0) {
         labels = (<>
-            <text className="x_axis" x="90" y="50" dy="4">{r>0 ? 'R' : '&#x02212;R'}</text>
-            <text className="x_axis" x="70" y="50" dy="4">{r>0 ? 'R/2' : '&#x02212;R/2'}</text>
-            <text className="x_axis" x="30" y="50" dy="4">{r<0 ? 'R/2' : '&#x02212;R/2'}</text>
-            <text className="x_axis" x="10" y="50" dy="4">{r<0 ? 'R' : '&#x02212;R'}</text>
+            <text className="x_axis" x="90" y="50" dy="4">{r>0 ? 'R' : '\u2212R'}</text>
+            <text className="x_axis" x="70" y="50" dy="4">{r>0 ? 'R/2' : '\u2212R/2'}</text>
+            <text className="x_axis" x="30" y="50" dy="4">{r<0 ? 'R/2' : '\u2212R/2'}</text>
+            <text className="x_axis" x="10" y="50" dy="4">{r<0 ? 'R' : '\u2212R'}</text>
 
-            <text className="y_axis" x="50" y="10" dx="-2" dy="1">{r>0 ? 'R' : '&#x02212;R'}</text>
-            <text className="y_axis" x="50" y="30" dx="-2" dy="1">{r>0 ? 'R/2' : '&#x02212;R/2'}</text>
-            <text className="y_axis" x="50" y="70" dx="-2" dy="1">{r<0 ? 'R/2' : '&#x02212;R/2'}</text>
-            <text className="y_axis" x="50" y="90" dx="-2" dy="1">{r<0 ? 'R' : '&#x02212;R'}</text>
+            <text className="y_axis" x="50" y="10" dx="-2" dy="1">{r>0 ? 'R' : '\u2212R'}</text>
+            <text className="y_axis" x="50" y="30" dx="-2" dy="1">{r>0 ? 'R/2' : '\u2212R/2'}</text>
+            <text className="y_axis" x="50" y="70" dx="-2" dy="1">{r<0 ? 'R/2' : '\u2212R/2'}</text>
+            <text className="y_axis" x="50" y="90" dx="-2" dy="1">{r<0 ? 'R' : '\u2212R'}</text>
         </>);
     }
     return (

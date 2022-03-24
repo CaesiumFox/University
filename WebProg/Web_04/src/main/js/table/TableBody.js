@@ -1,3 +1,4 @@
+import React from 'react';
 import TableEntry from './TableEntry.js';
 import NoTableEntries from './NoTableEntries.js';
 import { useSelector } from 'react-redux';
@@ -16,8 +17,9 @@ export default function TableBody(props) {
                         y={e.y}
                         r={e.r}
                         hit={e.hit}
-                        time={e.timeMsg}
-                        duration={e.durationMsg}/>
+                        time={e.time}
+                        duration={e.duration}
+                        user={e.user}/>
         ));
     });
     return <tbody>{list}</tbody>;

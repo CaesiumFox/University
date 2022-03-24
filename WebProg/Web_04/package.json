@@ -1,30 +1,41 @@
 {
-  "name": "web4",
-  "version": "1.0.0",
-  "description": "Web 04",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "spring-data-rest-and-reactjs",
+  "version": "0.1.0",
+  "description": "Demo of ReactJS + Spring Data REST",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:spring-guides/tut-react-and-spring-data-rest.git"
   },
-  "author": "CaesiumFox",
-  "license": "MIT",
+  "keywords": [
+    "rest",
+    "hateoas",
+    "spring",
+    "data",
+    "react"
+  ],
+  "author": "Greg L. Turnquist",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/spring-guides/tut-react-and-spring-data-rest/issues"
+  },
+  "homepage": "https://github.com/spring-guides/tut-react-and-spring-data-rest",
   "dependencies": {
-    "jquery": "^3.6.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react-dom": "^16.5.2",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
-    "requirejs": "^2.3.6",
-    "rest": "^2.0.0"
+    "rest": "^2.0.0",
+    "jquery": "^3.6.0"
+  },
+  "scripts": {
+    "watch": "webpack --watch -d --output ./target/classes/static/built/bundle.js"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "babel-loader": "^8.2.3",
-    "babel-plugin-transform-regenerator": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "webpack": "^5.67.0",
-    "webpack-dev-server": "^4.7.3"
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
   }
 }

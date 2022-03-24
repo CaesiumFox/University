@@ -1,3 +1,4 @@
+import React from 'react';
 import FormLabel from './FormLabel.js';
 import XCheckBoxPanel from './XCheckBoxPanel.js';
 import RCheckBoxPanel from './RCheckBoxPanel.js';
@@ -12,21 +13,21 @@ export default function Form(props) {
     let x = useSelector(state => state.x);
     let y = useSelector(state => state.y);
     let r = useSelector(state => state.r);
-    let imgR = useSelector(state => state.imgR);
-    let token = useSelector(state => state.token);
 
     function sendRequest(e) {
         e.preventDefault();
+        if (x.length === 0 || r.length === 0 ||
+            y.length === 0 || isNaN(y) || y < -3 || y > 5)
+            return;
         $.post({
             url: "/post-data",
             dataType: "json",
-            data: {
-                token: token,
-                type: "form",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
                 x: x,
                 y: y,
                 r: r
-            }
+            })
         }).done(function(data) {
             dispatch({type: "PUSH_ENTRIES", payload: data.entries});
         }).fail(function(jqXHR, textStatus) {
@@ -36,14 +37,14 @@ export default function Form(props) {
 
     return (
         <form method="post" name="numbers" onSubmit={sendRequest}>
-            <div className="form+panel">
+            <div className="form_panel" id="the_form_panel">
                 <FormLabel variable="X"/>
                 <XCheckBoxPanel/>
                 <FormLabel variable="Y"/>
                 <YTextBoxPanel/>
                 <FormLabel variable="R"/>
                 <RCheckBoxPanel/>
-                <FormLabel variable={'R<sub>(img)</sub> = ' + imgR.toString()}/>
+                <FormLabel variable="ImgR"/>
                 <ImgRButtonPanel/>
                 <SubmitButton text="Отправить"/>
             </div>

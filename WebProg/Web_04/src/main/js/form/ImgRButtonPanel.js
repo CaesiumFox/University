@@ -1,3 +1,4 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function ImgRButtonPanel(props) {
@@ -13,6 +14,13 @@ export default function ImgRButtonPanel(props) {
                        id={str + '_button'}
                        name={str}
                        value={val.toString().replace('-','\u2212')}
+                       style={{
+                           borderWidth: "2px",
+                           borderStyle: "solid",
+                           borderColor: ((r == val) ? "var(--accent-color)" : "transparent"),
+                           backgroundColor: ((r == val) ?
+                               "var(--half-accent-color)" : "")
+                       }}
                        onClick={()=>{
                            dispatch({type: "SET_IMG_R", payload: val});
                        }}/>
@@ -20,7 +28,7 @@ export default function ImgRButtonPanel(props) {
         ));
     }
     return (
-        <div className="btn_panel" id="img_r_checkbox_panel"><div>
+        <div className="btn_panel" id="img_r_button_panel"><div>
             {list}
         </div></div>
     );

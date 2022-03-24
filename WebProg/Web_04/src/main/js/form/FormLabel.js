@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function FormLabel(props) {
     return (
         <div className="form_label">

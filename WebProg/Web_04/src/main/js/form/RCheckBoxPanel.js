@@ -1,9 +1,16 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import $ from "jquery";
 
 export default function RCheckBoxPanel(props) {
     let dispatch = useDispatch();
     let rState = useSelector(state => state.r);
 
+    if (rState.length === 0)
+        $("#the_form_panel").css("--show-r-error", "visible");
+    else
+        $("#the_form_panel").css("--show-r-error", "hidden");
+    
     let list = [];
     for (let val = -4; val <= 4; val++) {
         let str = 'r' + val.toString().replace('-','m');

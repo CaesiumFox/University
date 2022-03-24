@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function TableEntry(props) {
     return (
         <tr>
@@ -7,6 +9,7 @@ export default function TableEntry(props) {
             <td>{props.hit ? "Да" : "Нет"}</td>
             <td>{props.time}</td>
             <td>{props.duration}</td>
+            <td>{props.user}</td>
         </tr>
     );
 }

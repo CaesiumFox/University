@@ -1,8 +1,15 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import $ from "jquery";
 
 export default function XCheckBoxPanel(props) {
     let dispatch = useDispatch();
     let xState = useSelector(state => state.x);
+
+    if (xState.length === 0)
+        $("#the_form_panel").css("--show-x-error", "visible");
+    else
+        $("#the_form_panel").css("--show-x-error", "hidden");
 
     let list = [];
     for (let val = -4; val <= 4; val++) {

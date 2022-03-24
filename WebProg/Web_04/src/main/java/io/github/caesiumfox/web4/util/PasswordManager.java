@@ -1,4 +1,4 @@
-package io.github.caesiumfox.web4;
+package io.github.caesiumfox.web4.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,7 +17,7 @@ public class PasswordManager {
         random = new Random(System.nanoTime());
     }
 
-    public static String hashPassword(String password, String salt) {
+    public static String hashPasswordSalt(String password, String salt) {
         String sum = password + salt;
         byte[] hash;
         try {
